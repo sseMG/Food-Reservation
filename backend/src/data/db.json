@@ -48,7 +48,7 @@
       "name": "Fried Lumpia",
       "category": "Meals",
       "price": 40,
-      "stock": 31,
+      "stock": 28,
       "img": "/uploads/1761207680082_825374.jpg",
       "visible": true,
       "updatedAt": "2025-10-28T13:19:12.903Z"
@@ -58,7 +58,7 @@
       "name": "Hot Dog",
       "category": "Meals",
       "price": 60,
-      "stock": 38,
+      "stock": 35,
       "img": "/uploads/1761631662153_847269.jpg",
       "visible": true,
       "updatedAt": "2025-10-28T13:19:13.874Z"
@@ -5447,13 +5447,74 @@
         }
       ],
       "total": 65,
-      "status": "Approved",
+      "status": "Ready",
       "transactionId": "TX_miaais0x77",
       "charged": true,
       "chargedAt": "2025-11-22T12:53:46.209Z",
       "stockDeducted": true,
       "createdAt": "2025-11-22T12:53:46.209Z",
-      "updatedAt": "2025-11-22T12:56:05.755Z"
+      "updatedAt": "2025-11-22T14:28:08.560Z"
+    },
+    {
+      "id": "RES_miadvco3a0",
+      "userId": "usr_mh0h1va7",
+      "student": "Anmol David Das",
+      "grade": "G10",
+      "section": "Proverbs",
+      "when": "lunch",
+      "note": "",
+      "items": [
+        {
+          "id": "ITM-5",
+          "name": "Fried Lumpia",
+          "price": 40,
+          "qty": 1
+        },
+        {
+          "id": "ITM-6",
+          "name": "Hot Dog",
+          "price": 60,
+          "qty": 1
+        }
+      ],
+      "total": 100,
+      "status": "Approved",
+      "transactionId": "TX_miadvco3kk",
+      "charged": true,
+      "chargedAt": "2025-11-22T14:27:31.683Z",
+      "stockDeducted": true,
+      "createdAt": "2025-11-22T14:27:31.683Z",
+      "updatedAt": "2025-11-22T14:27:57.795Z"
+    },
+    {
+      "id": "RES_miadxltags",
+      "userId": "usr_mh0h1va7",
+      "student": "Anmol David Das",
+      "grade": "G10",
+      "section": "Psalms",
+      "when": "lunch",
+      "note": "",
+      "items": [
+        {
+          "id": "ITM-5",
+          "name": "Fried Lumpia",
+          "price": 40,
+          "qty": 2
+        },
+        {
+          "id": "ITM-6",
+          "name": "Hot Dog",
+          "price": 60,
+          "qty": 2
+        }
+      ],
+      "total": 200,
+      "status": "Pending",
+      "transactionId": "TX_miadxlta83",
+      "charged": true,
+      "chargedAt": "2025-11-22T14:29:16.846Z",
+      "stockDeducted": true,
+      "createdAt": "2025-11-22T14:29:16.846Z"
     }
   ],
   "topups": [
@@ -6133,7 +6194,7 @@
       "role": "student",
       "grade": "",
       "section": "",
-      "balance": 3219,
+      "balance": 2919,
       "resetToken": "d2577656c95362fbd241689d0197718a829d807b",
       "resetTokenExpiresAt": "2025-10-29T03:55:10.715Z",
       "studentId": "1646523368",
@@ -8793,6 +8854,26 @@
       "direction": "debit",
       "status": "Success",
       "createdAt": "2025-11-22T12:53:46.209Z"
+    },
+    {
+      "id": "TX_miadvco3kk",
+      "userId": "usr_mh0h1va7",
+      "title": "Reservation Hold",
+      "ref": "RES_miadvco3a0",
+      "amount": 100,
+      "direction": "debit",
+      "status": "Success",
+      "createdAt": "2025-11-22T14:27:31.683Z"
+    },
+    {
+      "id": "TX_miadxlta83",
+      "userId": "usr_mh0h1va7",
+      "title": "Reservation Hold",
+      "ref": "RES_miadxltags",
+      "amount": 200,
+      "direction": "debit",
+      "status": "Pending",
+      "createdAt": "2025-11-22T14:29:16.846Z"
     }
   ],
   "wallets": [
@@ -8808,6 +8889,142 @@
     }
   ],
   "notifications": [
+    {
+      "id": "notif_miadxltr",
+      "for": "admin",
+      "actor": {
+        "id": "usr_mh0h1va7",
+        "name": "Anmol David Das",
+        "email": "spadymold@gmail.com",
+        "profilePictureUrl": "/uploads/profile-usr_mh0h1va7-1762414859999.png"
+      },
+      "type": "reservation:created",
+      "title": "New reservation submitted",
+      "body": "Anmol David Das submitted a reservation",
+      "data": {
+        "reservationId": "RES_miadxltags",
+        "items": [
+          {
+            "id": "ITM-5",
+            "name": "Fried Lumpia",
+            "price": 40,
+            "qty": 2
+          },
+          {
+            "id": "ITM-6",
+            "name": "Hot Dog",
+            "price": 60,
+            "qty": 2
+          }
+        ],
+        "total": 200,
+        "note": "",
+        "slot": "lunch",
+        "grade": "G10",
+        "section": "Psalms",
+        "student": "Anmol David Das"
+      },
+      "read": false,
+      "createdAt": "2025-11-22T14:29:16.846Z"
+    },
+    {
+      "id": "notif_miadw54w",
+      "for": "usr_mh0h1va7",
+      "type": "reservation:status",
+      "title": "Reservation RES_miaais0xk8 Ready",
+      "body": "Your reservation RES_miaais0xk8 is now Ready.",
+      "data": {
+        "reservationId": "RES_miaais0xk8",
+        "status": "Ready"
+      },
+      "read": true,
+      "createdAt": "2025-11-22T14:28:08.576Z"
+    },
+    {
+      "id": "notif_miadw40o",
+      "for": "usr_mh0h1va7",
+      "type": "reservation:status",
+      "title": "Reservation RES_miaais0xk8 Preparing",
+      "body": "Your reservation RES_miaais0xk8 is now Preparing.",
+      "data": {
+        "reservationId": "RES_miaais0xk8",
+        "status": "Preparing"
+      },
+      "read": true,
+      "createdAt": "2025-11-22T14:28:07.128Z"
+    },
+    {
+      "id": "notif_miadvwtt",
+      "for": "usr_mh0h1va7",
+      "type": "reservation:status",
+      "title": "Reservation RES_miadvco3a0 Approved",
+      "body": "Your reservation RES_miadvco3a0 has been approved.",
+      "data": {
+        "reservationId": "RES_miadvco3a0",
+        "status": "Approved",
+        "items": [
+          {
+            "id": "ITM-5",
+            "name": "Fried Lumpia",
+            "price": 40,
+            "qty": 1
+          },
+          {
+            "id": "ITM-6",
+            "name": "Hot Dog",
+            "price": 60,
+            "qty": 1
+          }
+        ],
+        "total": 100,
+        "note": "",
+        "slot": "lunch",
+        "grade": "G10",
+        "section": "Proverbs",
+        "student": "Anmol David Das",
+        "transactionId": "TX_miadvco3kk"
+      },
+      "read": true,
+      "createdAt": "2025-11-22T14:27:57.809Z"
+    },
+    {
+      "id": "notif_miadvcoi",
+      "for": "admin",
+      "actor": {
+        "id": "usr_mh0h1va7",
+        "name": "Anmol David Das",
+        "email": "spadymold@gmail.com",
+        "profilePictureUrl": "/uploads/profile-usr_mh0h1va7-1762414859999.png"
+      },
+      "type": "reservation:created",
+      "title": "New reservation submitted",
+      "body": "Anmol David Das submitted a reservation",
+      "data": {
+        "reservationId": "RES_miadvco3a0",
+        "items": [
+          {
+            "id": "ITM-5",
+            "name": "Fried Lumpia",
+            "price": 40,
+            "qty": 1
+          },
+          {
+            "id": "ITM-6",
+            "name": "Hot Dog",
+            "price": 60,
+            "qty": 1
+          }
+        ],
+        "total": 100,
+        "note": "",
+        "slot": "lunch",
+        "grade": "G10",
+        "section": "Proverbs",
+        "student": "Anmol David Das"
+      },
+      "read": true,
+      "createdAt": "2025-11-22T14:27:31.683Z"
+    },
     {
       "id": "notif_miacdj4x",
       "for": "admin",
@@ -19313,7 +19530,7 @@
       "id": "cart_user_usr_mh0h1va7",
       "userId": "usr_mh0h1va7",
       "items": [],
-      "updatedAt": "2025-11-22T12:53:48.182Z"
+      "updatedAt": "2025-11-22T14:29:18.309Z"
     },
     {
       "id": "cart_user_usr_mhd5ixwi",

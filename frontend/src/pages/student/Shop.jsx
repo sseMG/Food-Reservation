@@ -25,6 +25,11 @@ import {
   TrendingUp,
   Sparkles,
   ChevronRight,
+  Menu,
+  Home,
+  Info,
+  LogIn,
+  UserPlus,
 } from "lucide-react";
 
 const peso = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" });
@@ -45,26 +50,78 @@ const CATEGORY_EMOJI = {
   "Others": "🍽️",
 };
 
-function GuestHeader() {
+function GuestHeader({ mobileMenuOpen, setMobileMenuOpen }) {
   return (
-    <header className="bg-white border-b sticky top-0 z-40 shadow-sm">
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
-        <div className="h-14 sm:h-16 flex items-center justify-between gap-2">
-          <a href="/" className="inline-flex items-center gap-2 sm:gap-3 min-w-0 flex-shrink">
-            <img src="/jckl-192.png" alt="JCKL" className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg flex-shrink-0" />
-            <div className="min-w-0">
-              <span className="hidden xl:inline text-[15px] font-semibold text-gray-900">Jesus Christ King of Kings and Lord of Lords Academy Inc.</span>
-              <span className="hidden md:inline xl:hidden text-[15px] font-semibold text-gray-900 truncate max-w-[520px]">Jesus Christ King of Kings and Lord of Lords Academy Inc.</span>
-              <span className="md:hidden text-xs sm:text-sm font-semibold text-gray-900">JCKL Academy</span>
+    <>
+      <header className="bg-white border-b sticky top-0 z-40 shadow-sm">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
+          <div className="h-14 sm:h-16 flex items-center justify-between gap-2">
+            <a href="/" className="inline-flex items-center gap-2 sm:gap-3 min-w-0 flex-shrink">
+              <img src="/jckl-192.png" alt="JCKL" className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg flex-shrink-0" />
+              <div className="min-w-0">
+                <span className="hidden xl:inline text-[15px] font-semibold text-gray-900">Jesus Christ King of Kings and Lord of Lords Academy Inc.</span>
+                <span className="hidden md:inline xl:hidden text-[15px] font-semibold text-gray-900 truncate max-w-[520px]">Jesus Christ King of Kings and Lord of Lords Academy Inc.</span>
+                <span className="md:hidden text-xs sm:text-sm font-semibold text-gray-900">JCKL Academy</span>
+              </div>
+            </a>
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              <a href="/register" className="hidden sm:inline text-xs sm:text-sm text-gray-600 hover:text-gray-900">Create Account</a>
+              <a href="/login" className="text-xs sm:text-sm text-blue-600 hover:text-blue-700 font-medium hidden sm:inline">Log In</a>
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="sm:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-700 transition-colors"
+              >
+                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
             </div>
-          </a>
-          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-            <a href="/login" className="text-xs sm:text-sm text-blue-600 hover:text-blue-700 font-medium">Student Login</a>
-            <a href="/register" className="hidden sm:inline text-xs sm:text-sm text-gray-600 hover:text-gray-900">Create Account</a>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Mobile Navigation Menu */}
+      {mobileMenuOpen && (
+        <>
+          <div className="fixed inset-0 bg-black/40 z-30 sm:hidden" onClick={() => setMobileMenuOpen(false)} />
+          <nav className="fixed top-14 left-0 right-0 bg-white border-b border-gray-200 z-40 sm:hidden shadow-lg">
+            <div className="px-4 py-3 space-y-2">
+              <a
+                href="/"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Home className="w-5 h-5" />
+                <span className="text-sm font-medium">Home</span>
+              </a>
+              <a
+                href="/about"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Info className="w-5 h-5" />
+                <span className="text-sm font-medium">About Us</span>
+              </a>
+              <a
+                href="/login"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <LogIn className="w-5 h-5" />
+                <span className="text-sm font-medium">Log In</span>
+              </a>
+              <a
+                href="/register"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <UserPlus className="w-5 h-5" />
+                <span className="text-sm font-medium">Create Account</span>
+              </a>
+            </div>
+          </nav>
+        </>
+      )}
+    </>
   );
 }
 
@@ -131,6 +188,7 @@ function EmptyCartSuggestions({ items, onAdd }) {
 export default function Shop({ publicView = false }) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   useEffect(() => {
     if (publicView) return;
@@ -458,7 +516,7 @@ export default function Shop({ publicView = false }) {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">
-      {publicView ? <GuestHeader /> : <Navbar />}
+      {publicView ? <GuestHeader mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} /> : <Navbar />}
 
       <Toast 
         message={toast.message} 
