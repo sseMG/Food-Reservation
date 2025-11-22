@@ -6,7 +6,7 @@ import Button from "../components/Button";
 import { api, ApiError } from "../lib/api";
 import { refreshSessionForPublic } from "../lib/auth";
 import { setUserToStorage, setTokenToStorage } from "../lib/storage";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -15,6 +15,7 @@ export default function Login() {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -296,8 +297,33 @@ export default function Login() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <Input label="Email Address" name="email" type="email" value={creds.email} onChange={handleChange} placeholder="student@jckl.edu.ph" error={errors.email} autoComplete="username" />
+              
+              {/* Password field with toggle */}
               <div>
-                <Input label="Password" name="password" type="password" value={creds.password} onChange={handleChange} placeholder="••••••••" error={errors.password} autoComplete="current-password" />
+                <div className="relative">
+                  <Input 
+                    label="Password" 
+                    name="password" 
+                    type={showPassword ? "text" : "password"}
+                    value={creds.password} 
+                    onChange={handleChange} 
+                    placeholder="••••••••" 
+                    error={errors.password} 
+                    autoComplete="current-password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-10 text-gray-400 hover:text-gray-600 transition-colors"
+                    tabIndex="-1"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
                 <div className="text-right mt-2">
                   <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700 hover:underline font-medium">Forgot password?</Link>
                 </div>
@@ -313,13 +339,6 @@ export default function Login() {
                 Don't have an account?{" "}
                 <Link to="/register" className="text-blue-600 hover:text-blue-700 font-semibold">Create Account</Link>
               </p>
-            </div>
-
-            {/* Quick test hint (remove later) */}
-            <div className="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-500 bg-gray-50 rounded-lg p-3">
-              <div className="font-semibold text-gray-700 mb-1">Test Accounts:</div>
-              <div><span className="font-medium">Admin:</span> admin@school.test / admin123</div>
-              <div><span className="font-medium">Student:</span> student@school.test / student123</div>
             </div>
           </div>
         </div>

@@ -6072,6 +6072,21 @@
       "proofUrl": "/uploads/miaasgwh_69917fb1-9962-4cf5-aa04-b68afe5ead27.jpg",
       "submittedAt": "2025-11-22T13:01:18.386Z",
       "createdAt": "2025-11-22T13:01:18.386Z"
+    },
+    {
+      "id": "top_miabc5f1",
+      "userId": "usr_mi7l1snn",
+      "student": "Juan Dela Cruz",
+      "studentId": "202245535",
+      "contact": "0955667784",
+      "email": "juan@gmail.com",
+      "provider": "gcash",
+      "amount": 600,
+      "reference": "2324335434",
+      "status": "Pending",
+      "proofUrl": "/uploads/miabc5e4_69917fb1-9962-4cf5-aa04-b68afe5ead27.jpg",
+      "submittedAt": "2025-11-22T13:16:36.588Z",
+      "createdAt": "2025-11-22T13:16:36.588Z"
     }
   ],
   "users": [
@@ -6125,7 +6140,10 @@
       "phone": "09688523253",
       "updatedAt": "2025-11-11T08:32:56.129Z",
       "profilePictureUrl": "/uploads/profile-usr_mh0h1va7-1762414859999.png",
-      "passwordReset": null
+      "passwordReset": {
+        "token": "ok24dqo6hbqfnwojo45c7h",
+        "expiresAt": "2025-11-22T14:38:32.353Z"
+      }
     },
     {
       "id": "usr_mhbem19p",
@@ -6353,6 +6371,19 @@
       "studentId": "202293843",
       "phone": "202231244",
       "createdAt": "2025-11-22T12:38:34.392Z"
+    },
+    {
+      "id": "usr_miacdj0q",
+      "name": "Franky Gerald",
+      "email": "Frank@gmail.com",
+      "passwordHash": "$2a$10$iVprVBP.9mSEneL1BcNhPe0UG196jK2x1Qg9NQhnIytSUHTtXzg32",
+      "role": "student",
+      "grade": "",
+      "section": "",
+      "balance": 0,
+      "studentId": "20229384",
+      "phone": "02994839563",
+      "createdAt": "2025-11-22T13:45:40.626Z"
     }
   ],
   "transactions": [
@@ -8777,6 +8808,52 @@
     }
   ],
   "notifications": [
+    {
+      "id": "notif_miacdj4x",
+      "for": "admin",
+      "actor": null,
+      "type": "student:registered",
+      "title": "New Student Registration: Franky Gerald",
+      "body": "A new student account has been created.\n\nName: Franky Gerald\nStudent ID: 20229384\nEmail: Frank@gmail.com\nPhone: 02994839563",
+      "data": {
+        "userId": "usr_miacdj0q",
+        "studentName": "Franky Gerald",
+        "studentId": "20229384",
+        "email": "Frank@gmail.com",
+        "phone": "02994839563",
+        "grade": "",
+        "section": ""
+      },
+      "read": true,
+      "createdAt": "2025-11-22T13:45:40.641Z"
+    },
+    {
+      "id": "notif_miabc5g4",
+      "for": "admin",
+      "actor": {
+        "id": "usr_mi7l1snn",
+        "name": "Juan Dela Cruz",
+        "email": "juan@gmail.com",
+        "profilePictureUrl": null
+      },
+      "type": "topup:created",
+      "title": "New Top-up Request",
+      "body": "Juan Dela Cruz submitted a top-up request for ₱600.00",
+      "data": {
+        "topupId": "top_miabc5f1",
+        "amount": 600,
+        "provider": "gcash",
+        "studentId": "202245535",
+        "reference": "2324335434",
+        "student": {
+          "name": "Juan Dela Cruz",
+          "contact": "0955667784",
+          "email": "juan@gmail.com"
+        }
+      },
+      "read": true,
+      "createdAt": "2025-11-22T13:16:36.588Z"
+    },
     {
       "id": "notif_miaasgyn",
       "for": "admin",

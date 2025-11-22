@@ -6,7 +6,7 @@ import Button from "../components/Button";
 import { api, ApiError } from "../lib/api";
 import { refreshSessionForPublic } from "../lib/auth";
 import { setUserToStorage, setTokenToStorage } from "../lib/storage";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Eye, EyeOff } from "lucide-react";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -28,6 +28,8 @@ export default function Register() {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -279,24 +281,56 @@ export default function Register() {
                 placeholder="student@jckl.edu.ph"
                 error={errors.email}
               />
-              <Input
-                label="Password"
-                name="password"
-                type="password"
-                value={form.password}
-                onChange={handleChange}
-                placeholder="At least 8 characters"
-                error={errors.password}
-              />
-              <Input
-                label="Confirm Password"
-                name="confirm"
-                type="password"
-                value={form.confirm}
-                onChange={handleChange}
-                placeholder="Re-enter your password"
-                error={errors.confirm}
-              />
+
+              {/* Password field with toggle */}
+              <div className="relative">
+                <Input
+                  label="Password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  value={form.password}
+                  onChange={handleChange}
+                  placeholder="At least 8 characters"
+                  error={errors.password}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-10 text-gray-400 hover:text-gray-600 transition-colors"
+                  tabIndex="-1"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+
+              {/* Confirm Password field with toggle */}
+              <div className="relative">
+                <Input
+                  label="Confirm Password"
+                  name="confirm"
+                  type={showConfirm ? "text" : "password"}
+                  value={form.confirm}
+                  onChange={handleChange}
+                  placeholder="Re-enter your password"
+                  error={errors.confirm}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                  className="absolute right-3 top-10 text-gray-400 hover:text-gray-600 transition-colors"
+                  tabIndex="-1"
+                >
+                  {showConfirm ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
 
               <Button
                 type="submit"
