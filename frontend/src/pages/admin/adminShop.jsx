@@ -13,7 +13,8 @@ import {
   Eye,
   EyeOff,
   MoreVertical,
-  X
+  X,
+  AlertTriangle
 } from "lucide-react";
 import AdminBottomNav from '../../components/mobile/AdminBottomNav';
 import { api } from "../../lib/api";
@@ -56,6 +57,7 @@ export default function AdminShop() {
   const [showFilters, setShowFilters] = useState(false);
   const [showAddMenu, setShowAddMenu] = useState(false);
   const [activeMenu, setActiveMenu] = useState(null); // for mobile action menu
+  const [deleteConfirm, setDeleteConfirm] = useState(null); // for delete confirmation modal
 
   const load = async () => {
     setLoading(true);
@@ -140,6 +142,24 @@ export default function AdminShop() {
     } catch (e) {
       console.error(e);
       alert("Failed to update item.");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  // 🔥 NEW: Delete product function
+  const deleteProduct = async (id) => {
+    setBusyId(id);
+    setDeleteConfirm(null);
+    setActiveMenu(null);
+    try {
+      await api.del(`/menu/${id}`);
+      setItems((prev) => prev.filter((item) => item.id !== id));
+      try { window.dispatchEvent(new Event("menu:updated")); } catch {}
+      alert("Product deleted successfully.");
+    } catch (e) {
+      console.error(e);
+      alert("Failed to delete product.");
     } finally {
       setBusyId(null);
     }
@@ -448,10 +468,17 @@ export default function AdminShop() {
                                     </button>
                                     <button
                                       onClick={() => markOutOfStock(p.id)}
+                                      className="w-full flex items-center gap-2 px-4 py-3 text-sm text-orange-600 hover:bg-orange-50 border-b"
+                                    >
+                                      <AlertTriangle className="w-4 h-4" />
+                                      Out of Stock
+                                    </button>
+                                    <button
+                                      onClick={() => setDeleteConfirm(p.id)}
                                       className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-red-50"
                                     >
                                       <Trash2 className="w-4 h-4" />
-                                      Mark out of stock
+                                      Delete Product
                                     </button>
                                   </div>
                                 </>
@@ -558,8 +585,17 @@ export default function AdminShop() {
                                 <button
                                   onClick={() => markOutOfStock(p.id)}
                                   disabled={busyId === p.id}
-                                  className="p-2 rounded-lg text-red-600 hover:bg-red-50 disabled:opacity-60"
+                                  className="p-2 rounded-lg text-orange-600 hover:bg-orange-50 disabled:opacity-60"
                                   title="Mark as out of stock"
+                                >
+                                  <AlertTriangle className="w-4 h-4" />
+                                </button>
+
+                                <button
+                                  onClick={() => setDeleteConfirm(p.id)}
+                                  disabled={busyId === p.id}
+                                  className="p-2 rounded-lg text-red-600 hover:bg-red-50 disabled:opacity-60"
+                                  title="Delete product"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </button>
@@ -576,6 +612,50 @@ export default function AdminShop() {
           )}
         </section>
       </main>
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999] p-4">
+          <div className="bg-white rounded-lg shadow-lg max-w-sm w-full overflow-hidden">
+            <div className="p-6 space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                  <AlertTriangle className="w-6 h-6 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Delete Product?</h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {items.find(i => i.id === deleteConfirm)?.name}
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                <p className="text-sm text-red-800">
+                  This action cannot be undone. The product will be permanently deleted.
+                </p>
+              </div>
+            </div>
+
+            <div className="px-6 py-4 bg-gray-50 border-t flex gap-3">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                disabled={busyId === deleteConfirm}
+                className="flex-1 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 disabled:opacity-60"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => deleteProduct(deleteConfirm)}
+                disabled={busyId === deleteConfirm}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 disabled:opacity-60"
+              >
+                {busyId === deleteConfirm ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Bottom Navigation - Mobile only */}
       <AdminBottomNav badgeCounts={badgeCounts} />

@@ -159,7 +159,9 @@
       "img": "/uploads/1761993657294_157996.jpg",
       "visible": false,
       "createdAt": "2025-11-01T10:40:33.466Z",
-      "updatedAt": "2025-11-17T13:49:09.922Z"
+      "updatedAt": "2025-11-17T13:49:09.922Z",
+      "deleted": true,
+      "deletedAt": "2025-11-22T11:35:25.935Z"
     },
     {
       "id": "1761997137761313",
@@ -8681,7 +8683,7 @@
         "grade": "",
         "section": ""
       },
-      "read": false,
+      "read": true,
       "createdAt": "2025-11-21T14:54:05.891Z"
     },
     {

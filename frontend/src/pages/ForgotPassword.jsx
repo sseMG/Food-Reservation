@@ -3,12 +3,14 @@ import { Link } from "react-router-dom";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { api } from "../lib/api";
+import { Menu, X } from "lucide-react";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,36 +37,67 @@ export default function ForgotPassword() {
     <div className="min-h-screen bg-gray-50">
       {/* HEADER */}
       <header className="w-full bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="font-bold text-gray-900 text-lg">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+          {/* Logo */}
+          <div className="font-bold text-gray-900 text-sm sm:text-base lg:text-lg line-clamp-2">
             Jesus Christ King of Kings and Lord of Lords Academy Inc.
           </div>
-          <nav>
-            <ul className="flex items-center space-x-8">
-              <li>
-                <Link
-                  to="/"
-                  className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200"
-                >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/login"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors duration-200"
-                >
-                  Log In
-                </Link>
-              </li>
-            </ul>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden sm:flex items-center space-x-4 lg:space-x-8 flex-shrink-0 ml-4">
+            <Link
+              to="/"
+              className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 whitespace-nowrap"
+            >
+              Home
+            </Link>
+            <Link
+              to="/login"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors duration-200 whitespace-nowrap text-sm"
+            >
+              Log In
+            </Link>
           </nav>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="sm:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          >
+            {mobileMenuOpen ? (
+              <X className="w-5 h-5 text-gray-600" />
+            ) : (
+              <Menu className="w-5 h-5 text-gray-600" />
+            )}
+          </button>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="sm:hidden border-t border-gray-200 bg-white">
+            <nav className="px-4 py-3 space-y-2">
+              <Link
+                to="/"
+                className="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg font-medium transition-colors duration-200"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Home
+              </Link>
+              <Link
+                to="/login"
+                className="block w-full px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors duration-200 text-center"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Log In
+              </Link>
+            </nav>
+          </div>
+        )}
       </header>
 
       {/* FORM */}
-      <div className="py-12 px-4">
-        <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg border border-gray-200">
+      <div className="py-8 sm:py-12 px-4">
+        <div className="max-w-md mx-auto bg-white p-6 sm:p-8 rounded-lg shadow-lg border border-gray-200">
           <div className="mb-6">
             <h1 className="text-2xl font-bold mb-2">Forgot Password?</h1>
             <p className="text-sm text-gray-600">
