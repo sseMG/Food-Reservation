@@ -16,7 +16,7 @@
       "name": "Choco Drink",
       "category": "Beverages",
       "price": 45,
-      "stock": 6,
+      "stock": 5,
       "img": "/uploads/1761207750288_944553.jpg",
       "isActive": true,
       "visible": true,
@@ -58,7 +58,7 @@
       "name": "Hot Dog",
       "category": "Meals",
       "price": 60,
-      "stock": 39,
+      "stock": 38,
       "img": "/uploads/1761631662153_847269.jpg",
       "visible": true,
       "updatedAt": "2025-10-28T13:19:13.874Z"
@@ -144,7 +144,7 @@
       "name": "Dutch Mill",
       "category": "Beverages",
       "price": 20,
-      "stock": 1,
+      "stock": 0,
       "img": "/uploads/1761992752859_306286.jpg",
       "visible": true,
       "createdAt": "2025-11-01T10:25:30.493Z",
@@ -181,7 +181,7 @@
       "name": "Rice Meal D",
       "category": "Meals",
       "price": 90,
-      "stock": 7,
+      "stock": 6,
       "mealType": "Rice Meal",
       "servingGrams": "250",
       "calories": "300",
@@ -5392,6 +5392,68 @@
       "stockDeducted": true,
       "createdAt": "2025-11-21T14:51:59.528Z",
       "updatedAt": "2025-11-21T14:52:54.445Z"
+    },
+    {
+      "id": "RES_mia9xb4soa",
+      "userId": "usr_mh0h1va7",
+      "student": "Anmol David Das",
+      "grade": "G10",
+      "section": "Proverbs",
+      "when": "lunch",
+      "note": "",
+      "items": [
+        {
+          "id": "ITM-6",
+          "name": "Hot Dog",
+          "price": 60,
+          "qty": 1
+        },
+        {
+          "id": "1762000012846394",
+          "name": "Rice Meal D",
+          "price": 90,
+          "qty": 1
+        }
+      ],
+      "total": 150,
+      "status": "Claimed",
+      "transactionId": "TX_mia9xb4sr1",
+      "charged": true,
+      "chargedAt": "2025-11-22T12:37:04.540Z",
+      "stockDeducted": true,
+      "createdAt": "2025-11-22T12:37:04.540Z",
+      "updatedAt": "2025-11-22T12:37:46.945Z"
+    },
+    {
+      "id": "RES_miaais0xk8",
+      "userId": "usr_mh0h1va7",
+      "student": "Anmol David Das",
+      "grade": "G10",
+      "section": "Proverbs",
+      "when": "recess",
+      "note": "",
+      "items": [
+        {
+          "id": "ITM-2",
+          "name": "Choco Drink",
+          "price": 45,
+          "qty": 1
+        },
+        {
+          "id": "1761992730493190",
+          "name": "Dutch Mill",
+          "price": 20,
+          "qty": 1
+        }
+      ],
+      "total": 65,
+      "status": "Approved",
+      "transactionId": "TX_miaais0x77",
+      "charged": true,
+      "chargedAt": "2025-11-22T12:53:46.209Z",
+      "stockDeducted": true,
+      "createdAt": "2025-11-22T12:53:46.209Z",
+      "updatedAt": "2025-11-22T12:56:05.755Z"
     }
   ],
   "topups": [
@@ -5995,6 +6057,21 @@
       "createdAt": "2025-11-17T13:42:47.454Z",
       "updatedAt": "2025-11-17T13:43:23.981Z",
       "rejectionReason": "Fake image"
+    },
+    {
+      "id": "top_miaasgxe",
+      "userId": "usr_mh0h1va7",
+      "student": "Anmol David Das",
+      "studentId": "1646523368",
+      "contact": "09688523253",
+      "email": "spadymold@gmail.com",
+      "provider": "gcash",
+      "amount": 2000,
+      "reference": "23243423535",
+      "status": "Pending",
+      "proofUrl": "/uploads/miaasgwh_69917fb1-9962-4cf5-aa04-b68afe5ead27.jpg",
+      "submittedAt": "2025-11-22T13:01:18.386Z",
+      "createdAt": "2025-11-22T13:01:18.386Z"
     }
   ],
   "users": [
@@ -6041,7 +6118,7 @@
       "role": "student",
       "grade": "",
       "section": "",
-      "balance": 3434,
+      "balance": 3219,
       "resetToken": "d2577656c95362fbd241689d0197718a829d807b",
       "resetTokenExpiresAt": "2025-10-29T03:55:10.715Z",
       "studentId": "1646523368",
@@ -6263,6 +6340,19 @@
       "studentId": "202393488",
       "phone": "0968738239",
       "createdAt": "2025-11-21T14:54:05.876Z"
+    },
+    {
+      "id": "usr_mia9z8d4",
+      "name": "Jesis Honet Bria",
+      "email": "Jesis@gmail.com",
+      "passwordHash": "$2a$10$ZPnUiFCvMd0nB/CK49/Vauvrm3rklkuYTWbLw3tnqD9EQGOwc0cMe",
+      "role": "student",
+      "grade": "",
+      "section": "",
+      "balance": 0,
+      "studentId": "202293843",
+      "phone": "202231244",
+      "createdAt": "2025-11-22T12:38:34.392Z"
     }
   ],
   "transactions": [
@@ -8652,6 +8742,26 @@
       "direction": "debit",
       "status": "Success",
       "createdAt": "2025-11-21T14:51:59.528Z"
+    },
+    {
+      "id": "TX_mia9xb4sr1",
+      "userId": "usr_mh0h1va7",
+      "title": "Reservation Hold",
+      "ref": "RES_mia9xb4soa",
+      "amount": 150,
+      "direction": "debit",
+      "status": "Success",
+      "createdAt": "2025-11-22T12:37:04.540Z"
+    },
+    {
+      "id": "TX_miaais0x77",
+      "userId": "usr_mh0h1va7",
+      "title": "Reservation Hold",
+      "ref": "RES_miaais0xk8",
+      "amount": 65,
+      "direction": "debit",
+      "status": "Success",
+      "createdAt": "2025-11-22T12:53:46.209Z"
     }
   ],
   "wallets": [
@@ -8667,6 +8777,235 @@
     }
   ],
   "notifications": [
+    {
+      "id": "notif_miaasgyn",
+      "for": "admin",
+      "actor": {
+        "id": "usr_mh0h1va7",
+        "name": "Anmol David Das",
+        "email": "spadymold@gmail.com",
+        "profilePictureUrl": "/uploads/profile-usr_mh0h1va7-1762414859999.png"
+      },
+      "type": "topup:created",
+      "title": "New Top-up Request",
+      "body": "Anmol David Das submitted a top-up request for ₱2,000.00",
+      "data": {
+        "topupId": "top_miaasgxe",
+        "amount": 2000,
+        "provider": "gcash",
+        "studentId": "1646523368",
+        "reference": "23243423535",
+        "student": {
+          "name": "Anmol David Das",
+          "contact": "09688523253",
+          "email": "spadymold@gmail.com"
+        }
+      },
+      "read": true,
+      "createdAt": "2025-11-22T13:01:18.386Z"
+    },
+    {
+      "id": "notif_miaalrpj",
+      "for": "usr_mh0h1va7",
+      "type": "reservation:status",
+      "title": "Reservation RES_miaais0xk8 Approved",
+      "body": "Your reservation RES_miaais0xk8 has been approved.",
+      "data": {
+        "reservationId": "RES_miaais0xk8",
+        "status": "Approved",
+        "items": [
+          {
+            "id": "ITM-2",
+            "name": "Choco Drink",
+            "price": 45,
+            "qty": 1
+          },
+          {
+            "id": "1761992730493190",
+            "name": "Dutch Mill",
+            "price": 20,
+            "qty": 1
+          }
+        ],
+        "total": 65,
+        "note": "",
+        "slot": "recess",
+        "grade": "G10",
+        "section": "Proverbs",
+        "student": "Anmol David Das",
+        "transactionId": "TX_miaais0x77"
+      },
+      "read": true,
+      "createdAt": "2025-11-22T12:56:05.767Z"
+    },
+    {
+      "id": "notif_miaais1a",
+      "for": "admin",
+      "actor": {
+        "id": "usr_mh0h1va7",
+        "name": "Anmol David Das",
+        "email": "spadymold@gmail.com",
+        "profilePictureUrl": "/uploads/profile-usr_mh0h1va7-1762414859999.png"
+      },
+      "type": "reservation:created",
+      "title": "New reservation submitted",
+      "body": "Anmol David Das submitted a reservation",
+      "data": {
+        "reservationId": "RES_miaais0xk8",
+        "items": [
+          {
+            "id": "ITM-2",
+            "name": "Choco Drink",
+            "price": 45,
+            "qty": 1
+          },
+          {
+            "id": "1761992730493190",
+            "name": "Dutch Mill",
+            "price": 20,
+            "qty": 1
+          }
+        ],
+        "total": 65,
+        "note": "",
+        "slot": "recess",
+        "grade": "G10",
+        "section": "Proverbs",
+        "student": "Anmol David Das"
+      },
+      "read": true,
+      "createdAt": "2025-11-22T12:53:46.209Z"
+    },
+    {
+      "id": "notif_mia9z8h2",
+      "for": "admin",
+      "actor": null,
+      "type": "student:registered",
+      "title": "New Student Registration: Jesis Honet Bria",
+      "body": "A new student account has been created.\n\nName: Jesis Honet Bria\nStudent ID: 202293843\nEmail: Jesis@gmail.com\nPhone: 202231244",
+      "data": {
+        "userId": "usr_mia9z8d4",
+        "studentName": "Jesis Honet Bria",
+        "studentId": "202293843",
+        "email": "Jesis@gmail.com",
+        "phone": "202231244",
+        "grade": "",
+        "section": ""
+      },
+      "read": true,
+      "createdAt": "2025-11-22T12:38:34.406Z"
+    },
+    {
+      "id": "notif_mia9y7v1",
+      "for": "usr_mh0h1va7",
+      "type": "reservation:status",
+      "title": "Reservation RES_mia9xb4soa Claimed",
+      "body": "Your reservation RES_mia9xb4soa is now Claimed.",
+      "data": {
+        "reservationId": "RES_mia9xb4soa",
+        "status": "Claimed"
+      },
+      "read": true,
+      "createdAt": "2025-11-22T12:37:46.957Z"
+    },
+    {
+      "id": "notif_mia9y6ci",
+      "for": "usr_mh0h1va7",
+      "type": "reservation:status",
+      "title": "Reservation RES_mia9xb4soa Ready",
+      "body": "Your reservation RES_mia9xb4soa is now Ready.",
+      "data": {
+        "reservationId": "RES_mia9xb4soa",
+        "status": "Ready"
+      },
+      "read": true,
+      "createdAt": "2025-11-22T12:37:44.994Z"
+    },
+    {
+      "id": "notif_mia9y3xe",
+      "for": "usr_mh0h1va7",
+      "type": "reservation:status",
+      "title": "Reservation RES_mia9xb4soa Preparing",
+      "body": "Your reservation RES_mia9xb4soa is now Preparing.",
+      "data": {
+        "reservationId": "RES_mia9xb4soa",
+        "status": "Preparing"
+      },
+      "read": true,
+      "createdAt": "2025-11-22T12:37:41.858Z"
+    },
+    {
+      "id": "notif_mia9xsk0",
+      "for": "usr_mh0h1va7",
+      "type": "reservation:status",
+      "title": "Reservation RES_mia9xb4soa Approved",
+      "body": "Your reservation RES_mia9xb4soa has been approved.",
+      "data": {
+        "reservationId": "RES_mia9xb4soa",
+        "status": "Approved",
+        "items": [
+          {
+            "id": "ITM-6",
+            "name": "Hot Dog",
+            "price": 60,
+            "qty": 1
+          },
+          {
+            "id": "1762000012846394",
+            "name": "Rice Meal D",
+            "price": 90,
+            "qty": 1
+          }
+        ],
+        "total": 150,
+        "note": "",
+        "slot": "lunch",
+        "grade": "G10",
+        "section": "Proverbs",
+        "student": "Anmol David Das",
+        "transactionId": "TX_mia9xb4sr1"
+      },
+      "read": true,
+      "createdAt": "2025-11-22T12:37:27.120Z"
+    },
+    {
+      "id": "notif_mia9xb57",
+      "for": "admin",
+      "actor": {
+        "id": "usr_mh0h1va7",
+        "name": "Anmol David Das",
+        "email": "spadymold@gmail.com",
+        "profilePictureUrl": "/uploads/profile-usr_mh0h1va7-1762414859999.png"
+      },
+      "type": "reservation:created",
+      "title": "New reservation submitted",
+      "body": "Anmol David Das submitted a reservation",
+      "data": {
+        "reservationId": "RES_mia9xb4soa",
+        "items": [
+          {
+            "id": "ITM-6",
+            "name": "Hot Dog",
+            "price": 60,
+            "qty": 1
+          },
+          {
+            "id": "1762000012846394",
+            "name": "Rice Meal D",
+            "price": 90,
+            "qty": 1
+          }
+        ],
+        "total": 150,
+        "note": "",
+        "slot": "lunch",
+        "grade": "G10",
+        "section": "Proverbs",
+        "student": "Anmol David Das"
+      },
+      "read": true,
+      "createdAt": "2025-11-22T12:37:04.540Z"
+    },
     {
       "id": "notif_mi8zdo3n",
       "for": "admin",
@@ -18897,7 +19236,7 @@
       "id": "cart_user_usr_mh0h1va7",
       "userId": "usr_mh0h1va7",
       "items": [],
-      "updatedAt": "2025-11-21T14:52:00.792Z"
+      "updatedAt": "2025-11-22T12:53:48.182Z"
     },
     {
       "id": "cart_user_usr_mhd5ixwi",

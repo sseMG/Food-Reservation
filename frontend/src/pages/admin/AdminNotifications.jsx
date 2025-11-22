@@ -24,60 +24,237 @@ export default function AdminNotifications() {
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const paginatedNotifications = notifications.slice(startIndex, endIndex);
 
-  // Render preview.data as readable HTML (recursive)
-  const renderPreviewData = (data) => {
-    if (data == null) return <div className="text-sm text-gray-500">No additional details.</div>;
-    if (typeof data === "string" || typeof data === "number" || typeof data === "boolean") {
-      return <div className="text-sm text-gray-700">{String(data)}</div>;
-    }
-    if (Array.isArray(data)) {
+  // 🔥 NEW: Format reservation data nicely
+  const renderReservationData = (data) => {
+    if (!data) return null;
+
+    // If data has items array (reservation with items)
+    if (data.items && Array.isArray(data.items)) {
       return (
-        <div className="space-y-3">
-          {data.map((item, i) => (
-            <div key={i} className="border rounded-md p-3 bg-white shadow-sm">
-              {typeof item === "object" ? renderPreviewData(item) : <div className="text-sm text-gray-700">{String(item)}</div>}
+        <div className="space-y-4">
+          {/* Basic Info */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {data.reservationid && (
+              <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                <div className="text-xs font-semibold text-blue-700 uppercase">Reservation ID</div>
+                <div className="text-sm font-mono text-blue-900 mt-1">{data.reservationid}</div>
+              </div>
+            )}
+            
+            {data.student && (
+              <div className="bg-purple-50 rounded-lg p-3 border border-purple-200">
+                <div className="text-xs font-semibold text-purple-700 uppercase">Student</div>
+                <div className="text-sm text-purple-900 mt-1">{data.student}</div>
+              </div>
+            )}
+
+            {data.grade && (
+              <div className="bg-green-50 rounded-lg p-3 border border-green-200">
+                <div className="text-xs font-semibold text-green-700 uppercase">Grade</div>
+                <div className="text-sm text-green-900 mt-1">{data.grade}</div>
+              </div>
+            )}
+
+            {data.section && (
+              <div className="bg-amber-50 rounded-lg p-3 border border-amber-200">
+                <div className="text-xs font-semibold text-amber-700 uppercase">Section</div>
+                <div className="text-sm text-amber-900 mt-1">{data.section}</div>
+              </div>
+            )}
+
+            {data.slot && (
+              <div className="bg-indigo-50 rounded-lg p-3 border border-indigo-200">
+                <div className="text-xs font-semibold text-indigo-700 uppercase">Slot</div>
+                <div className="text-sm text-indigo-900 mt-1">{data.slot}</div>
+              </div>
+            )}
+
+            {data.note && (
+              <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                <div className="text-xs font-semibold text-gray-700 uppercase">Note</div>
+                <div className="text-sm text-gray-900 mt-1">{data.note}</div>
+              </div>
+            )}
+          </div>
+
+          {/* Items Table */}
+          <div className="border rounded-lg overflow-hidden bg-white">
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Item</th>
+                    <th className="px-3 py-2 text-center text-xs font-semibold text-gray-700">Price</th>
+                    <th className="px-3 py-2 text-center text-xs font-semibold text-gray-700">Qty</th>
+                    <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {data.items.map((item, idx) => {
+                    const itemPrice = typeof item.price === "number" ? item.price : 0;
+                    const itemQty = typeof item.qty === "number" ? item.qty : 1;
+                    const subtotal = itemPrice * itemQty;
+                    
+                    return (
+                      <tr key={idx} className="hover:bg-gray-50">
+                        <td className="px-3 py-3 text-sm text-gray-900 font-medium">{item.name || "Unknown Item"}</td>
+                        <td className="px-3 py-3 text-center text-sm text-gray-700">
+                          {typeof itemPrice === "number" ? peso.format(itemPrice) : "-"}
+                        </td>
+                        <td className="px-3 py-3 text-center text-sm text-gray-700">{itemQty}</td>
+                        <td className="px-3 py-3 text-right text-sm font-semibold text-gray-900">
+                          {typeof subtotal === "number" ? peso.format(subtotal) : "-"}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
-          ))}
+
+            {/* Total */}
+            {data.total && (
+              <div className="px-4 py-3 bg-blue-50 border-t border-blue-200 flex justify-end">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-sm font-semibold text-gray-700">Total:</span>
+                  <span className="text-lg font-bold text-blue-900">
+                    {typeof data.total === "number" ? peso.format(data.total) : data.total}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       );
     }
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {Object.entries(data).map(([k, v]) => (
-          <div key={k} className="flex items-start gap-4">
-            <div className="w-36 text-xs text-gray-500">{k}</div>
-            <div className="flex-1">
-              {Array.isArray(v) ? (
-                <div className="space-y-2">
-                  {v.map((it, idx) => (
-                    <div key={idx} className="border rounded px-3 py-2 bg-white text-sm text-gray-700">
-                      {typeof it === "object" ? (
-                        <div className="grid grid-cols-2 gap-2">
-                          {Object.entries(it).map(([ik, iv]) => (
-                            <div key={ik} className="flex">
-                              <div className="w-24 text-xs text-gray-500">{ik}</div>
-                              <div className="flex-1">{String(iv)}</div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        String(it)
-                      )}
-                    </div>
-                  ))}
+
+    // 🔥 NEW: Format top-up data nicely
+    if (data.topupid || data.amount || data.provider) {
+      // Parse student object if it's a JSON string
+      let studentData = null;
+      if (data.student) {
+        if (typeof data.student === "string") {
+          try {
+            studentData = JSON.parse(data.student);
+          } catch {
+            studentData = { name: data.student };
+          }
+        } else if (typeof data.student === "object") {
+          studentData = data.student;
+        }
+      }
+
+      return (
+        <div className="space-y-4">
+          {/* Top-up Details Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {data.topupid && (
+              <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                <div className="text-xs font-semibold text-blue-700 uppercase">Top-up ID</div>
+                <div className="text-sm font-mono text-blue-900 mt-1 break-all">{data.topupid}</div>
+              </div>
+            )}
+
+            {data.amount && (
+              <div className="bg-green-50 rounded-lg p-3 border border-green-200">
+                <div className="text-xs font-semibold text-green-700 uppercase">Amount</div>
+                <div className="text-lg font-bold text-green-900 mt-1">
+                  {typeof data.amount === "number" ? peso.format(data.amount) : peso.format(parseFloat(data.amount) || 0)}
                 </div>
-              ) : typeof v === "object" ? (
-                <div className="grid grid-cols-2 gap-2 text-sm text-gray-700">
-                  {Object.entries(v).map(([vk, vv]) => (
-                    <div key={vk} className="flex">
-                      <div className="w-24 text-xs text-gray-500">{vk}</div>
-                      <div className="flex-1">{String(vv)}</div>
-                    </div>
-                  ))}
+              </div>
+            )}
+
+            {data.provider && (
+              <div className="bg-purple-50 rounded-lg p-3 border border-purple-200">
+                <div className="text-xs font-semibold text-purple-700 uppercase">Provider</div>
+                <div className="text-sm text-purple-900 mt-1 capitalize">{data.provider}</div>
+              </div>
+            )}
+
+            {data.reference && (
+              <div className="bg-orange-50 rounded-lg p-3 border border-orange-200">
+                <div className="text-xs font-semibold text-orange-700 uppercase">Reference</div>
+                <div className="text-sm font-mono text-orange-900 mt-1 break-all">{data.reference}</div>
+              </div>
+            )}
+
+            {data.studentid && (
+              <div className="bg-indigo-50 rounded-lg p-3 border border-indigo-200">
+                <div className="text-xs font-semibold text-indigo-700 uppercase">Student ID</div>
+                <div className="text-sm font-mono text-indigo-900 mt-1">{data.studentid}</div>
+              </div>
+            )}
+          </div>
+
+          {/* Student Info Card */}
+          {studentData && (
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200 space-y-3">
+              <div className="text-xs font-semibold text-blue-700 uppercase tracking-wide">Student Information</div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {studentData.name && (
+                  <div>
+                    <div className="text-xs text-blue-600 font-medium">Full Name</div>
+                    <div className="text-sm text-gray-900 mt-1">{studentData.name}</div>
+                  </div>
+                )}
+
+                {studentData.contact && (
+                  <div>
+                    <div className="text-xs text-blue-600 font-medium">Contact Number</div>
+                    <div className="text-sm text-gray-900 mt-1 font-mono">{studentData.contact}</div>
+                  </div>
+                )}
+
+                {studentData.email && (
+                  <div className="sm:col-span-2">
+                    <div className="text-xs text-blue-600 font-medium">Email</div>
+                    <div className="text-sm text-gray-900 mt-1 break-all font-mono">{studentData.email}</div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Additional Info */}
+          {(data.status || data.createdAt) && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {data.status && (
+                <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                  <div className="text-xs font-semibold text-gray-700 uppercase">Status</div>
+                  <div className="text-sm text-gray-900 mt-1 capitalize">
+                    <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                      data.status === "completed" ? "bg-green-100 text-green-700" :
+                      data.status === "pending" ? "bg-yellow-100 text-yellow-700" :
+                      data.status === "failed" ? "bg-red-100 text-red-700" :
+                      "bg-gray-100 text-gray-700"
+                    }`}>
+                      {data.status}
+                    </span>
+                  </div>
                 </div>
-              ) : (
-                <div className="text-sm text-gray-700">{String(v)}</div>
               )}
+
+              {data.createdAt && (
+                <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                  <div className="text-xs font-semibold text-gray-700 uppercase">Date</div>
+                  <div className="text-sm text-gray-900 mt-1">{new Date(data.createdAt).toLocaleString()}</div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Fallback for other data types
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {Object.entries(data).map(([k, v]) => (
+          <div key={k} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+            <div className="text-xs font-semibold text-gray-600 uppercase">{k}</div>
+            <div className="text-sm text-gray-900 mt-1 break-words">
+              {typeof v === "object" ? JSON.stringify(v) : String(v)}
             </div>
           </div>
         ))}
@@ -90,7 +267,7 @@ export default function AdminNotifications() {
     try {
       const d = await api.get("/notifications/admin");
       setNotifications(Array.isArray(d) ? d : []);
-      setCurrentPage(1); // Reset to first page on refresh
+      setCurrentPage(1);
     } catch {
       setNotifications([]);
     } finally {
@@ -132,7 +309,6 @@ export default function AdminNotifications() {
       await Promise.all(Array.from(selected).map(id => api.del(`/notifications/admin/${id}`).catch(() => {})));
       setNotifications((prev) => prev.filter(n => !selected.has(n.id)));
       setSelected(new Set());
-      // Adjust page if necessary
       if (startIndex >= notifications.length - selected.size && currentPage > 1) {
         setCurrentPage(currentPage - 1);
       }
@@ -157,7 +333,6 @@ export default function AdminNotifications() {
       await api.del(`/notifications/admin/${id}`);
       setNotifications((prev) => prev.filter(n => n.id !== id));
       if (preview?.id === id) setPreview(null);
-      // Adjust page if necessary
       if (startIndex >= notifications.length - 1 && currentPage > 1) {
         setCurrentPage(currentPage - 1);
       }
@@ -270,12 +445,12 @@ export default function AdminNotifications() {
         </div>
       </div>
 
-      {/* Preview Modal */}
+      {/* Preview Modal - REDESIGNED */}
       {preview && ReactDOM.createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 p-4">
-          <div className="max-w-2xl w-full bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 p-4 overflow-y-auto">
+          <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg overflow-hidden my-8">
             {/* Header */}
-            <div className="flex items-start gap-4 p-5 border-b">
+            <div className="flex items-start gap-4 p-4 sm:p-6 border-b bg-gradient-to-r from-gray-50 to-white">
               <div className="flex-shrink-0">
                 {(() => {
                   const adminFallback = { name: "Canteen Admin", profilePictureUrl: "/jckl-192.png" };
@@ -284,56 +459,54 @@ export default function AdminNotifications() {
                     <img
                       src={display.profilePictureUrl}
                       alt=""
-                      className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-sm"
+                      className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover border-2 border-white shadow-sm"
                       onError={(e) => { 
                         e.target.onerror = null; 
                         e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(display.name || 'CA')}&background=random`; 
                       }}
                     />
                   ) : (
-                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-lg font-medium text-blue-600">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-lg font-medium text-blue-600">
                       {(display.name || "C").charAt(0)}
                     </div>
                   );
                 })()}
               </div>
 
-              <div className="flex-1 pr-8">
+              <div className="flex-1 min-w-0">
                 <div className="text-xs text-gray-500">From {(preview.actor && preview.actor.name) || "Canteen Admin"}</div>
-                <h3 className="text-xl font-semibold text-gray-900">{preview.title}</h3>
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 line-clamp-2">{preview.title}</h3>
                 <div className="text-xs text-gray-400 mt-1">{new Date(preview.createdAt).toLocaleString()}</div>
               </div>
 
               <button 
                 onClick={() => setPreview(null)} 
-                className="ml-3 p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                className="ml-2 flex-shrink-0 p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Body */}
-            <div className="p-6 max-h-[calc(100vh-250px)] overflow-y-auto">
-              <p className="text-sm text-gray-700 mb-4">{preview.body}</p>
-
-              {preview.data && (
-                <div className="bg-gray-50 border rounded-lg p-5 space-y-4">
-                  {renderPreviewData(preview.data)}
-                </div>
+            <div className="p-4 sm:p-6 max-h-[calc(100vh-300px)] overflow-y-auto space-y-4">
+              {preview.body && (
+                <p className="text-sm sm:text-base text-gray-700 leading-relaxed">{preview.body}</p>
               )}
+
+              {preview.data && renderReservationData(preview.data)}
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t flex justify-end gap-3">
+            <div className="px-4 sm:px-6 py-4 border-t bg-gray-50 flex justify-end gap-3">
               <button
                 onClick={() => setPreview(null)}
-                className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50"
+                className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
               >
                 Close
               </button>
               <button
                 onClick={() => deleteSingle(preview.id)}
-                className="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700"
+                className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors"
               >
                 Delete
               </button>
