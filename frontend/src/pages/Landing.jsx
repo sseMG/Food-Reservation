@@ -1,6 +1,6 @@
 import React, { Suspense, lazy, useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Menu, X, Facebook, Globe, ExternalLink } from "lucide-react";
 
 // Lazy load non-critical sections
 const LazyFAQ = lazy(() => import("../components/FAQ").catch(() => ({ default: () => null })));
@@ -244,76 +244,70 @@ export default function Landing() {
         Skip to content
       </a>
 
-      {/* HEADER */}
-      <header className="bg-white/80 backdrop-blur-md py-3 sm:py-4 shadow-sm border-b border-gray-100 sticky top-0 z-50">
-        <div className="container mx-auto flex items-center justify-between px-2 sm:px-4 lg:px-6 gap-2">
-          <Link to="/" className="flex items-center gap-2 sm:gap-3 min-w-0 flex-shrink" aria-label="JCKL Food Reservation Home">
+      {/* HEADER - Updated with About page style */}
+      <header className="w-full bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6 py-3 sm:py-4 flex items-center justify-between gap-2">
+          <Link to="/" className="flex items-center gap-2 min-w-0 flex-shrink" aria-label="JCKL Food Reservation Home">
             <img 
               src="/jckl-192.png" 
               alt="JCKL Academy Logo" 
-              className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl shadow-md flex-shrink-0"
+              className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex-shrink-0"
             />
-            <span className="font-bold text-gray-900 min-w-0">
-              <span className="hidden xl:inline text-xl">Jesus Christ King of Kings Academy</span>
-              <span className="hidden md:inline xl:hidden text-base truncate max-w-[300px]">Jesus Christ King of Kings Academy</span>
+            <div className="font-bold text-gray-900 min-w-0">
+              <span className="hidden xl:inline text-lg">Jesus Christ King of Kings and Lord of Lords Academy Inc.</span>
+              <span className="hidden md:inline xl:hidden text-base truncate max-w-[400px]">Jesus Christ King of Kings and Lord of Lords Academy Inc.</span>
               <span className="md:hidden text-sm truncate">JCKL Academy</span>
-            </span>
+            </div>
           </Link>
 
-          <nav className="hidden md:block" aria-label="Primary navigation">
-            <ul className="flex space-x-8">
+          <nav className="hidden lg:flex flex-shrink-0" aria-label="Primary navigation">
+            <ul className="flex items-center gap-2 sm:gap-4 lg:gap-8">
               <li>
-                <NavLink
+                <Link
                   to="/"
-                  end
-                  className={({ isActive }) =>
-                    isActive
-                      ? "font-semibold text-blue-600 border-b-2 border-blue-600 pb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded"
-                      : "text-gray-700 hover:text-blue-600 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded motion-reduce:transition-none"
-                  }
-                  aria-current={({ isActive }) => (isActive ? "page" : undefined)}
+                  className="text-blue-600 font-medium border-b-2 border-blue-600 pb-1"
                 >
                   Home
-                </NavLink>
+                </Link>
               </li>
               <li>
-                <NavLink
+                <Link
                   to="/about"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "font-semibold text-blue-600 border-b-2 border-blue-600 pb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded"
-                      : "text-gray-700 hover:text-blue-600 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded motion-reduce:transition-none"
-                  }
-                  aria-current={({ isActive }) => (isActive ? "page" : undefined)}
+                  className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200"
                 >
-                  About System
-                </NavLink>
+                  About Us
+                </Link>
               </li>
               <li>
-                <NavLink
+                <Link
                   to="/register"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "font-semibold text-blue-600 border-b-2 border-blue-600 pb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded"
-                      : "text-gray-700 hover:text-blue-600 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded motion-reduce:transition-none"
-                  }
-                  aria-current={({ isActive }) => (isActive ? "page" : undefined)}
+                  className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200"
                 >
                   Register
-                </NavLink>
+                </Link>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate("/login")}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors duration-200"
+                >
+                  Log In
+                </button>
               </li>
             </ul>
           </nav>
-
+          
           <div className="flex items-center gap-2 flex-shrink-0">
-            <Link to="/login" className="hidden sm:inline-block">
-              <Button variant="ghost" className="font-medium text-sm sm:text-base px-3 sm:px-4">Student Login</Button>
+            <Link to="/login" className="hidden sm:inline-block lg:hidden">
+              <button className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors duration-200 text-sm">
+                Log In
+              </button>
             </Link>
             
             {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-700"
+              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-700"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -323,11 +317,11 @@ export default function Landing() {
         
         {/* Mobile menu dropdown */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 bg-white">
+          <div className="lg:hidden border-t border-gray-200 bg-white">
             <nav className="px-4 py-3 space-y-2">
               <Link
                 to="/"
-                className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition text-sm"
+                className="block px-3 py-2 text-blue-600 bg-blue-50 rounded-lg text-sm font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Home
@@ -337,7 +331,7 @@ export default function Landing() {
                 className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition text-sm"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                About
+                About Us
               </Link>
               <Link
                 to="/register"
@@ -348,10 +342,10 @@ export default function Landing() {
               </Link>
               <Link
                 to="/login"
-                className="block px-3 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition text-sm font-medium"
+                className="block px-3 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition text-sm font-medium sm:hidden"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Student Login
+                Log In
               </Link>
             </nav>
           </div>
@@ -603,6 +597,50 @@ export default function Landing() {
               <div className="text-4xl font-bold mb-2">4</div>
               <div className="text-blue-100">Break Time Schedules</div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Social Links Section - Polished like major apps */}
+      <section className="container mx-auto px-6 my-8">
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg sm:rounded-2xl shadow-sm border border-blue-100 p-4 sm:p-6">
+          <div className="text-center mb-4">
+            <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-1">Connect with JCKL Academy</h2>
+            <p className="text-xs sm:text-sm text-gray-600">Stay updated with school news and announcements</p>
+          </div>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a
+              href="https://www.facebook.com/JCKLAcademy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto group flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-white hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
+              aria-label="Visit JCKL Academy Facebook page"
+            >
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                <Facebook className="w-5 h-5 text-white" fill="white" />
+              </div>
+              <div className="text-left flex-1">
+                <div className="text-sm font-semibold text-gray-900">Facebook</div>
+                <div className="text-xs text-gray-600">@JCKLAcademy</div>
+              </div>
+              <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors" />
+            </a>
+            <a
+              href="https://www.jcklacademy.edu.ph/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto group flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-white hover:bg-indigo-50 border border-gray-200 hover:border-indigo-300 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
+              aria-label="Visit JCKL Academy official website"
+            >
+              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                <Globe className="w-5 h-5 text-white" />
+              </div>
+              <div className="text-left flex-1">
+                <div className="text-sm font-semibold text-gray-900">Official Website</div>
+                <div className="text-xs text-gray-600">jcklacademy.edu.ph</div>
+              </div>
+              <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-indigo-600 transition-colors" />
+            </a>
           </div>
         </div>
       </section>

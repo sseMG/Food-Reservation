@@ -19,6 +19,9 @@ import {
   CupSoda,
   CheckCircle2,
   X,
+  Facebook,
+  Globe,
+  ExternalLink,
 } from "lucide-react";
 
 const peso = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" });
@@ -886,6 +889,50 @@ export default function Dashboard() {
               </div>
               <div className="text-[10px] sm:text-sm font-medium text-gray-900">Breakfast</div>
             </button>
+          </div>
+        </section>
+
+        {/* Social Links Section - Polished like major apps */}
+        <section className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg sm:rounded-2xl shadow-sm border border-blue-100 p-4 sm:p-6">
+          <div className="text-center mb-4">
+            <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-1">Connect with JCKL Academy</h2>
+            <p className="text-xs sm:text-sm text-gray-600">Stay updated with school news and announcements</p>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a
+              href="https://www.facebook.com/JCKLAcademy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto group flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-white hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 focus-ring"
+              aria-label="Visit JCKL Academy Facebook page"
+            >
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                <Facebook className="w-5 h-5 text-white" fill="white" />
+              </div>
+              <div className="text-left flex-1">
+                <div className="text-sm font-semibold text-gray-900">Facebook</div>
+                <div className="text-xs text-gray-600">@JCKLAcademy</div>
+              </div>
+              <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors" />
+            </a>
+
+            <a
+              href="https://www.jcklacademy.edu.ph/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto group flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-white hover:bg-indigo-50 border border-gray-200 hover:border-indigo-300 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 focus-ring"
+              aria-label="Visit JCKL Academy official website"
+            >
+              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                <Globe className="w-5 h-5 text-white" />
+              </div>
+              <div className="text-left flex-1">
+                <div className="text-sm font-semibold text-gray-900">Official Website</div>
+                <div className="text-xs text-gray-600">jcklacademy.edu.ph</div>
+              </div>
+              <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-indigo-600 transition-colors" />
+            </a>
           </div>
         </section>
       </main>

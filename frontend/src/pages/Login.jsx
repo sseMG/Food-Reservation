@@ -1,6 +1,6 @@
 // src/pages/Login.jsx
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState, useRef } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { api, ApiError } from "../lib/api";
@@ -10,18 +10,47 @@ import { Menu, X, Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [creds, setCreds] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const mobileFirstLinkRef = useRef(null);
 
   useEffect(() => {
     (async () => {
       await refreshSessionForPublic({ navigate });
     })();
   }, [navigate]);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  // Prevent background scroll when mobile menu open & manage focus
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+      setTimeout(() => mobileFirstLinkRef.current?.focus(), 50);
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
+
+  // Close mobile menu on Escape
+  useEffect(() => {
+    function onKey(e) {
+      if (e.key === "Escape") setMobileMenuOpen(false);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   const handleChange = (e) => {
     setCreds((c) => ({ ...c, [e.target.name]: e.target.value }));
@@ -187,13 +216,14 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex flex-col">
-      {/* HEADER */}
+      {/* HEADER - Updated with About page style */}
       <header className="w-full bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6 py-3 sm:py-4 flex items-center justify-between gap-2">
-          <Link to="/" className="flex items-center gap-2 min-w-0 flex-shrink">
+          <Link to="/" className="flex items-center gap-2 min-w-0 flex-shrink" aria-label="JCKL Food Reservation Home">
             <img
               src="/jckl-192.png"
-              alt="JCKL Logo"
+              alt="JCKL Academy Logo"
+              loading="lazy"
               className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex-shrink-0"
             />
             <div className="font-bold text-gray-900 min-w-0">
@@ -207,9 +237,9 @@ export default function Login() {
             </div>
           </Link>
 
-          <nav className="flex-shrink-0">
+          <nav className="hidden lg:flex flex-shrink-0" aria-label="Primary navigation">
             <ul className="flex items-center gap-2 sm:gap-4 lg:gap-8">
-              <li className="hidden lg:block">
+              <li>
                 <Link
                   to="/"
                   className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200"
@@ -217,7 +247,7 @@ export default function Login() {
                   Home
                 </Link>
               </li>
-              <li className="hidden lg:block">
+              <li>
                 <Link
                   to="/about"
                   className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200"
@@ -225,10 +255,10 @@ export default function Login() {
                   About Us
                 </Link>
               </li>
-              <li className="hidden sm:block">
+              <li>
                 <Link
                   to="/register"
-                  className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 text-sm sm:text-base"
+                  className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200"
                 >
                   Register
                 </Link>
@@ -236,7 +266,7 @@ export default function Login() {
               <li>
                 <Link
                   to="/login"
-                  className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors duration-200 text-sm sm:text-base"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors duration-200"
                 >
                   Log In
                 </Link>
@@ -244,28 +274,62 @@ export default function Login() {
             </ul>
           </nav>
 
-          {/* Mobile menu button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-700"
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <Link to="/login" className="hidden sm:inline-block lg:hidden">
+              <button className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors duration-200 text-sm">
+                Log In
+              </button>
+            </Link>
+
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setMobileMenuOpen((s) => !s)}
+              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-700"
+              aria-label="Toggle menu"
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-menu"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile menu dropdown */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-gray-200 bg-white">
+          <div id="mobile-menu" className="lg:hidden border-t border-gray-200 bg-white" role="menu" aria-label="Mobile primary navigation">
             <nav className="px-4 py-3 space-y-2">
-              <Link to="/" className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition text-sm" onClick={() => setMobileMenuOpen(false)}>
+              <Link
+                to="/"
+                role="menuitem"
+                ref={mobileFirstLinkRef}
+                className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition text-sm"
+                onClick={() => setMobileMenuOpen(false)}
+              >
                 Home
               </Link>
-              <Link to="/about" className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition text-sm" onClick={() => setMobileMenuOpen(false)}>
+              <Link
+                to="/about"
+                role="menuitem"
+                className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition text-sm"
+                onClick={() => setMobileMenuOpen(false)}
+              >
                 About Us
               </Link>
-              <Link to="/register" className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition text-sm sm:hidden" onClick={() => setMobileMenuOpen(false)}>
+              <Link
+                to="/register"
+                role="menuitem"
+                className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition text-sm"
+                onClick={() => setMobileMenuOpen(false)}
+              >
                 Register
+              </Link>
+              <Link
+                to="/login"
+                role="menuitem"
+                className="block px-3 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition text-sm font-medium sm:hidden"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Log In
               </Link>
             </nav>
           </div>
@@ -273,30 +337,43 @@ export default function Login() {
       </header>
 
       {/* MAIN CONTENT */}
-      <div className="flex-grow flex items-center justify-center py-12 px-4">
+      <div className="flex-grow flex items-center justify-center py-8 sm:py-12 px-4">
         <div className="w-full max-w-md">
           {/* Welcome Card */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-6 sm:mb-8">
             <div className="inline-flex items-center justify-center mb-4">
-              <img src="/jckl-192.png" alt="JCKL Academy Logo" className="w-20 h-20 rounded-2xl shadow-lg" />
+              <img 
+                src="/jckl-192.png" 
+                alt="JCKL Academy Logo" 
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl shadow-lg" 
+              />
             </div>
-            <h1 className="text-3xl font-extrabold text-gray-900 mb-2">Welcome Back</h1>
-            <p className="text-gray-600">Sign in to your food reservation account</p>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-2">Welcome Back</h1>
+            <p className="text-sm sm:text-base text-gray-600">Sign in to your food reservation account</p>
           </div>
 
           {/* Login Form Card */}
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 sm:p-8">
             {errors.form && (
               <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 flex items-start gap-2">
-                <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
                 <span>{errors.form}</span>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <Input label="Email Address" name="email" type="email" value={creds.email} onChange={handleChange} placeholder="student@jckl.edu.ph" error={errors.email} autoComplete="username" />
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+              <Input 
+                label="Email Address" 
+                name="email" 
+                type="email" 
+                value={creds.email} 
+                onChange={handleChange} 
+                placeholder="student@jckl.edu.ph" 
+                error={errors.email} 
+                autoComplete="username" 
+              />
               
               {/* Password field with toggle */}
               <div>
@@ -316,6 +393,7 @@ export default function Login() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-10 text-gray-400 hover:text-gray-600 transition-colors"
                     tabIndex="-1"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? (
                       <EyeOff className="w-5 h-5" />
@@ -325,7 +403,12 @@ export default function Login() {
                   </button>
                 </div>
                 <div className="text-right mt-2">
-                  <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700 hover:underline font-medium">Forgot password?</Link>
+                  <Link 
+                    to="/forgot-password" 
+                    className="text-xs sm:text-sm text-blue-600 hover:text-blue-700 hover:underline font-medium"
+                  >
+                    Forgot password?
+                  </Link>
                 </div>
               </div>
 
@@ -335,9 +418,11 @@ export default function Login() {
             </form>
 
             <div className="mt-6 pt-6 border-t border-gray-100">
-              <p className="text-center text-sm text-gray-600">
+              <p className="text-center text-xs sm:text-sm text-gray-600">
                 Don't have an account?{" "}
-                <Link to="/register" className="text-blue-600 hover:text-blue-700 font-semibold">Create Account</Link>
+                <Link to="/register" className="text-blue-600 hover:text-blue-700 font-semibold">
+                  Create Account
+                </Link>
               </p>
             </div>
           </div>
@@ -345,8 +430,10 @@ export default function Login() {
       </div>
 
       {/* FOOTER */}
-      <footer className="py-8 bg-gray-900 text-center">
-        <div className="text-gray-400 text-sm">© 2025 JCKL Food Reservation System. All rights reserved.</div>
+      <footer className="py-6 sm:py-8 bg-gray-900 text-center">
+        <div className="text-gray-400 text-xs sm:text-sm">
+          © 2025 JCKL Food Reservation System. All rights reserved.
+        </div>
       </footer>
     </div>
   );
