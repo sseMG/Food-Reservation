@@ -87,7 +87,13 @@ app.get("/health_check", (_req, res) => res.json({ ok: true, name: "canteen-api"
  * 404 (JSON only)
  */
 app.use((_req, res) => {
-  res.status(404).json({ error: "Not Found" });
+  if (_req.method === 'GET') {
+    console.log("request route uri not found : get method => sending back main index.html", _req.method);
+    res.sendFile(path.join(process.cwd(), "public", "index.html"));
+  } else {
+    console.log("request route uri not found : NOT GET METHOD -> sending json error object");
+    res.status(404).json({ error: "Not Found" });
+  }
 });
 
 /**
