@@ -1,0 +1,62 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [20.x]
+        database: [json, mongodb]
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: backend/package-lock.json
+    
+    - name: Install dependencies
+      working-directory: ./backend
+      run: npm ci
+    
+    - name: Run linter
+      working-directory: ./backend
+      run: npm run lint || true
+    
+    - name: Run tests with ${{ matrix.database }} database
+      working-directory: ./backend
+      env:
+        NODE_ENV: test
+        TEST_DB: ${{ matrix.database }}
+        MONGO_URI: ${{ matrix.database == 'mongodb' && 'mongodb://localhost:27017/test' || '' }}
+        JWT_SECRET: test_secret_key
+      run: |
+        if [ "${{ matrix.database }}" == "mongodb" ]; then
+          npm test -- --testPathPattern=mongodb
+        else
+          unset MONGO_URI
+          npm test -- --testPathPattern=json
+        fi
+    
+    - name: Generate coverage report
+      working-directory: ./backend
+      if: matrix.node-version == '20.x' && matrix.database == 'mongodb'
+      run: npm run test:coverage
+    
+    - name: Upload coverage to artifacts
+      uses: actions/upload-artifact@v3
+      if: matrix.node-version == '20.x' && matrix.database == 'mongodb'
+      with:
+        name: coverage-report
+        path: backend/coverage
+

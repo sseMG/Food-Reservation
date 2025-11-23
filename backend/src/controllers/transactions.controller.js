@@ -1,35 +1,7 @@
 // backend/src/controllers/transactions.controller.js
-// Orders-only "transactions" for the current user (db.json edition)
+// Orders-only "transactions" for the current user
 
-const fs = require("fs");
-const path = require("path");
-const mongoose = require("mongoose");
-const { ObjectId } = require("mongodb");
-
-const DB_PATH = path.join(__dirname, "..", "data", "db.json");
-
-/**
- * Helper: are we connected to Mongo?
- */
-function usingMongo() {
-  return !!(mongoose && mongoose.connection && mongoose.connection.readyState === 1);
-}
-
-function readDB() {
-  try {
-    const raw = fs.readFileSync(DB_PATH, "utf8");
-    const data = JSON.parse(raw || "{}");
-    return {
-      users: data.users || [],
-      reservations: data.reservations || [],
-      menu: data.menu || [],
-      transactions: data.transactions || [],
-      topups: data.topups || [],
-    };
-  } catch {
-    return { users: [], reservations: [], menu: [], transactions: [], topups: [] };
-  }
-}
+const RepositoryFactory = require("../repositories/repository.factory");
 
 // Map one reservation/order into a transaction row for the UI
 function mapReservationToTx(r) {
@@ -78,149 +50,71 @@ exports.getMyTransactions = async (req, res) => {
 
     console.log('[TRANSACTION] GetMyTransactions: userId', userId);
 
-    if (usingMongo()) {
-      const db = mongoose.connection.db;
-      const reservationsCol = db.collection("reservations");
-      const transactionsCol = db.collection("transactions");
-      const usersCol = db.collection("users");
+    const userRepo = RepositoryFactory.getUserRepository();
+    const reservationRepo = RepositoryFactory.getReservationRepository();
+    const transactionRepo = RepositoryFactory.getTransactionRepository();
 
-      // Get user for matching
-      const me = await usersCol.findOne({ 
-        $or: [{ id: String(userId) }, { _id: ObjectId.isValid(userId) ? new ObjectId(userId) : null }]
+    // Get user for matching
+    const me = await userRepo.findById(userId);
+
+    // Get user's reservations
+    let mine = await reservationRepo.findAll({ userId: String(userId) });
+
+    // Legacy fallback: match by student name/email/id
+    if (me) {
+      const allReservations = await reservationRepo.findAll({});
+      const legacyRows = allReservations.filter(r => {
+        if (r.userId) return false;
+        const student = String(r.student || "").trim().toLowerCase();
+        if (!student) return false;
+        const name = String(me.name || "").trim().toLowerCase();
+        const email = String(me.email || "").trim().toLowerCase();
+        return student === name || student === email || student === String(me.id).toLowerCase();
+      });
+      mine = [...mine, ...legacyRows];
+    }
+
+    const resRows = mine.map(mapReservationToTx);
+
+    // Get persisted transactions
+    const myResIds = new Set(mine.map((r) => String(r.id)));
+
+    let persisted = await transactionRepo.findAll({ userId: String(userId) });
+    
+    // Also get transactions that reference user's reservations
+    const refTransactions = [];
+    for (const resId of myResIds) {
+      const refTx = await transactionRepo.findOne({ ref: resId });
+      if (refTx && !persisted.find(t => String(t.id) === String(refTx.id))) {
+        refTransactions.push(refTx);
+      }
+    }
+    persisted = [...persisted, ...refTransactions];
+
+    const filteredPersisted = persisted
+      .filter((t) => {
+        const type = (t.type || t.kind || "").toString().toLowerCase();
+        const isTopup = type.includes("topup") || type === "topup" || (t.topupId != null) || type.includes("top-");
+        const ref = String(t.ref || t.reference || "").toLowerCase();
+        const hasResRef = ref.includes("res-") || ref.startsWith("res-");
+        return !isTopup || hasResRef;
+      })
+      .map((t) => {
+        const isTopup = ((t.type || "") + "").toString().toLowerCase().includes("topup") || (t.topupId != null);
+        return {
+          id: t.id || t.txId || `TX-${Math.random().toString(36).slice(2)}`,
+          title: isTopup ? "Top-Up" : (t.title || t.type || "Transaction"),
+          createdAt: t.createdAt || t.date || new Date().toISOString(),
+          status: t.status || "Success",
+          statusLC: String(t.status || "Success").toLowerCase(),
+          direction: isTopup ? "credit" : (t.direction || (Number(t.amount || 0) < 0 ? "debit" : "credit")),
+          sign: isTopup ? 1 : (Number(t.amount || 0) < 0 ? -1 : 1),
+          amount: Math.abs(Number(t.amount || t.value || 0) || 0),
+          raw: t,
+        };
       });
 
-      // Get user's reservations
-      const mine = await reservationsCol.find({
-        $or: [
-          { userId: String(userId) },
-          { userId: ObjectId.isValid(userId) ? new ObjectId(userId) : null }
-        ]
-      }).toArray();
-
-      // Legacy fallback: match by student name/email/id
-      if (me) {
-        const legacyRows = await reservationsCol.find({
-          userId: { $exists: false },
-          $or: [
-            { student: me.name },
-            { student: me.email },
-            { student: String(me.id || me._id) }
-          ]
-        }).toArray();
-        mine.push(...legacyRows);
-      }
-
-      const resRows = mine.map(mapReservationToTx);
-
-      // Get persisted transactions
-      const myResIds = new Set(mine.map((r) => String(r.id || r._id)));
-
-      const persisted = await transactionsCol.find({
-        $or: [
-          { userId: String(userId) },
-          { userId: ObjectId.isValid(userId) ? new ObjectId(userId) : null },
-          { ref: { $in: Array.from(myResIds) } }
-        ]
-      }).toArray();
-
-      const filteredPersisted = persisted
-        .filter((t) => {
-          const type = (t.type || t.kind || "").toString().toLowerCase();
-          const isTopup = type.includes("topup") || type === "topup" || (t.topupId != null) || type.includes("top-");
-          const ref = String(t.ref || t.reference || "").toLowerCase();
-          const hasResRef = ref.includes("res-") || ref.startsWith("res-");
-          return !isTopup || hasResRef;
-        })
-        .map((t) => {
-          const isTopup = ((t.type || "") + "").toString().toLowerCase().includes("topup") || (t.topupId != null);
-          return {
-            id: t.id || t.txId || t._id?.toString() || `TX-${Math.random().toString(36).slice(2)}`,
-            title: isTopup ? "Top-Up" : (t.title || t.type || "Transaction"),
-            createdAt: t.createdAt || t.date || new Date().toISOString(),
-            status: t.status || "Success",
-            statusLC: String(t.status || "Success").toLowerCase(),
-            direction: isTopup ? "credit" : (t.direction || (Number(t.amount || 0) < 0 ? "debit" : "credit")),
-            sign: isTopup ? 1 : (Number(t.amount || 0) < 0 ? -1 : 1),
-            amount: Math.abs(Number(t.amount || t.value || 0) || 0),
-            raw: t,
-          };
-        });
-
-      const merged = [...filteredPersisted, ...resRows];
-      merged.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      console.log('[TRANSACTION] GetMyTransactions: returning', merged.length, 'transactions for user', userId);
-      return res.json({ status: 200, data: merged });
-    }
-
-    const db = readDB();
-
-  // Try to find the user record so we can also match by student name/email
-  const me = (db.users || []).find((u) => String(u.id) === String(userId));
-
-  // Filter only this user's reservations (orders). Some reservations were
-  // created without a `userId` (guest/student flow) — include those when the
-  // reservation.student matches the authenticated user's name or email.
-  const mine = (db.reservations || []).filter((r) => {
-    const uid = r.userId || r.user || r.ownerId || r.uid;
-    if (String(uid) === String(userId)) return true;
-
-    // No explicit user id on reservation: try matching by student name/email
-    if (!uid && me) {
-      const student = String(r.student || "").trim().toLowerCase();
-      if (!student) return false;
-      const name = String(me.name || "").trim().toLowerCase();
-      const email = String(me.email || "").trim().toLowerCase();
-      if (student === name || student === email) return true;
-    }
-
-    return false;
-  });
-
-  const resRows = mine.map(mapReservationToTx);
-
-  // Also include persisted ledger transactions (manual ledger entries).
-  // Only include persisted rows that belong to the authenticated user, or
-  // that explicitly reference a reservation that belongs to this user. This
-  // prevents showing global ledger rows to other users.
-  const myResIds = new Set((mine || []).map((r) => String(r.id)));
-
-  const persisted = (db.transactions || [])
-    .filter((t) => {
-      // basic ownership: userId match
-      if (String(t.userId) === String(userId)) return true;
-
-      // allow transactions that reference one of this user's reservations
-      const ref = String(t.ref || t.reference || "").trim();
-      if (ref && myResIds.has(ref)) return true;
-
-      return false;
-    })
-    .filter((t) => {
-      // of the owned/related rows, exclude pure top-up rows unless they are
-      // explicitly linked to a topup object we own (handled above by userId)
-      const type = (t.type || t.kind || "").toString().toLowerCase();
-      const isTopup = type.includes("topup") || type === "topup" || (t.topupId != null) || type.includes("top-");
-      const ref = String(t.ref || t.reference || "").toLowerCase();
-      const hasResRef = ref.includes("res-") || ref.startsWith("res-");
-      // keep rows that are not topups, or those that reference a reservation
-      return !isTopup || hasResRef;
-    })
-    .map((t) => {
-      const isTopup = ((t.type || "") + "").toString().toLowerCase().includes("topup") || (t.topupId != null);
-      return {
-        id: t.id || t.txId || t._id || `TX-${Math.random().toString(36).slice(2)}`,
-        title: isTopup ? "Top-Up" : (t.title || t.type || "Transaction"),
-        createdAt: t.createdAt || t.date || new Date().toISOString(),
-        status: t.status || "Success",
-        statusLC: String(t.status || "Success").toLowerCase(),
-        direction: isTopup ? "credit" : (t.direction || (Number(t.amount || 0) < 0 ? "debit" : "credit")),
-        sign: isTopup ? 1 : (Number(t.amount || 0) < 0 ? -1 : 1),
-        amount: Math.abs(Number(t.amount || t.value || 0) || 0),
-        raw: t,
-      };
-    });
-
-    const merged = [...persisted, ...resRows];
+    const merged = [...filteredPersisted, ...resRows];
     merged.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     console.log('[TRANSACTION] GetMyTransactions: returning', merged.length, 'transactions for user', userId);
     return res.json({ status: 200, data: merged });
