@@ -2,21 +2,7 @@
 const { sign } = require("../lib/auth");
 const Notifications = require("./notifications.controller");
 const RepositoryFactory = require("../repositories/repository.factory");
-const path = require("path");
-const fs = require("fs-extra");
-
-const UPLOAD_DIR = path.join(__dirname, "..", "uploads");
-fs.ensureDirSync(UPLOAD_DIR);
-
-// Helper to save profile picture
-function saveProfilePicture(file, userId) {
-  if (!file || !file.buffer) return null;
-  const ext = path.extname(file.originalname) || '.jpg';
-  const filename = `${userId}-${Date.now()}${ext}`;
-  const outPath = path.join(UPLOAD_DIR, filename);
-  fs.writeFileSync(outPath, file.buffer);
-  return `/uploads/${filename}`;
-}
+const ImageUploadFactory = require("../repositories/image-upload/image-upload.factory");
 
 exports.me = async (req, res) => {
   try {
@@ -204,8 +190,20 @@ exports.updateProfile = async (req, res) => {
 
     // Handle profile picture upload if present
     if (req.file) {
-      const pictureUrl = saveProfilePicture(req.file, user.id);
-      if (pictureUrl) update.profilePictureUrl = pictureUrl;
+      const imageRepo = ImageUploadFactory.getRepository();
+      
+      // Delete old profile picture if it exists
+      if (user.profilePictureUrl) {
+        await imageRepo.delete(user.profilePictureUrl);
+      }
+      
+      const result = await imageRepo.upload(req.file, {
+        prefix: `profile-${user.id}`,
+        folder: 'profiles'
+      });
+      if (result && result.url) {
+        update.profilePictureUrl = result.url;
+      }
     }
 
     const updated = await userRepo.update(uid, update);

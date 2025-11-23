@@ -1,5 +1,6 @@
 const Notifications = require("./notifications.controller");
 const RepositoryFactory = require("../repositories/repository.factory");
+const ImageUploadFactory = require("../repositories/image-upload/image-upload.factory");
 
 // Add peso formatter at the top of the file
 const peso = new Intl.NumberFormat("en-PH", {
@@ -50,7 +51,14 @@ exports.create = async (req, res) => {
       amount: amt,
       reference,
       status: "Pending",
-      proofUrl: req.file ? (req.file.filename ? `/uploads/${req.file.filename}` : (req.file.path || null)) : null,
+      proofUrl: req.file ? await (async () => {
+        const imageRepo = ImageUploadFactory.getRepository();
+        const result = await imageRepo.upload(req.file, {
+          prefix: `topup-${uid}`,
+          folder: 'topups'
+        });
+        return result.url;
+      })() : null,
       submittedAt: now,
     });
 

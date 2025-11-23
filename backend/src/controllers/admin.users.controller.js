@@ -1,11 +1,7 @@
-const path = require('path');
-const fs = require('fs-extra');
 const crypto = require('crypto');
 const Notifications = require('./notifications.controller');
 const RepositoryFactory = require('../repositories/repository.factory');
-
-const UPLOAD_DIR = path.join(__dirname, '..', 'uploads');
-fs.ensureDirSync(UPLOAD_DIR);
+const ImageUploadFactory = require('../repositories/image-upload/image-upload.factory');
 
 const TOKEN_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
@@ -85,32 +81,24 @@ exports.updateUser = async (req, res) => {
     // Handle profile picture
     if (removePhoto === 'true') {
       if (user.profilePictureUrl) {
-        const filePath = path.join(UPLOAD_DIR, path.basename(user.profilePictureUrl));
-        try {
-          await fs.unlink(filePath);
-        } catch (err) {
-          console.error('Failed to delete profile picture:', err);
-        }
+        const imageRepo = ImageUploadFactory.getRepository();
+        await imageRepo.delete(user.profilePictureUrl);
         update.profilePictureUrl = null;
       }
     } else if (req.file) {
-      const ext = path.extname(req.file.originalname) || '.jpg';
-      const filename = `profile-${user.id}-${Date.now()}${ext}`;
-      const filePath = path.join(UPLOAD_DIR, filename);
+      const imageRepo = ImageUploadFactory.getRepository();
 
       // Delete old photo if exists
       if (user.profilePictureUrl) {
-        const oldPath = path.join(UPLOAD_DIR, path.basename(user.profilePictureUrl));
-        try {
-          await fs.unlink(oldPath);
-        } catch (err) {
-          console.error('Failed to delete old profile picture:', err);
-        }
+        await imageRepo.delete(user.profilePictureUrl);
       }
 
-      // Save new photo
-      await fs.writeFile(filePath, req.file.buffer);
-      update.profilePictureUrl = `/uploads/${filename}`;
+      // Upload new photo
+      const result = await imageRepo.upload(req.file, {
+        prefix: `profile-${user.id}`,
+        folder: 'profiles'
+      });
+      update.profilePictureUrl = result.url;
     }
 
     const updated = await userRepo.update(id, update);

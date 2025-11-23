@@ -1,9 +1,5 @@
-const path = require("path");
-const fs = require("fs-extra");
 const RepositoryFactory = require("../repositories/repository.factory");
-
-const UPLOAD_DIR = path.join(__dirname, "..", "uploads");
-fs.ensureDirSync(UPLOAD_DIR);
+const ImageUploadFactory = require("../repositories/image-upload/image-upload.factory");
 
 function safeName(name = "") {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -35,11 +31,12 @@ exports.addMenu = async (req, res) => {
     // handle optional image upload
     let img = "";
     if (req.file) {
-      const ext = (req.file.mimetype || "").split("/").pop() || "png";
-      const filename = `${Date.now()}_${safeName(name)}.${ext}`;
-      const dest = path.join(UPLOAD_DIR, filename);
-      await fs.writeFile(dest, req.file.buffer);
-      img = `/uploads/${filename}`;
+      const imageRepo = ImageUploadFactory.getRepository();
+      const result = await imageRepo.upload(req.file, {
+        prefix: safeName(name),
+        folder: 'menu'
+      });
+      img = result.url;
     }
 
     const menuRepo = RepositoryFactory.getMenuRepository();
@@ -77,11 +74,18 @@ exports.updateMenu = async (req, res) => {
     }
 
     if (req.file) {
-      const ext = (req.file.mimetype || "").split("/").pop() || "png";
-      const filename = `${Date.now()}_${safeName(existing.name || "item")}.${ext}`;
-      const dest = path.join(UPLOAD_DIR, filename);
-      await fs.writeFile(dest, req.file.buffer);
-      patch.img = `/uploads/${filename}`;
+      const imageRepo = ImageUploadFactory.getRepository();
+      
+      // Delete old image if it exists
+      if (existing.img) {
+        await imageRepo.delete(existing.img);
+      }
+      
+      const result = await imageRepo.upload(req.file, {
+        prefix: safeName(existing.name || "item"),
+        folder: 'menu'
+      });
+      patch.img = result.url;
     }
 
     const updated = await menuRepo.update(id, patch);

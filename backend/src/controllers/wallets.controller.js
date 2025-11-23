@@ -1,10 +1,6 @@
 // server/src/controllers/wallets.controller.js
-const path = require('path');
-const fs = require('fs-extra');
 const RepositoryFactory = require('../repositories/repository.factory');
-
-const UPLOAD_DIR = path.join(__dirname, '..', 'uploads');
-fs.ensureDirSync(UPLOAD_DIR);
+const ImageUploadFactory = require('../repositories/image-upload/image-upload.factory');
 
 function safeName(name = '') {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -99,21 +95,18 @@ exports.upsert = async (req, res) => {
     // Save QR file if provided
     let qrUrl = '';
     if (req.file) {
-      if (req.file.path || req.file.filename) {
-        const filename = req.file.filename || path.basename(req.file.path);
-        const current = req.file.path || path.join(UPLOAD_DIR, filename);
-        const dest = path.join(UPLOAD_DIR, filename);
-        if (current !== dest) {
-          await fs.move(current, dest, { overwrite: true });
-        }
-        qrUrl = `/uploads/${filename}`;
-      } else if (req.file.buffer) {
-        const ext = (req.file.mimetype || '').split('/').pop() || 'png';
-        const filename = `${Date.now()}_${safeName(provider)}.${ext}`;
-        const dest = path.join(UPLOAD_DIR, filename);
-        await fs.writeFile(dest, req.file.buffer);
-        qrUrl = `/uploads/${filename}`;
+      const imageRepo = ImageUploadFactory.getRepository();
+      
+      // Delete old QR image if it exists
+      if (existing && existing.qrImageUrl) {
+        await imageRepo.delete(existing.qrImageUrl);
       }
+      
+      const result = await imageRepo.upload(req.file, {
+        prefix: `wallet-${safeName(provider)}`,
+        folder: 'wallets'
+      });
+      qrUrl = result.url;
     }
 
     const walletRepo = RepositoryFactory.getWalletRepository();
@@ -205,11 +198,18 @@ exports.updateProfile = async (req, res) => {
 
     // Handle profile picture if provided
     if (req.file) {
-      const ext = path.extname(req.file.originalname) || '.jpg';
-      const filename = `profile-${user.id}-${Date.now()}${ext}`;
-      const filePath = path.join(UPLOAD_DIR, filename);
-      await fs.writeFile(filePath, req.file.buffer);
-      update.profilePictureUrl = `/uploads/${filename}`;
+      const imageRepo = ImageUploadFactory.getRepository();
+      
+      // Delete old profile picture if it exists
+      if (user.profilePictureUrl) {
+        await imageRepo.delete(user.profilePictureUrl);
+      }
+      
+      const result = await imageRepo.upload(req.file, {
+        prefix: `profile-${user.id}`,
+        folder: 'profiles'
+      });
+      update.profilePictureUrl = result.url;
     }
 
     const updated = await userRepo.update(uid, update);
