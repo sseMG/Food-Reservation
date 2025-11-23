@@ -1,9 +1,15 @@
 const RepositoryFactory = require('../../../repositories/repository.factory');
 
 describe('Reservation Repository - MongoDB', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     expect(process.env.MONGO_URI).toBeDefined();
     RepositoryFactory.clearCache();
+    
+    // Clean up reservations created in previous tests
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState === 1) {
+      await mongoose.connection.db.collection('reservations').deleteMany({});
+    }
   });
   
   test('should create a reservation', async () => {

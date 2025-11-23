@@ -149,57 +149,69 @@ app.use((err, _req, res, _next) => {
 // Serve exported reports files (CSV) under /reports-files
 app.use("/reports-files", express.static(path.join(__dirname, "reports")));
 
-// Connect to MongoDB and start server
-connectMongoDB().then(() => {
-  const server = app.listen(PORT, () => {
-    console.log('='.repeat(70));
-    console.log(`🚀 FOOD RESERVATION API SERVER STARTED`);
-    console.log(`📡 API @ http://localhost:${PORT}`);
-    console.log(`📊 Health Check: http://localhost:${PORT}/`);
-    console.log(`🔗 Frontend should connect from: http://localhost:3000`);
-    console.log(`🎨 Using COLORED Morgan HTTP Request Logging`);
-    console.log('='.repeat(70));
-    printColorLegend();
-    console.log('-'.repeat(70));
-  });
-
-  // Graceful shutdown handling
-  process.on('SIGTERM', () => {
-    console.log('🛑 SIGTERM received, shutting down gracefully');
-    server.close(() => {
-      mongoose.connection.close();
-      console.log('✅ Server closed');
-      process.exit(0);
+// Connect to MongoDB and start server (skip in test environment)
+if (process.env.NODE_ENV !== 'test') {
+  connectMongoDB().then(() => {
+    const server = app.listen(PORT, () => {
+      console.log('='.repeat(70));
+      console.log(`🚀 FOOD RESERVATION API SERVER STARTED`);
+      console.log(`📡 API @ http://localhost:${PORT}`);
+      console.log(`📊 Health Check: http://localhost:${PORT}/`);
+      console.log(`🔗 Frontend should connect from: http://localhost:3000`);
+      console.log(`🎨 Using COLORED Morgan HTTP Request Logging`);
+      console.log('='.repeat(70));
+      printColorLegend();
+      console.log('-'.repeat(70));
     });
-  });
 
-  process.on('SIGINT', () => {
-    console.log('🛑 SIGINT received, shutting down gracefully');
-    server.close(() => {
-      mongoose.connection.close();
-      console.log('✅ Server closed');
-      process.exit(0);
+    // Graceful shutdown handling
+    process.on('SIGTERM', () => {
+      console.log('🛑 SIGTERM received, shutting down gracefully');
+      server.close(() => {
+        mongoose.connection.close();
+        console.log('✅ Server closed');
+        process.exit(0);
+      });
     });
+
+    process.on('SIGINT', () => {
+      console.log('🛑 SIGINT received, shutting down gracefully');
+      server.close(() => {
+        mongoose.connection.close();
+        console.log('✅ Server closed');
+        process.exit(0);
+      });
+    });
+  }).catch(err => {
+    console.error('Failed to start server:', err);
+    process.exit(1);
   });
-}).catch(err => {
-  console.error('Failed to start server:', err);
-  process.exit(1);
-});
+} else {
+  // In test environment, just connect to MongoDB if MONGO_URI is set
+  // This allows tests to use MongoDB if needed
+  if (process.env.MONGO_URI) {
+    connectMongoDB().catch(() => {
+      // Silently fail in test environment
+    });
+  }
+}
 
 
 module.exports = app; // (optional) helpful for testing
 
-// schedule periodic orphan cleanup every 6 hours
-try {
-  const cleanup = require('./lib/cleanupUploads');
-  setInterval(async () => {
-    try {
-      const r = await cleanup({ dryRun: true });
-      console.log('[cleanupUploads] dryRun result', r);
-    } catch (e) {
-      console.error('[cleanupUploads] failed', e && e.message);
-    }
-  }, 1000 * 60 * 60 * 6);
-} catch (e) {
-  console.error('Failed to schedule cleanupUploads:', e && e.message);
+// schedule periodic orphan cleanup every 6 hours (skip in test environment)
+if (process.env.NODE_ENV !== 'test') {
+  try {
+    const cleanup = require('./lib/cleanupUploads');
+    setInterval(async () => {
+      try {
+        const r = await cleanup({ dryRun: true });
+        console.log('[cleanupUploads] dryRun result', r);
+      } catch (e) {
+        console.error('[cleanupUploads] failed', e && e.message);
+      }
+    }, 1000 * 60 * 60 * 6);
+  } catch (e) {
+    console.error('Failed to schedule cleanupUploads:', e && e.message);
+  }
 }

@@ -1,9 +1,15 @@
 const RepositoryFactory = require('../../../repositories/repository.factory');
+const { load, save } = require('../../../lib/db');
 
 describe('Menu Repository - JSON', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     delete process.env.MONGO_URI;
     RepositoryFactory.clearCache();
+    
+    // Clean up menu items created in previous tests
+    const db = await load();
+    db.menu = [];
+    await save(db);
   });
   
   test('should create a menu item', async () => {
@@ -65,12 +71,18 @@ describe('Menu Repository - JSON', () => {
       price: 50,
     });
     
+    // Verify item was created
+    expect(created).toBeDefined();
+    expect(created.id).toBeDefined();
+    
     const result = await menuRepo.delete(created.id);
     expect(result).toBeDefined();
+    expect(result).not.toBeNull();
     expect(result.deleted).toBe(true);
     expect(result.visible).toBe(false);
     
     const found = await menuRepo.findById(created.id);
+    expect(found).toBeDefined();
     expect(found.deleted).toBe(true);
     expect(found.visible).toBe(false);
   });

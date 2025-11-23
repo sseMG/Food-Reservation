@@ -1,34 +1,17 @@
 const RepositoryFactory = require('../../../repositories/repository.factory');
-const fs = require('fs');
-const path = require('path');
+const { load, save } = require('../../../lib/db');
 
 describe('User Repository - JSON', () => {
-  const testDbPath = path.join(__dirname, '../../../data/test-db.json');
-  let originalDbPath;
-  let originalLoad;
-  
-  beforeAll(() => {
-    // Backup original db path
-    const dbModule = require('../../../lib/db');
-    originalLoad = dbModule.load;
-    
-    // Create test database
-    const testDb = { users: [], menu: [], reservations: [], topups: [], transactions: [], notifications: [] };
-    fs.writeFileSync(testDbPath, JSON.stringify(testDb, null, 2));
-  });
-  
-  afterAll(() => {
-    // Cleanup test database
-    if (fs.existsSync(testDbPath)) {
-      fs.unlinkSync(testDbPath);
-    }
-  });
-  
-  beforeEach(() => {
+  beforeEach(async () => {
     // Clear repository cache
     RepositoryFactory.clearCache();
     // Ensure MONGO_URI is not set to force JSON mode
     delete process.env.MONGO_URI;
+    
+    // Clean up users created in previous tests
+    const db = await load();
+    db.users = [];
+    await save(db);
   });
   
   test('should create a user', async () => {

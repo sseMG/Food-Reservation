@@ -1,6 +1,6 @@
 const request = require('supertest');
-const app = require('../../../src/index');
-const RepositoryFactory = require('../../../repositories/repository.factory');
+const app = require('../../index');
+const RepositoryFactory = require('../../repositories/repository.factory');
 const { createTestUser, getAuthHeaders } = require('../helpers/test-helpers');
 
 describe('Auth Routes', () => {

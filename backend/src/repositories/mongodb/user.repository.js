@@ -81,6 +81,12 @@ class MongoUserRepository extends BaseRepository {
     const col = this.getCollection();
     const filter = createIdFilter(id);
     
+    // First check if document exists
+    const existing = await col.findOne(filter);
+    if (!existing) {
+      return null;
+    }
+    
     const update = {
       ...data,
       updatedAt: new Date().toISOString(),
@@ -90,13 +96,12 @@ class MongoUserRepository extends BaseRepository {
       update.email = update.email.toLowerCase();
     }
     
-    const result = await col.findOneAndUpdate(
-      filter,
-      { $set: update },
-      { returnDocument: 'after' }
-    );
+    // Update the document
+    await col.updateOne(filter, { $set: update });
     
-    return result.value ? sanitizeForResponse(normalizeMongoDoc(result.value)) : null;
+    // Get the updated document
+    const updated = await col.findOne(filter);
+    return updated ? sanitizeForResponse(normalizeMongoDoc(updated)) : null;
   }
 
   async delete(id) {
@@ -123,12 +128,19 @@ class MongoUserRepository extends BaseRepository {
   async incrementBalance(userId, amount) {
     const col = this.getCollection();
     const filter = createIdFilter(userId);
-    const result = await col.findOneAndUpdate(
-      filter,
-      { $inc: { balance: Number(amount) } },
-      { returnDocument: 'after' }
-    );
-    return result.value ? sanitizeForResponse(normalizeMongoDoc(result.value)) : null;
+    
+    // First check if document exists
+    const existing = await col.findOne(filter);
+    if (!existing) {
+      return null;
+    }
+    
+    // Update the document
+    await col.updateOne(filter, { $inc: { balance: Number(amount) } });
+    
+    // Get the updated document
+    const updated = await col.findOne(filter);
+    return updated ? sanitizeForResponse(normalizeMongoDoc(updated)) : null;
   }
 
   /**
@@ -138,19 +150,22 @@ class MongoUserRepository extends BaseRepository {
     const col = this.getCollection();
     const filter = createIdFilter(userId);
     
-    // First get current balance to ensure it doesn't go negative
-    const user = await col.findOne(filter);
-    if (!user) return null;
+    // First check if document exists
+    const existing = await col.findOne(filter);
+    if (!existing) {
+      return null;
+    }
     
-    const currentBalance = Number(user.balance || 0);
+    // Get current balance to ensure it doesn't go negative
+    const currentBalance = Number(existing.balance || 0);
     const newBalance = Math.max(0, currentBalance - Number(amount));
     
-    const result = await col.findOneAndUpdate(
-      filter,
-      { $set: { balance: newBalance } },
-      { returnDocument: 'after' }
-    );
-    return result.value ? sanitizeForResponse(normalizeMongoDoc(result.value)) : null;
+    // Update the document
+    await col.updateOne(filter, { $set: { balance: newBalance, updatedAt: new Date().toISOString() } });
+    
+    // Get the updated document
+    const updated = await col.findOne(filter);
+    return updated ? sanitizeForResponse(normalizeMongoDoc(updated)) : null;
   }
 }
 

@@ -1,8 +1,22 @@
 const RepositoryFactory = require('../../../repositories/repository.factory');
+const { load, save } = require('../../../lib/db');
 
 describe('Reservation Repository - JSON', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     delete process.env.MONGO_URI;
+    RepositoryFactory.clearCache();
+    
+    // Clean up reservations created in previous tests
+    const db = await load();
+    db.reservations = [];
+    await save(db);
+  });
+  
+  afterEach(async () => {
+    // Additional cleanup after each test
+    const db = await load();
+    db.reservations = [];
+    await save(db);
     RepositoryFactory.clearCache();
   });
   
@@ -36,11 +50,19 @@ describe('Reservation Repository - JSON', () => {
   
   test('should find reservations by user id', async () => {
     const reservationRepo = RepositoryFactory.getReservationRepository();
-    await reservationRepo.create({ userId: 'user1', items: [], total: 50 });
-    await reservationRepo.create({ userId: 'user1', items: [], total: 75 });
-    await reservationRepo.create({ userId: 'user2', items: [], total: 100 });
     
-    const userReservations = await reservationRepo.findAll({ userId: 'user1' });
+    // Use a unique userId for this test to avoid conflicts
+    const testUserId = 'test_user_find_by_id';
+    
+    // Verify database is clean before creating reservations
+    const beforeCreate = await reservationRepo.findAll({ userId: testUserId });
+    expect(beforeCreate.length).toBe(0);
+    
+    await reservationRepo.create({ userId: testUserId, items: [], total: 50 });
+    await reservationRepo.create({ userId: testUserId, items: [], total: 75 });
+    await reservationRepo.create({ userId: 'test_user_other', items: [], total: 100 });
+    
+    const userReservations = await reservationRepo.findAll({ userId: testUserId });
     expect(userReservations.length).toBe(2);
   });
   

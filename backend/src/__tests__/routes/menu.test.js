@@ -1,6 +1,6 @@
 const request = require('supertest');
-const app = require('../../../src/index');
-const RepositoryFactory = require('../../../repositories/repository.factory');
+const app = require('../../index');
+const RepositoryFactory = require('../../repositories/repository.factory');
 const { createTestAdmin, getAuthHeaders } = require('../helpers/test-helpers');
 
 describe('Menu Routes', () => {
@@ -22,12 +22,12 @@ describe('Menu Routes', () => {
       expect(Array.isArray(response.body.data)).toBe(true);
     });
     
-    test('POST /api/menu - should create menu item (admin only)', async () => {
+    test('POST /api/admin/menu - should create menu item (admin only)', async () => {
       const admin = await createTestAdmin();
       const headers = getAuthHeaders(admin);
       
       const response = await request(app)
-        .post('/api/menu')
+        .post('/api/admin/menu')
         .set(headers)
         .send({
           name: 'New Item',
@@ -60,12 +60,12 @@ describe('Menu Routes', () => {
       expect(Array.isArray(response.body.data)).toBe(true);
     });
     
-    test('POST /api/menu - should create menu item (admin only)', async () => {
+    test('POST /api/admin/menu - should create menu item (admin only)', async () => {
       const admin = await createTestAdmin();
       const headers = getAuthHeaders(admin);
       
       const response = await request(app)
-        .post('/api/menu')
+        .post('/api/admin/menu')
         .set(headers)
         .send({
           name: 'New Item',

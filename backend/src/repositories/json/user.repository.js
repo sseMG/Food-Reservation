@@ -115,7 +115,6 @@ class JsonUserRepository extends BaseRepository {
    * Decrement user balance
    */
   async decrementBalance(userId, amount) {
-    const db = await load();
     const user = await this.findById(userId);
     if (!user) return null;
     

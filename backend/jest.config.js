@@ -11,5 +11,8 @@ module.exports = {
   coverageReporters: ['text', 'lcov', 'html'],
   setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup/test-setup.js'],
   testTimeout: 30000,
+  testEnvironmentOptions: {
+    NODE_ENV: 'test',
+  },
 };
 

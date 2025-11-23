@@ -62,7 +62,10 @@ class MongoMenuRepository extends BaseRepository {
 
   async create(data) {
     const col = this.getCollection();
+    // Generate id if not provided
+    const id = data.id || `ITM_${Date.now()}`;
     const item = {
+      id,
       ...data,
       visible: data.visible !== undefined ? data.visible : true,
       deleted: false,
@@ -79,18 +82,23 @@ class MongoMenuRepository extends BaseRepository {
     const col = this.getCollection();
     const filter = createIdFilter(id);
     
+    // First check if document exists
+    const existing = await col.findOne(filter);
+    if (!existing) {
+      return null;
+    }
+    
     const update = {
       ...data,
       updatedAt: new Date().toISOString(),
     };
     
-    const result = await col.findOneAndUpdate(
-      filter,
-      { $set: update },
-      { returnDocument: 'after' }
-    );
+    // Update the document
+    await col.updateOne(filter, { $set: update });
     
-    return result.value ? sanitizeForResponse(normalizeMongoDoc(result.value)) : null;
+    // Get the updated document
+    const updated = await col.findOne(filter);
+    return updated ? sanitizeForResponse(normalizeMongoDoc(updated)) : null;
   }
 
   async delete(id) {
@@ -121,12 +129,19 @@ class MongoMenuRepository extends BaseRepository {
   async incrementStock(id, amount) {
     const col = this.getCollection();
     const filter = createIdFilter(id);
-    const result = await col.findOneAndUpdate(
-      filter,
-      { $inc: { stock: Number(amount) } },
-      { returnDocument: 'after' }
-    );
-    return result.value ? sanitizeForResponse(normalizeMongoDoc(result.value)) : null;
+    
+    // First check if document exists
+    const existing = await col.findOne(filter);
+    if (!existing) {
+      return null;
+    }
+    
+    // Update the document
+    await col.updateOne(filter, { $inc: { stock: Number(amount) } });
+    
+    // Get the updated document
+    const updated = await col.findOne(filter);
+    return updated ? sanitizeForResponse(normalizeMongoDoc(updated)) : null;
   }
 
   /**
@@ -136,8 +151,14 @@ class MongoMenuRepository extends BaseRepository {
     const col = this.getCollection();
     const filter = createIdFilter(id);
     
+    // First check if document exists
+    const existing = await col.findOne(filter);
+    if (!existing) {
+      return null;
+    }
+    
     // Use aggregation pipeline to ensure stock doesn't go negative
-    const result = await col.findOneAndUpdate(
+    await col.updateOne(
       filter,
       [
         {
@@ -147,10 +168,12 @@ class MongoMenuRepository extends BaseRepository {
             }
           }
         }
-      ],
-      { returnDocument: 'after' }
+      ]
     );
-    return result.value ? sanitizeForResponse(normalizeMongoDoc(result.value)) : null;
+    
+    // Get the updated document
+    const updated = await col.findOne(filter);
+    return updated ? sanitizeForResponse(normalizeMongoDoc(updated)) : null;
   }
 }
 

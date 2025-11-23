@@ -44,7 +44,9 @@ class JsonCartRepository extends BaseRepository {
     const db = await load();
     db[this.collectionName] = Array.isArray(db[this.collectionName]) ? db[this.collectionName] : [];
     
+    const id = data.id || `cart_${Date.now().toString(36)}`;
     const cart = {
+      id,
       userId: data.userId,
       items: Array.isArray(data.items) ? data.items : [],
       createdAt: data.createdAt || new Date().toISOString(),

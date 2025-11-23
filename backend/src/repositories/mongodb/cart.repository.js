@@ -58,7 +58,9 @@ class MongoCartRepository extends BaseRepository {
 
   async create(data) {
     const col = this.getCollection();
+    const id = data.id || `cart_${Date.now().toString(36)}`;
     const cart = {
+      id,
       userId: String(data.userId),
       items: Array.isArray(data.items) ? data.items : [],
       createdAt: data.createdAt || new Date().toISOString(),
@@ -98,18 +100,23 @@ class MongoCartRepository extends BaseRepository {
     const col = this.getCollection();
     const filter = { userId: String(userId) };
     
+    // First check if document exists
+    const existing = await col.findOne(filter);
+    if (!existing) {
+      return null;
+    }
+    
     const update = {
       ...data,
       updatedAt: new Date().toISOString(),
     };
     
-    const result = await col.findOneAndUpdate(
-      filter,
-      { $set: update },
-      { returnDocument: 'after' }
-    );
+    // Update the document
+    await col.updateOne(filter, { $set: update });
     
-    return result.value ? sanitizeForResponse(normalizeMongoDoc(result.value)) : null;
+    // Get the updated document
+    const updated = await col.findOne(filter);
+    return updated ? sanitizeForResponse(normalizeMongoDoc(updated)) : null;
   }
 
   async delete(id) {
