@@ -3,8 +3,17 @@
 
 const fs = require("fs");
 const path = require("path");
+const mongoose = require("mongoose");
+const { ObjectId } = require("mongodb");
 
 const DB_PATH = path.join(__dirname, "..", "data", "db.json");
+
+/**
+ * Helper: are we connected to Mongo?
+ */
+function usingMongo() {
+  return !!(mongoose && mongoose.connection && mongoose.connection.readyState === 1);
+}
 
 function readDB() {
   try {
@@ -57,17 +66,93 @@ function mapReservationToTx(r) {
   };
 }
 
-exports.getMyTransactions = (req, res) => {
-  // your auth middleware typically sets req.user (id or {_id, id})
-  const userId = req.user?.id || req.user?._id || req.user;
+exports.getMyTransactions = async (req, res) => {
+  try {
+    // your auth middleware typically sets req.user (id or {_id, id})
+    const userId = req.user?.id || req.user?._id || req.user;
 
-  if (!userId) {
-      console.log('[TRANSACTION] GetMyTransactions: unauthorized');
-      return res.status(401).json({ error: "Unauthorized" });
-  }
+    if (!userId) {
+        console.log('[TRANSACTION] GetMyTransactions: unauthorized');
+        return res.status(401).json({ error: "Unauthorized" });
+    }
 
-  const db = readDB();
     console.log('[TRANSACTION] GetMyTransactions: userId', userId);
+
+    if (usingMongo()) {
+      const db = mongoose.connection.db;
+      const reservationsCol = db.collection("reservations");
+      const transactionsCol = db.collection("transactions");
+      const usersCol = db.collection("users");
+
+      // Get user for matching
+      const me = await usersCol.findOne({ 
+        $or: [{ id: String(userId) }, { _id: ObjectId.isValid(userId) ? new ObjectId(userId) : null }]
+      });
+
+      // Get user's reservations
+      const mine = await reservationsCol.find({
+        $or: [
+          { userId: String(userId) },
+          { userId: ObjectId.isValid(userId) ? new ObjectId(userId) : null }
+        ]
+      }).toArray();
+
+      // Legacy fallback: match by student name/email/id
+      if (me) {
+        const legacyRows = await reservationsCol.find({
+          userId: { $exists: false },
+          $or: [
+            { student: me.name },
+            { student: me.email },
+            { student: String(me.id || me._id) }
+          ]
+        }).toArray();
+        mine.push(...legacyRows);
+      }
+
+      const resRows = mine.map(mapReservationToTx);
+
+      // Get persisted transactions
+      const myResIds = new Set(mine.map((r) => String(r.id || r._id)));
+
+      const persisted = await transactionsCol.find({
+        $or: [
+          { userId: String(userId) },
+          { userId: ObjectId.isValid(userId) ? new ObjectId(userId) : null },
+          { ref: { $in: Array.from(myResIds) } }
+        ]
+      }).toArray();
+
+      const filteredPersisted = persisted
+        .filter((t) => {
+          const type = (t.type || t.kind || "").toString().toLowerCase();
+          const isTopup = type.includes("topup") || type === "topup" || (t.topupId != null) || type.includes("top-");
+          const ref = String(t.ref || t.reference || "").toLowerCase();
+          const hasResRef = ref.includes("res-") || ref.startsWith("res-");
+          return !isTopup || hasResRef;
+        })
+        .map((t) => {
+          const isTopup = ((t.type || "") + "").toString().toLowerCase().includes("topup") || (t.topupId != null);
+          return {
+            id: t.id || t.txId || t._id?.toString() || `TX-${Math.random().toString(36).slice(2)}`,
+            title: isTopup ? "Top-Up" : (t.title || t.type || "Transaction"),
+            createdAt: t.createdAt || t.date || new Date().toISOString(),
+            status: t.status || "Success",
+            statusLC: String(t.status || "Success").toLowerCase(),
+            direction: isTopup ? "credit" : (t.direction || (Number(t.amount || 0) < 0 ? "debit" : "credit")),
+            sign: isTopup ? 1 : (Number(t.amount || 0) < 0 ? -1 : 1),
+            amount: Math.abs(Number(t.amount || t.value || 0) || 0),
+            raw: t,
+          };
+        });
+
+      const merged = [...filteredPersisted, ...resRows];
+      merged.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      console.log('[TRANSACTION] GetMyTransactions: returning', merged.length, 'transactions for user', userId);
+      return res.json({ status: 200, data: merged });
+    }
+
+    const db = readDB();
 
   // Try to find the user record so we can also match by student name/email
   const me = (db.users || []).find((u) => String(u.id) === String(userId));
@@ -135,10 +220,14 @@ exports.getMyTransactions = (req, res) => {
       };
     });
 
-  const merged = [...persisted, ...resRows];
-  merged.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    const merged = [...persisted, ...resRows];
+    merged.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     console.log('[TRANSACTION] GetMyTransactions: returning', merged.length, 'transactions for user', userId);
-  return res.json({ status: 200, data: merged });
+    return res.json({ status: 200, data: merged });
+  } catch (err) {
+    console.error("[TRANSACTION] getMyTransactions error:", err);
+    res.status(500).json({ error: "Failed to fetch transactions" });
+  }
 };
 
 // Alias `mine` to match route import: `const { mine } = require(...);`

@@ -1,6 +1,15 @@
 ﻿// backend/src/controllers/reservations.controller.js
 const { load, save, nextId: libNextId } = require("../lib/db");
 const Notifications = require("./notifications.controller");
+const mongoose = require("mongoose");
+const { ObjectId } = require("mongodb");
+
+/**
+ * Helper: are we connected to Mongo?
+ */
+function usingMongo() {
+  return !!(mongoose && mongoose.connection && mongoose.connection.readyState === 1);
+}
 
 /**
  * fallback nextId generator (used when lib/db does not export nextId)
@@ -22,7 +31,6 @@ function nextId(arr, prefix = "ID") {
  */
 exports.create = async (req, res) => {
   try {
-    const db = await load();
     const {
       items = [],
       grade = "",
@@ -41,7 +49,160 @@ exports.create = async (req, res) => {
       return res.status(400).json({ error: "Missing pickup slot" });
     }
 
-    const user = db.users.find(x => x.id === req?.user.id);
+    const uid = req?.user?.id || req?.user?._id;
+    if (!uid) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    if (usingMongo()) {
+      const db = mongoose.connection.db;
+      const usersCol = db.collection("users");
+      const menuCol = db.collection("menu");
+      const reservationsCol = db.collection("reservations");
+      const transactionsCol = db.collection("transactions");
+
+      // Get user
+      const user = await usersCol.findOne({ $or: [{ id: String(uid) }, { _id: ObjectId.isValid(uid) ? new ObjectId(uid) : null }] });
+      if (!user) {
+        return res.status(401).json({ error: "User not found" });
+      }
+
+      // Validate and normalize items
+      const normalized = [];
+      const menuItems = await menuCol.find({}).toArray();
+      
+      for (const it of items) {
+        const { id, qty } = it || {};
+        let m = menuItems.find((x) => String(x.id || x._id) === String(id));
+        if (!m) {
+          const incoming = String(id || "").trim();
+          const incomingSuffix = incoming.split("-").pop();
+          m = menuItems.find((x) => {
+            const sid = String(x.id || x._id || "").trim();
+            const sfx = sid.split("-").pop();
+            return (sfx && incomingSuffix && sfx === incomingSuffix) || sid === incoming;
+          });
+        }
+        if (!m) {
+          console.log('[RESERVATION] Create: item not found', id);
+          return res.status(400).json({ error: `Item ${id} not found` });
+        }
+
+        const q = Number(qty) || 0;
+        if (q <= 0) {
+          console.log('[RESERVATION] Create: invalid quantity', id);
+          return res.status(400).json({ error: "Invalid quantity" });
+        }
+
+        if (typeof m.stock === "number" && m.stock < 0) {
+          console.log('[RESERVATION] Create: invalid stock', m.name);
+          return res.status(400).json({ error: `Invalid stock for ${m.name}` });
+        }
+
+        normalized.push({
+          id: m.id || m._id.toString(),
+          name: m.name,
+          price: Number(m.price) || 0,
+          qty: q,
+        });
+      }
+
+      const total = normalized.reduce((s, r) => s + r.price * r.qty, 0);
+
+      // Check wallet balance
+      const userBalance = Number(user.balance) || 0;
+      if (userBalance < total) {
+        return res.status(400).json({ error: "Insufficient balance. Please top-up first." });
+      }
+
+      // Deduct wallet
+      await usersCol.updateOne(
+        { $or: [{ id: String(uid) }, { _id: ObjectId.isValid(uid) ? new ObjectId(uid) : null }] },
+        { $inc: { balance: -total } }
+      );
+
+      // Deduct stock
+      for (const it of normalized) {
+        await menuCol.updateOne(
+          { $or: [{ id: it.id }, { _id: ObjectId.isValid(it.id) ? new ObjectId(it.id) : null }] },
+          { $inc: { stock: -it.qty } }
+        );
+      }
+
+      // Create transaction
+      const txId = `TX_${Date.now().toString(36)}${Math.floor(Math.random() * 900 + 100).toString(36)}`;
+      const now = new Date().toISOString();
+      const reservationId = `RES_${Date.now().toString(36)}${Math.floor(Math.random() * 900 + 100).toString(36)}`;
+      
+      const tx = {
+        id: txId,
+        userId: user.id || user._id.toString(),
+        title: "Reservation Hold",
+        ref: reservationId,
+        amount: total,
+        direction: "debit",
+        status: "Pending",
+        createdAt: now,
+      };
+      await transactionsCol.insertOne(tx);
+
+      // Create reservation
+      const reservation = {
+        id: reservationId,
+        userId: user.id || user._id.toString(),
+        student: user.name || req.user?.name,
+        grade,
+        section,
+        when: slot,
+        note,
+        items: normalized,
+        total,
+        status: "Pending",
+        transactionId: tx.id,
+        charged: true,
+        chargedAt: now,
+        stockDeducted: true,
+        createdAt: now,
+      };
+      await reservationsCol.insertOne(reservation);
+
+      // Notify admins
+      try {
+        Notifications.addNotification({
+          id: "notif_" + Date.now().toString(36),
+          for: "admin",
+          actor: user ? {
+            id: user.id || user._id.toString(),
+            name: user.name,
+            email: user.email,
+            profilePictureUrl: user.profilePictureUrl
+          } : uid,
+          type: "reservation:created",
+          title: "New reservation submitted",
+          body: `${user?.name || reservation.student || req.user?.email || uid} submitted a reservation`,
+          data: { 
+            reservationId: reservation.id,
+            items: reservation.items,
+            total: reservation.total,
+            note: reservation.note || "",
+            slot: reservation.when || reservation.slot || "",
+            grade: reservation.grade || "",
+            section: reservation.section || "",
+            student: reservation.student || ""
+          },
+          read: false,
+          createdAt: reservation.createdAt
+        });
+      } catch (e) {
+        console.error("Notification publish failed", e && e.message);
+      }
+
+      return res.json(reservation);
+    }
+
+    // File DB fallback
+    const db = await load();
+    const user = db.users.find(x => String(x.id) === String(uid));
     if (!user) {
       return res.status(401).json({ error: "User not found" });
     }
@@ -187,9 +348,50 @@ exports.create = async (req, res) => {
  */
 exports.mine = async (req, res) => {
   try {
-    const db = await load();
-    const uid = req.user?.id;
+    const uid = req.user?.id || req.user?._id;
+    
+    if (usingMongo()) {
+      const db = mongoose.connection.db;
+      const reservationsCol = db.collection("reservations");
+      const usersCol = db.collection("users");
 
+      let rows = [];
+      if (uid) {
+        const me = await usersCol.findOne({ $or: [{ id: String(uid) }, { _id: ObjectId.isValid(uid) ? new ObjectId(uid) : null }] });
+        
+        rows = await reservationsCol.find({
+          $or: [
+            { userId: String(uid) },
+            { userId: ObjectId.isValid(uid) ? new ObjectId(uid) : null }
+          ]
+        }).toArray();
+
+        // Legacy fallback: match by student name/email/id when reservation has no userId
+        if (me) {
+          const legacyRows = await reservationsCol.find({
+            userId: { $exists: false },
+            $or: [
+              { student: me.name },
+              { student: me.email },
+              { student: String(me.id || me._id) }
+            ]
+          }).toArray();
+          rows = [...rows, ...legacyRows];
+        }
+      } else if (req.query.student) {
+        const s = String(req.query.student).toLowerCase();
+        rows = await reservationsCol.find({
+          student: { $regex: new RegExp(s, "i") }
+        }).toArray();
+      } else {
+        return res.status(400).json({ error: "Missing identity" });
+      }
+
+      rows.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      return res.json({ status: 200, data: rows });
+    }
+
+    const db = await load();
     let rows = [];
     if (uid) {
       const users = Array.isArray(db.users) ? db.users : [];
@@ -231,6 +433,20 @@ exports.mine = async (req, res) => {
  */
 exports.listAdmin = async (req, res) => {
   try {
+    if (usingMongo()) {
+      const db = mongoose.connection.db;
+      const reservationsCol = db.collection("reservations");
+      
+      let query = {};
+      if (req.query.status) {
+        query.status = String(req.query.status);
+      }
+      
+      const rows = await reservationsCol.find(query).toArray();
+      rows.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      return res.json({ status: 200, data: rows });
+    }
+
     const db = await load();
     let rows = Array.isArray(db.reservations) ? db.reservations.slice() : [];
     if (req.query.status) {
@@ -265,6 +481,231 @@ exports.setStatus = async (req, res) => {
     let newStatus = status;
     if (String(newStatus).toLowerCase() === "cancelled") newStatus = "Rejected";
 
+    if (usingMongo()) {
+      const db = mongoose.connection.db;
+      const reservationsCol = db.collection("reservations");
+      const usersCol = db.collection("users");
+      const transactionsCol = db.collection("transactions");
+      const menuCol = db.collection("menu");
+
+      const row = await reservationsCol.findOne({ 
+        $or: [
+          { id: String(id) },
+          { _id: ObjectId.isValid(id) ? new ObjectId(id) : null }
+        ]
+      });
+      if (!row) return res.status(404).json({ error: "Not found" });
+
+      const prev = row.status || "Pending";
+
+      // Approve flow
+      if (newStatus === "Approved") {
+        const prevNorm = String(prev || "").trim();
+        if (prevNorm !== "Pending") {
+          console.log(`[RESERVATION] Cannot approve: status is "${prevNorm}" (expected "Pending") for reservation ${id}`);
+          return res.status(400).json({ error: `Cannot approve: current status is "${prevNorm}". Only pending reservations can be approved.` });
+        }
+
+        // Update transaction status from Pending to Success
+        if (row.transactionId) {
+          await transactionsCol.updateOne(
+            { id: row.transactionId },
+            { $set: { status: "Success" } }
+          );
+        }
+
+        await reservationsCol.updateOne(
+          { $or: [{ id: String(id) }, { _id: ObjectId.isValid(id) ? new ObjectId(id) : null }] },
+          { $set: { status: "Approved", updatedAt: new Date().toISOString() } }
+        );
+
+        const updated = await reservationsCol.findOne({ 
+          $or: [{ id: String(id) }, { _id: ObjectId.isValid(id) ? new ObjectId(id) : null }]
+        });
+        const tx = row.transactionId ? await transactionsCol.findOne({ id: row.transactionId }) : null;
+        const user = row.userId ? await usersCol.findOne({ 
+          $or: [{ id: String(row.userId) }, { _id: ObjectId.isValid(row.userId) ? new ObjectId(row.userId) : null }]
+        }) : null;
+
+        // Notify user
+        try {
+          if (row.userId) {
+            Notifications.addNotification({
+              id: "notif_" + Date.now().toString(36),
+              for: row.userId,
+              actor: req.user && req.user.id,
+              type: "reservation:status",
+              title: `Reservation ${row.id} Approved`,
+              body: `Your reservation ${row.id} has been approved.`,
+              data: { 
+                reservationId: row.id, 
+                status: "Approved",
+                items: row.items,
+                total: row.total,
+                note: row.note || "",
+                slot: row.when || row.slot || "",
+                grade: row.grade,
+                section: row.section,
+                student: row.student,
+                transactionId: row.transactionId
+              },
+              read: false,
+              createdAt: new Date().toISOString(),
+            });
+          }
+        } catch (e) {
+          console.error("Notification publish failed", e && e.message);
+        }
+
+        return res.json({ status: 200, data: { reservation: updated, transaction: tx, user } });
+      }
+
+      if (newStatus === "Rejected") {
+        const allowedPrev = ["Pending", "Approved"];
+        if (!allowedPrev.includes(prev)) {
+          return res.status(400).json({ error: "Refund/cancellation not allowed for current order state" });
+        }
+
+        const total = Number(row.total || 0);
+        
+        // Restore wallet & stock if not already refunded
+        if (!row.refunded && row.charged && total > 0) {
+          // Restore wallet
+          if (row.userId) {
+            await usersCol.updateOne(
+              { $or: [{ id: String(row.userId) }, { _id: ObjectId.isValid(row.userId) ? new ObjectId(row.userId) : null }] },
+              { $inc: { balance: total } }
+            );
+          }
+
+          // Restore stock
+          if (row.stockDeducted && row.items) {
+            for (const it of row.items) {
+              await menuCol.updateOne(
+                { $or: [{ id: it.id }, { _id: ObjectId.isValid(it.id) ? new ObjectId(it.id) : null }] },
+                { $inc: { stock: it.qty } }
+              );
+            }
+          }
+
+          // Create refund transaction
+          const refundTxId = `TX_${Date.now().toString(36)}${Math.floor(Math.random() * 900 + 100).toString(36)}`;
+          const refundTx = {
+            id: refundTxId,
+            userId: row.userId,
+            title: "Refund",
+            ref: row.id,
+            amount: total,
+            direction: "credit",
+            status: "Success",
+            createdAt: new Date().toISOString(),
+          };
+          await transactionsCol.insertOne(refundTx);
+
+          await reservationsCol.updateOne(
+            { $or: [{ id: String(id) }, { _id: ObjectId.isValid(id) ? new ObjectId(id) : null }] },
+            { $set: { refunded: true, refundTransactionId: refundTxId, status: "Rejected", updatedAt: new Date().toISOString() } }
+          );
+        } else {
+          await reservationsCol.updateOne(
+            { $or: [{ id: String(id) }, { _id: ObjectId.isValid(id) ? new ObjectId(id) : null }] },
+            { $set: { status: "Rejected", updatedAt: new Date().toISOString() } }
+          );
+        }
+
+        const updated = await reservationsCol.findOne({ 
+          $or: [{ id: String(id) }, { _id: ObjectId.isValid(id) ? new ObjectId(id) : null }]
+        });
+
+        // Notify user
+        try {
+          if (row.userId) {
+            Notifications.addNotification({
+              id: "notif_" + Date.now().toString(36),
+              for: row.userId,
+              actor: req.user && req.user.id,
+              type: "reservation:status",
+              title: `Reservation ${row.id} Rejected`,
+              body: `Your reservation ${row.id} has been rejected. Refund has been applied.`,
+              data: { 
+                reservationId: row.id, 
+                status: "Rejected",
+                items: row.items,
+                total: row.total,
+                note: row.note || "",
+                slot: row.when || row.slot || "",
+                grade: row.grade,
+                section: row.section,
+                student: row.student
+              },
+              read: false,
+              createdAt: new Date().toISOString(),
+            });
+          }
+        } catch (e) {
+          console.error("Notification publish failed", e && e.message);
+        }
+
+        return res.json({ status: 200, data: { reservation: updated } });
+      }
+
+      // Preparing / Ready / Claimed - validate state machine transitions
+      const validTransitions = {
+        'Approved': ['Preparing'],
+        'Preparing': ['Ready'],
+        'Ready': ['Claimed'],
+        'Claimed': []
+      };
+
+      const allowedNext = validTransitions[prev] || [];
+      if (!allowedNext.includes(newStatus)) {
+        console.warn(`[RESERVATION] Invalid transition: ${prev} -> ${newStatus} for ${id}`);
+        return res.status(400).json({ 
+          error: `Invalid status transition from ${prev} to ${newStatus}`,
+          details: `Allowed transitions from ${prev}: ${allowedNext.join(', ') || 'none (terminal state)'}`
+        });
+      }
+
+      // Check if already in requested state (idempotency)
+      if (prev === newStatus) {
+        return res.status(409).json({ 
+          error: `Order is already in ${newStatus} status`,
+          reservation: row
+        });
+      }
+
+      await reservationsCol.updateOne(
+        { $or: [{ id: String(id) }, { _id: ObjectId.isValid(id) ? new ObjectId(id) : null }] },
+        { $set: { status: newStatus, updatedAt: new Date().toISOString() } }
+      );
+
+      const updated = await reservationsCol.findOne({ 
+        $or: [{ id: String(id) }, { _id: ObjectId.isValid(id) ? new ObjectId(id) : null }]
+      });
+
+      // notify user about reservation status change
+      try {
+        if (row.userId) {
+          Notifications.addNotification({
+            id: "notif_" + Date.now().toString(36),
+            for: row.userId,
+            actor: req.user && req.user.id,
+            type: "reservation:status",
+            title: `Reservation ${row.id} ${status}`,
+            body: `Your reservation ${row.id} is now ${status}.`,
+            data: { reservationId: row.id, status },
+            read: false,
+            createdAt: new Date().toISOString(),
+          });
+        }
+      } catch (e) {
+        console.error("Notification publish failed", e && e.message);
+      }
+
+      return res.json({ status: 200, data: { reservation: updated } });
+    }
+
+    // File DB fallback
     const db = await load();
     db.reservations = db.reservations || [];
 

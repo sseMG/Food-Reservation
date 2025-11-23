@@ -2,8 +2,36 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const mongoose = require("mongoose");
 
 const { coloredMorgan, printColorLegend } = require("./lib/coloredMorgan");
+
+/**
+ * MongoDB connection
+ */
+async function connectMongoDB() {
+  const mongoUri = process.env.MONGO_URI;
+  if (mongoUri) {
+    try {
+      await mongoose.connect(mongoUri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+      console.log('✅ Connected to MongoDB');
+      mongoose.connection.on('error', (err) => {
+        console.error('❌ MongoDB connection error:', err);
+      });
+      mongoose.connection.on('disconnected', () => {
+        console.warn('⚠️ MongoDB disconnected');
+      });
+    } catch (err) {
+      console.error('❌ Failed to connect to MongoDB:', err.message);
+      console.log('📁 Falling back to JSON file database');
+    }
+  } else {
+    console.log('📁 MONGO_URI not set, using JSON file database');
+  }
+}
 
 // Specific routers
 const transactionsRouter = require("./routes/transactions.routes");
@@ -121,34 +149,43 @@ app.use((err, _req, res, _next) => {
 // Serve exported reports files (CSV) under /reports-files
 app.use("/reports-files", express.static(path.join(__dirname, "reports")));
 
-const server = app.listen(PORT, () => {
-  console.log('='.repeat(70));
-  console.log(`🚀 FOOD RESERVATION API SERVER STARTED`);
-  console.log(`📡 API @ http://localhost:${PORT}`);
-  console.log(`📊 Health Check: http://localhost:${PORT}/`);
-  console.log(`🔗 Frontend should connect from: http://localhost:3000`);
-  console.log(`🎨 Using COLORED Morgan HTTP Request Logging`);
-  console.log('='.repeat(70));
-  printColorLegend();
-  console.log('-'.repeat(70));
+// Connect to MongoDB and start server
+connectMongoDB().then(() => {
+  const server = app.listen(PORT, () => {
+    console.log('='.repeat(70));
+    console.log(`🚀 FOOD RESERVATION API SERVER STARTED`);
+    console.log(`📡 API @ http://localhost:${PORT}`);
+    console.log(`📊 Health Check: http://localhost:${PORT}/`);
+    console.log(`🔗 Frontend should connect from: http://localhost:3000`);
+    console.log(`🎨 Using COLORED Morgan HTTP Request Logging`);
+    console.log('='.repeat(70));
+    printColorLegend();
+    console.log('-'.repeat(70));
+  });
+
+  // Graceful shutdown handling
+  process.on('SIGTERM', () => {
+    console.log('🛑 SIGTERM received, shutting down gracefully');
+    server.close(() => {
+      mongoose.connection.close();
+      console.log('✅ Server closed');
+      process.exit(0);
+    });
+  });
+
+  process.on('SIGINT', () => {
+    console.log('🛑 SIGINT received, shutting down gracefully');
+    server.close(() => {
+      mongoose.connection.close();
+      console.log('✅ Server closed');
+      process.exit(0);
+    });
+  });
+}).catch(err => {
+  console.error('Failed to start server:', err);
+  process.exit(1);
 });
 
-// Graceful shutdown handling
-process.on('SIGTERM', () => {
-  console.log('🛑 SIGTERM received, shutting down gracefully');
-  server.close(() => {
-    console.log('✅ Server closed');
-    process.exit(0);
-  });
-});
-
-process.on('SIGINT', () => {
-  console.log('🛑 SIGINT received, shutting down gracefully');
-  server.close(() => {
-    console.log('✅ Server closed');
-    process.exit(0);
-  });
-});
 
 module.exports = app; // (optional) helpful for testing
 
