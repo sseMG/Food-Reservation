@@ -50,7 +50,7 @@ exports.addMenu = async (req, res) => {
       visible: true,
       deleted: false,
     });
-    res.json({ status: 200, data: item });
+    res.json({ status: 200, data: item, ok: true, item });
   } catch (err) {
     console.error("[ADMIN] addMenu error:", err);
     res.status(500).json({ error: "Failed to add menu item" });

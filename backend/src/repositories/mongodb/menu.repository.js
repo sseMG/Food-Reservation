@@ -75,6 +75,10 @@ class MongoMenuRepository extends BaseRepository {
     
     const result = await col.insertOne(item);
     const created = await col.findOne({ _id: result.insertedId });
+    // If findOne returns null (shouldn't happen, but handle it), return the inserted document
+    if (!created) {
+      return sanitizeForResponse(normalizeMongoDoc({ ...item, _id: result.insertedId }));
+    }
     return sanitizeForResponse(normalizeMongoDoc(created));
   }
 

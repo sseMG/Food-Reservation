@@ -43,6 +43,12 @@ describe('Reservation Repository - JSON', () => {
       total: 50,
     });
     
+    expect(created).toBeDefined();
+    expect(created.id).toBeDefined();
+    
+    // Small delay to ensure database write is complete
+    await new Promise(resolve => setTimeout(resolve, 10));
+    
     const found = await reservationRepo.findById(created.id);
     expect(found).toBeDefined();
     expect(found.id).toBe(created.id);
@@ -61,6 +67,9 @@ describe('Reservation Repository - JSON', () => {
     await reservationRepo.create({ userId: testUserId, items: [], total: 50 });
     await reservationRepo.create({ userId: testUserId, items: [], total: 75 });
     await reservationRepo.create({ userId: 'test_user_other', items: [], total: 100 });
+    
+    // Small delay to ensure database writes are complete
+    await new Promise(resolve => setTimeout(resolve, 10));
     
     const userReservations = await reservationRepo.findAll({ userId: testUserId });
     expect(userReservations.length).toBe(2);

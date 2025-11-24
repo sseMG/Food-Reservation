@@ -1,5 +1,13 @@
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const mongoose = require('mongoose');
+const path = require('path');
+const fs = require('fs');
+
+// Load .env file if it exists (system env vars take precedence)
+const envPath = path.join(__dirname, '..', '..', '..', '.env');
+if (fs.existsSync(envPath)) {
+  require('dotenv').config({ path: envPath, override: false });
+}
 
 let mongoServer;
 let originalMongoUri;
@@ -17,16 +25,10 @@ beforeAll(async () => {
     process.env.MONGO_URI = mongoUri;
     
     // Connect to in-memory MongoDB
-    await mongoose.connect(mongoUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(mongoUri);
   } else {
     // Connect to provided MongoDB URI
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(process.env.MONGO_URI);
   }
 });
 
@@ -34,8 +36,13 @@ beforeAll(async () => {
 afterAll(async () => {
   // Close mongoose connection
   if (mongoose.connection.readyState !== 0) {
-    await mongoose.connection.dropDatabase();
-    await mongoose.connection.close();
+    try {
+      // Don't drop database - just close connection
+      // Collections are already cleared in afterEach
+      await mongoose.connection.close();
+    } catch (err) {
+      // Ignore close errors
+    }
   }
   
   // Stop in-memory MongoDB if we created it
@@ -53,17 +60,26 @@ afterAll(async () => {
 
 // Cleanup between tests
 afterEach(async () => {
-  // Clear all collections between tests (if MongoDB is connected)
-  if (mongoose.connection.readyState === 1) {
-    const collections = mongoose.connection.collections;
-    for (const key in collections) {
-      await collections[key].deleteMany({});
-    }
-  }
-  
-  // Clear repository cache
+  // Clear repository cache first
   const RepositoryFactory = require('../../repositories/repository.factory');
   RepositoryFactory.clearCache();
+  
+  // Clear all collections between tests (if MongoDB is connected)
+  // Only do this if MONGO_URI is set (MongoDB tests)
+  if (process.env.MONGO_URI && mongoose.connection.readyState === 1) {
+    try {
+      const collections = mongoose.connection.collections;
+      for (const key in collections) {
+        try {
+          await collections[key].deleteMany({});
+        } catch (err) {
+          // Ignore errors during cleanup
+        }
+      }
+    } catch (err) {
+      // Ignore errors if database is being dropped
+    }
+  }
   
   // Restore MONGO_URI if it was deleted (for MongoDB tests)
   if (!process.env.MONGO_URI && (originalMongoUri || mongoServer)) {

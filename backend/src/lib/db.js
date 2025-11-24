@@ -16,7 +16,7 @@ function save(obj) {
 }
 
 function load() {
-  let data = { users: [], menu: [], reservations: [], topups: [], transactions: [], notifications: [] };
+  let data = { users: [], menu: [], reservations: [], topups: [], transactions: [], notifications: [], carts: [] };
   const raw = readRaw();
   if (raw) {
     try {
@@ -32,6 +32,7 @@ function load() {
   data.topups = Array.isArray(data.topups) ? data.topups : [];
   data.transactions = Array.isArray(data.transactions) ? data.transactions : [];
   data.notifications = Array.isArray(data.notifications) ? data.notifications : [];
+  data.carts = Array.isArray(data.carts) ? data.carts : [];
 
   // --- migration: ensure studentId for all users ---
   const used = new Set();

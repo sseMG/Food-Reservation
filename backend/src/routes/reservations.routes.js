@@ -82,6 +82,8 @@ router.get("/mine", requireAuth, R.mine);
  *   get:
  *     summary: Admin - list reservations
  *     tags: [Reservations]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: status
@@ -91,8 +93,12 @@ router.get("/mine", requireAuth, R.mine);
  *     responses:
  *       200:
  *         description: List of reservations
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden (not admin)
  */
-router.get("/admin", R.listAdmin);
+router.get("/admin", requireAuth, requireAdmin, R.listAdmin);
 
 /**
  * @swagger
@@ -100,6 +106,8 @@ router.get("/admin", R.listAdmin);
  *   patch:
  *     summary: Admin - update reservation status
  *     tags: [Reservations]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -121,7 +129,11 @@ router.get("/admin", R.listAdmin);
  *         description: Reservation updated
  *       400:
  *         description: Invalid input
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden (not admin)
  */
-router.patch("/admin/:id", R.setStatus);
+router.patch("/admin/:id", requireAuth, requireAdmin, R.setStatus);
 
 module.exports = router;

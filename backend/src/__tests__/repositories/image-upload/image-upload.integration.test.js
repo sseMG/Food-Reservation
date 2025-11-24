@@ -6,6 +6,27 @@ const ImageUploadFactory = require('../../../repositories/image-upload/image-upl
 const RepositoryFactory = require('../../../repositories/repository.factory');
 const { createTestAdmin, getAuthHeaders } = require('../../helpers/test-helpers');
 
+// Helper function to validate Cloudinary credentials and throw error if missing
+function requireCloudinaryCredentials() {
+  const missing = [];
+  if (!process.env.CLOUDINARY_CLOUD_NAME) {
+    missing.push('CLOUDINARY_CLOUD_NAME');
+  }
+  if (!process.env.CLOUDINARY_API_KEY) {
+    missing.push('CLOUDINARY_API_KEY');
+  }
+  if (!process.env.CLOUDINARY_API_SECRET) {
+    missing.push('CLOUDINARY_API_SECRET');
+  }
+  
+  if (missing.length > 0) {
+    throw new Error(
+      `Cloudinary credentials are missing. Please set the following environment variables: ${missing.join(', ')}. ` +
+      `You can set them in a .env file in the backend directory or as system environment variables.`
+    );
+  }
+}
+
 describe('Image Upload Integration Tests', () => {
   let admin;
   let headers;
@@ -123,11 +144,35 @@ describe('Image Upload Integration Tests', () => {
     });
 
     test('should upload profile picture via wallets endpoint', async () => {
+      // Ensure user exists in the current repository
+      const userRepo = RepositoryFactory.getUserRepository();
+      let testUser = await userRepo.findById(admin.id);
+      if (!testUser) {
+        // Try to find by email as fallback
+        const users = await userRepo.findAll({ email: admin.email });
+        if (users && users.length > 0) {
+          testUser = users[0];
+        } else {
+          // Create a new user for this test
+          const bcrypt = require('bcryptjs');
+          testUser = await userRepo.create({
+            name: admin.name,
+            email: `test${Date.now()}@example.com`,
+            passwordHash: bcrypt.hashSync('password123', 10),
+            role: admin.role,
+            balance: 1000,
+            studentId: String(Date.now()).slice(-9),
+            phone: '1234567890',
+          });
+        }
+      }
+      const testHeaders = getAuthHeaders(testUser);
+
       const imageBuffer = createTestImageFile();
       
       const response = await request(app)
         .post('/api/wallets/update-profile')
-        .set(headers)
+        .set(testHeaders)
         .attach('profilePicture', imageBuffer, 'test-profile.jpg');
 
       expect(response.status).toBe(200);
@@ -140,23 +185,12 @@ describe('Image Upload Integration Tests', () => {
 
   describe('Cloudinary Storage', () => {
     beforeEach(() => {
-      // Only run Cloudinary tests if credentials are configured
-      if (!process.env.CLOUDINARY_CLOUD_NAME || 
-          !process.env.CLOUDINARY_API_KEY || 
-          !process.env.CLOUDINARY_API_SECRET) {
-        console.log('Skipping Cloudinary tests - credentials not configured');
-        return;
-      }
-      
       process.env.IMAGE_STORAGE_TYPE = 'cloudinary';
       ImageUploadFactory.clearCache();
     });
 
     test('should upload menu item image to Cloudinary', async () => {
-      if (!process.env.CLOUDINARY_CLOUD_NAME) {
-        console.log('Skipping - Cloudinary not configured');
-        return;
-      }
+      requireCloudinaryCredentials();
 
       const imageBuffer = createTestImageFile();
       
@@ -183,16 +217,37 @@ describe('Image Upload Integration Tests', () => {
     });
 
     test('should upload profile picture to Cloudinary', async () => {
-      if (!process.env.CLOUDINARY_CLOUD_NAME) {
-        console.log('Skipping - Cloudinary not configured');
-        return;
+      requireCloudinaryCredentials();
+
+      // Ensure user exists in the current repository
+      const userRepo = RepositoryFactory.getUserRepository();
+      let testUser = await userRepo.findById(admin.id);
+      if (!testUser) {
+        // Try to find by email as fallback
+        const users = await userRepo.findAll({ email: admin.email });
+        if (users && users.length > 0) {
+          testUser = users[0];
+        } else {
+          // Create a new user for this test
+          const bcrypt = require('bcryptjs');
+          testUser = await userRepo.create({
+            name: admin.name,
+            email: `test${Date.now()}@example.com`,
+            passwordHash: bcrypt.hashSync('password123', 10),
+            role: admin.role,
+            balance: 1000,
+            studentId: String(Date.now()).slice(-9),
+            phone: '1234567890',
+          });
+        }
       }
+      const testHeaders = getAuthHeaders(testUser);
 
       const imageBuffer = createTestImageFile();
       
       const response = await request(app)
         .post('/api/wallets/update-profile')
-        .set(headers)
+        .set(testHeaders)
         .attach('profilePicture', imageBuffer, 'test-profile-cloudinary.jpg');
 
       expect(response.status).toBe(200);
@@ -222,10 +277,7 @@ describe('Image Upload Integration Tests', () => {
     });
 
     test('should return cloudinary repository when set', () => {
-      if (!process.env.CLOUDINARY_CLOUD_NAME) {
-        console.log('Skipping - Cloudinary not configured');
-        return;
-      }
+      requireCloudinaryCredentials();
       
       process.env.IMAGE_STORAGE_TYPE = 'cloudinary';
       ImageUploadFactory.clearCache();

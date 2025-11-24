@@ -14,5 +14,9 @@ module.exports = {
   testEnvironmentOptions: {
     NODE_ENV: 'test',
   },
+  // Run tests sequentially to avoid race conditions with shared db.json file
+  maxWorkers: 1,
+  // Ensure test files run sequentially
+  runInBand: false, // We use maxWorkers: 1 instead for better control
 };
 

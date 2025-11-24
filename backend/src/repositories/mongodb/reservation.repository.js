@@ -74,6 +74,10 @@ class MongoReservationRepository extends BaseRepository {
     
     const result = await col.insertOne(reservation);
     const created = await col.findOne({ _id: result.insertedId });
+    // If findOne returns null (shouldn't happen, but handle it), return the inserted document
+    if (!created) {
+      return sanitizeForResponse(normalizeMongoDoc({ ...reservation, _id: result.insertedId }));
+    }
     return sanitizeForResponse(normalizeMongoDoc(created));
   }
 

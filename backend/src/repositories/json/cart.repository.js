@@ -80,7 +80,7 @@ class JsonCartRepository extends BaseRepository {
   async updateByUserId(userId, data) {
     const cart = await this.findByUserId(userId);
     if (!cart) return null;
-    return await this.update(userId, data);
+    return await this.update(cart.id, data);
   }
 
   async delete(id) {
