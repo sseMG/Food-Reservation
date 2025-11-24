@@ -40,6 +40,9 @@ jobs:
         TEST_DB: ${{ matrix.database }}
         MONGO_URI: ${{ matrix.database == 'mongodb' && 'mongodb://localhost:27017/test' || '' }}
         JWT_SECRET: test_secret_key
+        CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+        CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+        CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
       run: |
         if [ "${{ matrix.database }}" == "mongodb" ]; then
           npm test -- --testPathPattern=mongodb
