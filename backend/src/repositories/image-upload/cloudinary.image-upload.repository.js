@@ -1,5 +1,6 @@
 const { v2: cloudinary } = require('cloudinary');
 const { Readable } = require('stream');
+const fs = require('fs');
 const BaseImageUploadRepository = require('./base.image-upload.repository');
 
 /**
@@ -36,13 +37,29 @@ class CloudinaryImageUploadRepository extends BaseImageUploadRepository {
 
   /**
    * Upload file to Cloudinary
-   * @param {Object} file - Multer file object
+   * @param {Object} file - Multer file object (from memory or disk storage)
    * @param {Object} options - Upload options { folder, publicId, transformation }
    * @returns {Promise<Object>} Upload result
    */
   async upload(file, options = {}) {
-    if (!file || !file.buffer) {
-      throw new Error('File buffer is required');
+    if (!file) {
+      throw new Error('File is required');
+    }
+
+    // Handle both memory storage (file.buffer) and disk storage (file.path)
+    let fileBuffer = file.buffer;
+    
+    if (!fileBuffer && file.path) {
+      // If using disk storage, read the file into a buffer
+      try {
+        fileBuffer = fs.readFileSync(file.path);
+      } catch (error) {
+        throw new Error(`Failed to read file from disk: ${error.message}`);
+      }
+    }
+
+    if (!fileBuffer) {
+      throw new Error('File buffer is required. Ensure multer is configured with memoryStorage() or provide a valid file path.');
     }
 
     if (!process.env.CLOUDINARY_CLOUD_NAME) {
@@ -83,7 +100,7 @@ class CloudinaryImageUploadRepository extends BaseImageUploadRepository {
       );
 
       // Convert buffer to stream and pipe to Cloudinary
-      this.bufferToStream(file.buffer).pipe(uploadStream);
+      this.bufferToStream(fileBuffer).pipe(uploadStream);
     });
   }
 
