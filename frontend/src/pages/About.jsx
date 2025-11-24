@@ -89,7 +89,7 @@
           </div>
         </div>
         
-        {/* Mobile menu dropdown */}
+        {/* Mobile view menu dropdown */}
         {mobileMenuOpen && (
           <div className="lg:hidden border-t border-gray-200 bg-white">
             <nav className="px-4 py-3 space-y-2">

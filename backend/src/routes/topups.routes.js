@@ -1,19 +1,16 @@
 const express = require("express");
 const { create, mine } = require("../controllers/topups.controller");
 const { requireAuth } = require("../lib/auth");
-const path = require("path");
 const multer = require("multer");
 
 const router = express.Router();
 
-// store proofs in backend uploads directory (served at /uploads)
-const uploadDir = path.join(__dirname, "..", "uploads");
-const storage = multer.diskStorage({
-	destination: function (req, file, cb) { cb(null, uploadDir); },
-	filename: function (req, file, cb) { cb(null, Date.now().toString(36) + '_' + file.originalname.replace(/\s+/g,'_')); }
+// Use memory storage for Cloudinary compatibility (works with both filesystem and Cloudinary)
+// The image upload repository will handle saving to the appropriate storage
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 8 * 1024 * 1024 } // 8MB limit
 });
-// limit proofs to 8MB
-const upload = multer({ storage, limits: { fileSize: 8 * 1024 * 1024 } });
 
 /**
  * @swagger

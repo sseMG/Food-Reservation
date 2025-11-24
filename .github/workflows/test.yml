@@ -1,0 +1,60 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [ main, develop, mongodb-cloudinary-support-repository-pattern-impl ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        database: [json, mongodb]
+    
+    steps:
+    - uses: actions/checkout@v5
+
+    - uses: actions/setup-node@v6
+      with:
+        node-version: '24'
+    
+    - name: Install dependencies
+      working-directory: ./backend
+      run: npm ci
+    
+    - name: Run linter
+      working-directory: ./backend
+      run: npm run lint || true
+    
+    - name: Run tests with ${{ matrix.database }} database
+      working-directory: ./backend
+      env:
+        NODE_ENV: test
+        TEST_DB: ${{ matrix.database }}
+        JWT_SECRET: test_secret_key
+        CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+        CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+        CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+      run: |
+        if [ "${{ matrix.database }}" == "mongodb" ]; then
+          unset MONGO_URI
+          npm test -- --testPathPattern=mongodb
+        else
+          unset MONGO_URI
+          npm test -- --testPathPattern=json
+        fi
+    
+    - name: Generate coverage report
+      working-directory: ./backend
+      env:
+        NODE_ENV: test
+        TEST_DB: ${{ matrix.database }}
+        JWT_SECRET: test_secret_key
+        CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+        CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+        CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+      if: matrix.database == 'mongodb'
+      run: npm run test:coverage

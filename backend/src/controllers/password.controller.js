@@ -1,6 +1,6 @@
-const { load, save } = require("../lib/db");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
+const RepositoryFactory = require("../repositories/repository.factory");
 
 // Configure email service
 const transporter = nodemailer.createTransport({
@@ -24,8 +24,8 @@ exports.forgotPassword = async (req, res) => {
       return res.status(400).json({ error: "Email is required" });
     }
 
-    const db = load();
-    const user = (db.users || []).find(u => u.email === email.trim().toLowerCase());
+    const userRepo = RepositoryFactory.getUserRepository();
+    const user = await userRepo.findOne({ email: email.trim().toLowerCase() });
     
     if (!user) {
       return res.json({ ok: true, message: "If email exists, reset link will be sent" });
@@ -35,12 +35,9 @@ exports.forgotPassword = async (req, res) => {
     const resetToken = generateResetToken();
     const resetExpiry = new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
-    user.passwordReset = {
-      token: resetToken,
-      expiresAt: resetExpiry
-    };
-
-    save(db);
+    await userRepo.update(user.id, {
+      passwordReset: { token: resetToken, expiresAt: resetExpiry }
+    });
 
     const resetLink = `${process.env.FRONTEND_URL || "http://localhost:3000"}/reset-password?token=${resetToken}&email=${encodeURIComponent(email)}`;
 
@@ -94,8 +91,8 @@ exports.resetPassword = async (req, res) => {
       return res.status(400).json({ error: "Password must be at least 6 characters" });
     }
 
-    const db = load();
-    const user = (db.users || []).find(u => u.email === email.trim().toLowerCase());
+    const userRepo = RepositoryFactory.getUserRepository();
+    const user = await userRepo.findOne({ email: email.trim().toLowerCase() });
 
     if (!user) {
       return res.status(400).json({ error: "User not found" });
@@ -106,15 +103,14 @@ exports.resetPassword = async (req, res) => {
     }
 
     if (new Date() > new Date(user.passwordReset.expiresAt)) {
-      user.passwordReset = null;
-      save(db);
+      await userRepo.update(user.id, { passwordReset: null });
       return res.status(400).json({ error: "Reset token expired. Please request a new one." });
     }
 
-    user.passwordHash = bcrypt.hashSync(newPassword, 10);
-    user.passwordReset = null;
-
-    save(db);
+    await userRepo.update(user.id, {
+      passwordHash: bcrypt.hashSync(newPassword, 10),
+      passwordReset: null
+    });
 
     console.log(`[PASSWORD] Password reset for user ${user.id}`);
     return res.json({ ok: true, message: "Password reset successful" });
@@ -128,7 +124,7 @@ exports.resetPassword = async (req, res) => {
 exports.changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body || {};
-    const uid = req.user?.id;
+    const uid = req.user?.id || req.user?._id;
 
     if (!uid) {
       return res.status(401).json({ error: "Unauthorized" });
@@ -142,8 +138,8 @@ exports.changePassword = async (req, res) => {
       return res.status(400).json({ error: "New password must be at least 6 characters" });
     }
 
-    const db = load();
-    const user = (db.users || []).find(u => u.id === uid);
+    const userRepo = RepositoryFactory.getUserRepository();
+    const user = await userRepo.findById(uid);
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -153,8 +149,9 @@ exports.changePassword = async (req, res) => {
       return res.status(401).json({ error: "Current password is incorrect" });
     }
 
-    user.passwordHash = bcrypt.hashSync(newPassword, 10);
-    save(db);
+    await userRepo.update(user.id, {
+      passwordHash: bcrypt.hashSync(newPassword, 10)
+    });
 
     console.log(`[PASSWORD] Password changed for user ${user.id}`);
     return res.json({ ok: true, message: "Password changed successfully" });

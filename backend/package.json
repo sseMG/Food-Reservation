@@ -11,11 +11,16 @@
     "start": "node -r dotenv/config src/index.js",
     "dev": "nodemon -r dotenv/config src/index.js",
     "seed": "node -r dotenv/config -e \"require('./src/lib/seed').ensureSeed(); console.log('✅ Seed complete');\"",
+    "seed-mongo": "node -r dotenv/config -e \"require('./src/lib/seed-mongo').ensureSeed().then(() => { console.log('✅ MongoDB seed complete'); process.exit(0); }).catch(e => { console.error('❌ Seed failed:', e.message); process.exit(1); })\"",
     "dev-seed": "node scripts/dev-seed.js",
-    "lint": "eslint src --ext .js,.jsx,.ts,.tsx"
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cloudinary": "^1.41.3",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "exceljs": "^4.4.0",
@@ -32,6 +37,9 @@
   },
   "devDependencies": {
     "eslint": "^9.39.1",
-    "nodemon": "^3.1.0"
+    "jest": "^29.7.0",
+    "mongodb-memory-server": "^10.1.0",
+    "nodemon": "^3.1.0",
+    "supertest": "^7.0.0"
   }
 }

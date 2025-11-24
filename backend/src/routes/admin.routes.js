@@ -3,20 +3,13 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs-extra");
 const M = require("../controllers/menu.controller");
+const AdminController = require("../controllers/admin.controller");
 const { requireAuth, requireAdmin } = require("../lib/auth");
 
+// Use memory storage for Cloudinary compatibility (works with both filesystem and Cloudinary)
 const upload = multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => {
-      const dir = path.join(__dirname, "..", "uploads");
-      fs.ensureDirSync(dir);
-      cb(null, dir);
-    },
-    filename: (req, file, cb) => {
-      const ext = path.extname(file.originalname || "");
-      cb(null, Date.now() + "_" + Math.round(Math.random() * 1e6) + ext);
-    }
-  })
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 8 * 1024 * 1024 } // 8MB limit
 });
 
 const router = express.Router();
@@ -64,7 +57,7 @@ router.get("/dashboard", requireAuth, requireAdmin, require("../controllers/admi
  *       200:
  *         description: Menu item created
  */
-router.post("/menu", requireAuth, requireAdmin, upload.single("image"), M.create);
+router.post("/menu", requireAuth, requireAdmin, upload.single("image"), AdminController.addMenu);
 /**
  * @swagger
  * /admin/menu/{id}:
@@ -104,7 +97,7 @@ router.post("/menu", requireAuth, requireAdmin, upload.single("image"), M.create
  *       404:
  *         description: Not found
  */
-router.put("/menu/:id", requireAuth, requireAdmin, upload.single("image"), M.update);
+router.put("/menu/:id", requireAuth, requireAdmin, upload.single("image"), AdminController.updateMenu);
 /**
  * @swagger
  * /admin/menu/{id}:

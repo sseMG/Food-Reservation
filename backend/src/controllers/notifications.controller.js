@@ -1,5 +1,4 @@
-const { load, save } = require("../lib/db");
-const mongoose = require("mongoose");
+const RepositoryFactory = require("../repositories/repository.factory");
 
 function nowISO() {
   return new Date().toISOString();
@@ -10,14 +9,14 @@ function nowISO() {
  * { id, for: "admin" | "<userId>", actor, type, title, body, data?, read: false, createdAt }
  */
 
-exports.addNotification = (notif = {}) => {
-  const db = load();
-  db.notifications = Array.isArray(db.notifications) ? db.notifications : [];
+exports.addNotification = async (notif = {}) => {
+  const notificationRepo = RepositoryFactory.getNotificationRepository();
+  const userRepo = RepositoryFactory.getUserRepository();
   
   // Get user data if actor is provided
   let actorData = null;
   if (notif.actor) {
-    const user = (db.users || []).find(u => String(u.id) === String(notif.actor));
+    const user = await userRepo.findById(notif.actor);
     if (user) {
       actorData = {
         id: user.id,
@@ -28,7 +27,7 @@ exports.addNotification = (notif = {}) => {
     }
   }
 
-  const n = {
+  const n = await notificationRepo.create({
     id: notif.id || "notif_" + Date.now().toString(36),
     for: notif.for || "admin",
     actor: actorData || notif.actor,
@@ -38,86 +37,84 @@ exports.addNotification = (notif = {}) => {
     data: notif.data || null,
     read: !!notif.read,
     createdAt: notif.createdAt || nowISO(),
-  };
+  });
   
-  // newest first
-  db.notifications.unshift(n);
-  save(db);
   return n;
 };
 
-exports.listAdmin = (req, res) => {
-  const db = load();
-  const rows = (db.notifications || []).filter((x) => x.for === "admin");
-  res.json({ status: 200, data: rows });
-};
-
-exports.mine = (req, res) => {
-  const db = load();
-  const uid = req.user && req.user.id;
-  if (!uid) return res.status(401).json({ error: "Unauthorized" });
-  const rows = (db.notifications || []).filter((n) => String(n.for) === String(uid));
-  res.json({ status: 200, data: rows });
-};
-
-exports.markRead = (req, res) => {
-  const { id } = req.params || {};
-  if (!id) return res.status(400).json({ error: "Missing id" });
-  const db = load();
-  db.notifications = db.notifications || [];
-  const i = db.notifications.findIndex((n) => String(n.id) === String(id));
-  if (i === -1) return res.status(404).json({ error: "Not found" });
-
-  const target = db.notifications[i];
-  if (req.user?.role !== "admin" && String(target.for) !== String(req.user.id)) {
-    return res.status(403).json({ error: "Forbidden" });
+exports.listAdmin = async (req, res) => {
+  try {
+    const notificationRepo = RepositoryFactory.getNotificationRepository();
+    const rows = await notificationRepo.findAll({ for: "admin" });
+    res.json({ status: 200, data: rows });
+  } catch (err) {
+    console.error("[NOTIFICATIONS] listAdmin error:", err);
+    res.status(500).json({ error: "Failed to list admin notifications" });
   }
-
-  db.notifications[i].read = true;
-  save(db);
-  res.json({ ok: true, id });
 };
 
-exports.markManyReadAdmin = (req, res) => {
-  const { ids = [], all = false } = req.body || {};
-  const db = load();
-  db.notifications = db.notifications || [];
-  if (all) {
-    for (const n of db.notifications) {
-      if (n.for === "admin") n.read = true;
+exports.mine = async (req, res) => {
+  try {
+    const uid = req.user && (req.user.id || req.user._id);
+    if (!uid) return res.status(401).json({ error: "Unauthorized" });
+
+    const notificationRepo = RepositoryFactory.getNotificationRepository();
+    const rows = await notificationRepo.findAll({ for: String(uid) });
+    res.json({ status: 200, data: rows });
+  } catch (err) {
+    console.error("[NOTIFICATIONS] mine error:", err);
+    res.status(500).json({ error: "Failed to fetch notifications" });
+  }
+};
+
+exports.markRead = async (req, res) => {
+  try {
+    const { id } = req.params || {};
+    if (!id) return res.status(400).json({ error: "Missing id" });
+
+    const notificationRepo = RepositoryFactory.getNotificationRepository();
+    const target = await notificationRepo.findById(id);
+    
+    if (!target) return res.status(404).json({ error: "Not found" });
+
+    const uid = req.user && (req.user.id || req.user._id);
+    if (req.user?.role !== "admin" && String(target.for) !== String(uid)) {
+      return res.status(403).json({ error: "Forbidden" });
     }
-    save(db);
+
+    await notificationRepo.update(id, { read: true });
+    return res.json({ ok: true, id });
+  } catch (err) {
+    console.error("[NOTIFICATIONS] markRead error:", err);
+    res.status(500).json({ error: "Failed to mark notification as read" });
+  }
+};
+
+exports.markManyReadAdmin = async (req, res) => {
+  try {
+    const { ids = [], all = false } = req.body || {};
+    const notificationRepo = RepositoryFactory.getNotificationRepository();
+
+    if (all) {
+      await notificationRepo.markAllRead("admin");
+      return res.json({ ok: true });
+    }
+    
+    const idArray = Array.isArray(ids) ? ids.map(String) : [];
+    await notificationRepo.markManyRead(idArray, "admin");
     return res.json({ ok: true });
+  } catch (err) {
+    console.error("[NOTIFICATIONS] markManyReadAdmin error:", err);
+    res.status(500).json({ error: "Failed to mark notifications as read" });
   }
-  const set = new Set((Array.isArray(ids) ? ids : []).map(String));
-  for (const n of db.notifications) {
-    if (n.for === "admin" && set.has(String(n.id))) n.read = true;
-  }
-  save(db);
-  res.json({ ok: true });
 };
 
 exports.delete = async (req, res) => {
   const id = req.params.id;
   try {
-    // If Mongo is available, remove from collection
-    if (mongoose && mongoose.connection && mongoose.connection.readyState === 1) {
-      const db = mongoose.connection.db;
-      const col = db.collection("notifications");
-      const result = await col.findOneAndDelete({ $or: [{ id }, { _id: id }] });
-      if (!result.value) return res.status(404).json({ error: "Not Found" });
-      return res.json({ ok: true });
-    }
-
-    // Fallback to file DB
-    const db = await load();
-    db.notifications = Array.isArray(db.notifications) ? db.notifications : [];
-    const idx = db.notifications.findIndex(
-      (n) => String(n.id) === String(id) || String(n._id) === String(id)
-    );
-    if (idx === -1) return res.status(404).json({ error: "Not Found" });
-    db.notifications.splice(idx, 1);
-    await save(db);
+    const notificationRepo = RepositoryFactory.getNotificationRepository();
+    const result = await notificationRepo.delete(id);
+    if (!result) return res.status(404).json({ error: "Not Found" });
     return res.json({ ok: true });
   } catch (err) {
     console.error("[NOTIFICATIONS] delete error:", err);

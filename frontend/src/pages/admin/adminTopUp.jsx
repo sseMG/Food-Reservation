@@ -167,7 +167,14 @@ function TopUpManager() {
     if (!file) return;
 
     const localUrl = URL.createObjectURL(file);
-    setQrPreview((prev) => ({ ...prev, [provider]: localUrl }));
+    setQrPreview((prev) => {
+      // Clean up previous object URL if it exists
+      const prevUrl = prev[provider];
+      if (prevUrl && prevUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(prevUrl);
+      }
+      return { ...prev, [provider]: localUrl };
+    });
 
     try {
       setUploading(true);
@@ -175,18 +182,37 @@ function TopUpManager() {
       fd.append("provider", provider);
       fd.append("qr", file);
       const data = await api.post("/admin/wallets", fd);
-      setQrPreview((prev) => ({ ...prev, [provider]: data.qrImageUrl || localUrl }));
-      setMeta((m) => ({
-        ...m,
-        [provider]: {
-          accountName: data.accountName || m[provider].accountName,
-          mobile: data.mobile || m[provider].mobile,
-          reference: data.reference || m[provider].reference,
-        },
-      }));
-      alert("QR code uploaded successfully!");
+      
+      // Safely handle the response - data might be undefined or have different structure
+      if (data && typeof data === 'object' && data.qrImageUrl) {
+        // Clean up the local object URL since we now have the server URL
+        URL.revokeObjectURL(localUrl);
+        const serverUrl = data.qrImageUrl;
+        setQrPreview((prev) => ({ ...prev, [provider]: serverUrl }));
+        setMeta((m) => {
+          const currentProvider = m[provider] || { accountName: "", mobile: "", reference: "" };
+          return {
+            ...m,
+            [provider]: {
+              accountName: data.accountName || currentProvider.accountName || "",
+              mobile: data.mobile || currentProvider.mobile || "",
+              reference: data.reference || currentProvider.reference || "",
+            },
+          };
+        });
+      } else {
+        // If response structure is unexpected, keep the local preview (don't revoke URL yet)
+        setQrPreview((prev) => ({ ...prev, [provider]: localUrl }));
+      }
+      
+      // Use setTimeout to ensure state updates complete before showing alert
+      setTimeout(() => {
+        alert("QR code uploaded successfully!");
+      }, 0);
     } catch (err) {
       console.error(err);
+      // Clean up object URL on error
+      URL.revokeObjectURL(localUrl);
       alert(err.message || "Failed to upload QR code");
       setQrPreview((prev) => ({ ...prev, [provider]: null }));
     } finally {
