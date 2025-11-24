@@ -86,14 +86,6 @@ export default function AdminAddSnacks() {
     return e;
   };
 
-  const fileToBase64 = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result || ""));
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-
   const onSubmit = async (goToList = false) => {
     setFormError("");
     setSuccessMessage("");
@@ -105,22 +97,24 @@ export default function AdminAddSnacks() {
       return;
     }
 
-    const payload = {
-      name: form.name.trim(),
-      category: "Snacks",
-      price: Number(form.price),
-      stock: form.stock === "" ? 0 : Number(form.stock),
-      img: "",
-    };
-
     try {
       setSubmitting(true);
-
+      const fd = new FormData();
+      fd.append("name", form.name.trim());
+      fd.append("category", "Snacks");
+      fd.append("price", String(Number(form.price)));
+      fd.append("stock", String(form.stock === "" ? 0 : Number(form.stock)));
+      fd.append("isActive", form.isActive ? "true" : "false");
+      if (form.unit) fd.append("unit", form.unit);
+      if (form.sizeGrams) fd.append("sizeGrams", String(Number(form.sizeGrams)));
+      if (form.flavor) fd.append("flavor", form.flavor);
+      if (form.description) fd.append("description", form.description);
+      if (form.allergens) fd.append("allergens", form.allergens);
       if (imageFile) {
-        payload.img = await fileToBase64(imageFile);
+        fd.append("image", imageFile, imageFile.name);
       }
 
-      await api.post("/admin/menu", payload);
+      await api.post("/admin/menu", fd);
 
       if (goToList) {
         navigate("/admin/shops", { replace: true });
