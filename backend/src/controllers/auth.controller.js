@@ -125,7 +125,7 @@ exports.login = async (req, res) => {
         password: undefined 
       });
     } else {
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(401).json({ error: (u.role === "admin") ? "Invalid admin credentials" : "Invalid credentials" });
     }
 
     const token = sign({ id: u.id, role: u.role });
