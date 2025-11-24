@@ -10,7 +10,7 @@ const { coloredMorgan, printColorLegend } = require("./lib/coloredMorgan");
  * MongoDB connection
  */
 async function connectMongoDB() {
-  const mongoUri = process.env.MONGO_URI;
+  const mongoUri = process.env.MONGO_URI; //
   if (mongoUri) {
     try {
       await mongoose.connect(mongoUri);
