@@ -92,6 +92,9 @@ exports.upsert = async (req, res) => {
 
     const key = String(provider).toLowerCase();
 
+    const walletRepo = RepositoryFactory.getWalletRepository();
+    const existing = await walletRepo.findOne({ provider: key });
+
     // Save QR file if provided
     let qrUrl = '';
     if (req.file) {
@@ -108,9 +111,6 @@ exports.upsert = async (req, res) => {
       });
       qrUrl = result.url;
     }
-
-    const walletRepo = RepositoryFactory.getWalletRepository();
-    const existing = await walletRepo.findOne({ provider: key });
 
     const payload = {
       accountName: (req.body && req.body.accountName) || (existing && existing.accountName) || '',
