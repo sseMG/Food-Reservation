@@ -151,7 +151,10 @@ exports.setStatus = async (req, res) => {
   const transactionRepo = RepositoryFactory.getTransactionRepository();
 
   const topup = await topupRepo.findById(id);
-  if (!topup) return res.status(404).json({ error: 'Not found' });
+  if (!topup) {
+    console.log(`[TOPUP] setStatus: topup not found for id: ${id}`);
+    return res.status(404).json({ error: 'Not found' });
+  }
 
   const prev = topup.status;
   const newStatus = String(status || '').toLowerCase();
@@ -197,7 +200,10 @@ exports.setStatus = async (req, res) => {
   }
 
   const updated = await topupRepo.update(id, update);
-  if (!updated) return res.status(404).json({ error: 'Not found' });
+  if (!updated) {
+    console.error(`[TOPUP] setStatus: failed to update topup ${id}. Topup exists but update returned null.`);
+    return res.status(404).json({ error: 'Not found' });
+  }
 
   // Update notification
   try {

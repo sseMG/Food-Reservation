@@ -78,18 +78,29 @@ class MongoTopupRepository extends BaseRepository {
     const col = this.getCollection();
     const filter = createIdFilter(id);
     
+    // First check if document exists
+    const existing = await col.findOne(filter);
+    if (!existing) {
+      console.log(`[MongoTopupRepository] update: document not found for id: ${id}`);
+      return null;
+    }
+    
     const update = {
       ...data,
       updatedAt: new Date().toISOString(),
     };
     
-    const result = await col.findOneAndUpdate(
-      filter,
-      { $set: update },
-      { returnDocument: 'after' }
-    );
+    // Update the document
+    const updateResult = await col.updateOne(filter, { $set: update });
     
-    return result.value ? sanitizeForResponse(normalizeMongoDoc(result.value)) : null;
+    if (updateResult.matchedCount === 0) {
+      console.log(`[MongoTopupRepository] update: no document matched for id: ${id}`);
+      return null;
+    }
+    
+    // Fetch the updated document
+    const updated = await col.findOne(filter);
+    return updated ? sanitizeForResponse(normalizeMongoDoc(updated)) : null;
   }
 
   async delete(id) {
