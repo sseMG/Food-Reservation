@@ -151,6 +151,8 @@ exports.deleteUser = async (req, res) => {
     if (!id) return res.status(400).json({ error: "Missing user id" });
 
     const userRepo = RepositoryFactory.getUserRepository();
+    const cartRepo = RepositoryFactory.getCartRepository();
+    const notificationRepo = RepositoryFactory.getNotificationRepository();
     const user = await userRepo.findById(id);
     
     if (!user) return res.status(404).json({ error: "User not found" });
@@ -159,6 +161,28 @@ exports.deleteUser = async (req, res) => {
     }
     if ((user.balance || 0) !== 0) {
       return res.status(400).json({ error: "User must have zero balance before deletion" });
+    }
+
+    // Delete profile picture if it exists
+    if (user.profilePictureUrl) {
+      try {
+        const imageRepo = ImageUploadFactory.getRepository();
+        await imageRepo.delete(user.profilePictureUrl);
+      } catch (err) {
+        console.error("[ADMIN.USERS] Failed to delete profile picture:", err);
+        // Continue even if delete fails
+      }
+    }
+
+    // Delete user's cart
+    try {
+      const cart = await cartRepo.findByUserId(id);
+      if (cart) {
+        await cartRepo.delete(cart.id);
+      }
+    } catch (err) {
+      console.error("[ADMIN.USERS] Failed to delete user cart:", err);
+      // Continue even if delete fails
     }
 
     const result = await userRepo.delete(id);
