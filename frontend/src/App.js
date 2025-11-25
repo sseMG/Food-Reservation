@@ -26,6 +26,7 @@ import AdminShop           from "./pages/admin/adminShop";
 import AdminAddRice        from "./pages/admin/adminAddRice";
 import AdminAddSnacks      from "./pages/admin/adminAddSnacks";
 import AdminAddDrinks      from "./pages/admin/adminAddDrinks";
+import AdminAddItem        from "./pages/admin/adminAddItem";
 import AdminEditCategories from "./pages/admin/adminEditCategories";
 import AdminEditItems      from "./pages/admin/adminEditItems";
 import AdminTopUp          from "./pages/admin/adminTopUp";
@@ -38,6 +39,7 @@ import AdminStats          from "./pages/admin/adminStats";
 import AdminInventory      from "./pages/admin/adminInventory";
 import AdminReports        from "./pages/admin/adminReports";
 import AdminUsers          from "./pages/admin/AdminUsers";
+import AdminCategories     from "./pages/admin/adminCategories"; // Add this import
 
 /* --------------- Other pages --------------- */
 import BreakPolicy from "./pages/BreakPolicy";
@@ -97,6 +99,7 @@ function App() {
         <Route path="/admin/shop/add-rice"            element={<AdminAddRice />} />
         <Route path="/admin/shop/add-drinks"          element={<AdminAddDrinks />} />
         <Route path="/admin/shop/add-snacks"          element={<AdminAddSnacks />} />
+        <Route path="/admin/shop/add/:category"       element={<AdminAddItem />} />
         {/* aliases for earlier links used in some pages */}
         <Route path="/admin/shops/add"                element={<AdminAddRice />} />
         <Route path="/admin/shops/add-drink"          element={<AdminAddDrinks />} />
@@ -104,6 +107,7 @@ function App() {
 
         {/* Edit screens */}
         <Route path="/admin/shop/edit-categories"     element={<AdminEditCategories />} />
+        <Route path="/admin/shop/categories"           element={<AdminCategories />} /> {/* Add this new route */}
         <Route path="/admin/shop/edit-items"          element={<AdminEditItems />} />
 
         {/* Wallet top-ups & orders */}

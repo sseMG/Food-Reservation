@@ -50,6 +50,8 @@ const CATEGORY_EMOJI = {
   "Others": "🍽️",
 };
 
+const STORAGE_KEY = "admin_categories_v1";
+
 function GuestHeader({ mobileMenuOpen, setMobileMenuOpen }) {
   return (
     <>
@@ -200,6 +202,36 @@ export default function Shop({ publicView = false }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [initialLoad, setInitialLoad] = useState(true);
+
+  // admin icons mapping (from admin categories localStorage)
+  const [adminIcons, setAdminIcons] = useState(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      return stored.icons || {};
+    } catch (e) {
+      return {};
+    }
+  });
+
+  useEffect(() => {
+    const reload = () => {
+      try {
+        const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+        setAdminIcons(stored.icons || {});
+      } catch (e) {
+        setAdminIcons({});
+      }
+    };
+
+    window.addEventListener("categories:updated", reload);
+    window.addEventListener("menu:updated", reload);
+    // initial
+    reload();
+    return () => {
+      window.removeEventListener("categories:updated", reload);
+      window.removeEventListener("menu:updated", reload);
+    };
+  }, []);
 
   const [wallet, setWallet] = useState({ balance: 0 });
   const [loadingWallet, setLoadingWallet] = useState(true);
@@ -575,7 +607,9 @@ export default function Shop({ publicView = false }) {
                         : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
                     }`}
                   >
-                    {c !== "all" && <span className="mr-1">{CATEGORY_EMOJI[c] || "🍽️"}</span>}
+                    {c !== "all" && (
+                      <span className="mr-1">{adminIcons[c] || CATEGORY_EMOJI[c] || "🍽️"}</span>
+                    )}
                     {c === "all" ? "All Items" : c}
                     {c !== "all" && (
                       <span className="ml-1.5 text-[10px] opacity-70">

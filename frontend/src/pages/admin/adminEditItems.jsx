@@ -18,7 +18,8 @@ import {
 
 const peso = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" });
 
-const CATEGORIES = ["Meals", "Snacks", "Beverages"];
+const DEFAULT_CATEGORIES = ["Meals", "Snacks", "Beverages"];
+const STORAGE_KEY = "admin_categories_v1";
 
 export default function AdminEditItems() {
   const navigate = useNavigate();
@@ -74,6 +75,19 @@ export default function AdminEditItems() {
   };
 
   useEffect(() => { load(); }, []);
+
+  // Merge categories from defaults, stored custom categories, and categories discovered in menu items
+  const mergedCategories = useMemo(() => {
+    let stored = {};
+    try {
+      stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    } catch (e) {
+      stored = {};
+    }
+    const storedList = Array.isArray(stored.list) ? stored.list : [];
+    const fromItems = Array.from(new Set((Array.isArray(items) ? items : []).map(i => i.category).filter(Boolean)));
+    return Array.from(new Set([...DEFAULT_CATEGORIES, ...storedList, ...fromItems]));
+  }, [items]);
 
   /* ---------------- Filters ---------------- */
   const filtered = useMemo(() => {
@@ -146,8 +160,8 @@ export default function AdminEditItems() {
       setSaveError("Name is required.");
       return;
     }
-    if (!CATEGORIES.includes(editing.category)) {
-      setSaveError("Category must be Meals, Snacks, or Beverages.");
+    if (!mergedCategories.includes(editing.category)) {
+      setSaveError(`Category must be one of: ${mergedCategories.join(", ")}`);
       return;
     }
     if (isNaN(Number(editing.price)) || Number(editing.price) <= 0) {
@@ -281,7 +295,7 @@ export default function AdminEditItems() {
                 className="px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option>All</option>
-                {CATEGORIES.map((c) => (
+                {mergedCategories.map((c) => (
                   <option key={c}>{c}</option>
                 ))}
               </select>
@@ -446,7 +460,7 @@ export default function AdminEditItems() {
                         onChange={(e) => setEditField("category", e.target.value)}
                         className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
-                        {CATEGORIES.map((c) => (
+                        {mergedCategories.map((c) => (
                           <option key={c}>{c}</option>
                         ))}
                       </select>

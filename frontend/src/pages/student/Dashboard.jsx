@@ -26,6 +26,10 @@ import {
 
 const peso = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" });
 
+// Admin category storage defaults
+const DEFAULT_CATEGORIES = ["Meals", "Snacks", "Beverages"];
+const STORAGE_KEY = "admin_categories_v1";
+
 // Canonical status mapping for consistency
 const STATUS = {
   PENDING: 'PENDING',
@@ -208,6 +212,40 @@ export default function Dashboard() {
   const [activity, setActivity] = useState([]);
   const [retryCount, setRetryCount] = useState(0);
   const abortControllerRef = React.useRef(null);
+
+  // Admin-provided categories (defaults + persisted custom categories)
+  const [adminCategories, setAdminCategories] = useState(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      const storedList = Array.isArray(stored.list) ? stored.list : [];
+      return Array.from(new Set([...DEFAULT_CATEGORIES, ...storedList]));
+    } catch (e) {
+      return DEFAULT_CATEGORIES.slice();
+    }
+  });
+
+  useEffect(() => {
+    const reload = () => {
+      try {
+        const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+        const storedList = Array.isArray(stored.list) ? stored.list : [];
+        setAdminCategories(Array.from(new Set([...DEFAULT_CATEGORIES, ...storedList])));
+      } catch (e) {
+        setAdminCategories(DEFAULT_CATEGORIES.slice());
+      }
+    };
+
+    window.addEventListener("categories:updated", reload);
+    window.addEventListener("menu:updated", reload);
+
+    // initial load
+    reload();
+
+    return () => {
+      window.removeEventListener("categories:updated", reload);
+      window.removeEventListener("menu:updated", reload);
+    };
+  }, []);
 
   const fetchArr = async (path, signal) => {
     try {
@@ -835,60 +873,24 @@ export default function Dashboard() {
         <section>
           <h2 className="text-base sm:text-xl font-bold text-gray-900 mb-2 sm:mb-4">Categories</h2>
           <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-1.5 sm:gap-4">
-            <button
-              onClick={() => navigate("/shop?category=Rice Meals")}
-              className="bg-white rounded-lg sm:rounded-2xl p-2 sm:p-6 shadow-sm hover:shadow-md transition border border-gray-100 text-center focus-ring"
-            >
-              <div className="mx-auto mb-1 sm:mb-3 w-6 h-6 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gray-100 flex items-center justify-center">
-                <UtensilsCrossed className="w-3 h-3 sm:w-5 sm:h-5 text-gray-700" />
-              </div>
-              <div className="text-[10px] sm:text-sm font-medium text-gray-900">Rice Meals</div>
-            </button>
-            <button
-              onClick={() => navigate("/shop?category=Noodles")}
-              className="bg-white rounded-lg sm:rounded-2xl p-2 sm:p-6 shadow-sm hover:shadow-md transition border border-gray-100 text-center focus-ring"
-            >
-              <div className="mx-auto mb-1 sm:mb-3 w-6 h-6 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gray-100 flex items-center justify-center">
-                <UtensilsCrossed className="w-3 h-3 sm:w-5 sm:h-5 text-gray-700" />
-              </div>
-              <div className="text-[10px] sm:text-sm font-medium text-gray-900">Noodles</div>
-            </button>
-            <button
-              onClick={() => navigate("/shop?category=Snacks")}
-              className="bg-white rounded-lg sm:rounded-2xl p-2 sm:p-6 shadow-sm hover:shadow-md transition border border-gray-100 text-center focus-ring"
-            >
-              <div className="mx-auto mb-1 sm:mb-3 w-6 h-6 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gray-100 flex items-center justify-center">
-                <Cookie className="w-3 h-3 sm:w-5 sm:h-5 text-gray-700" />
-              </div>
-              <div className="text-[10px] sm:text-sm font-medium text-gray-900">Snacks</div>
-            </button>
-            <button
-              onClick={() => navigate("/shop?category=Beverages")}
-              className="bg-white rounded-lg sm:rounded-2xl p-2 sm:p-6 shadow-sm hover:shadow-md transition border border-gray-100 text-center focus-ring"
-            >
-              <div className="mx-auto mb-1 sm:mb-3 w-6 h-6 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gray-100 flex items-center justify-center">
-                <CupSoda className="w-3 h-3 sm:w-5 sm:h-5 text-gray-700" />
-              </div>
-              <div className="text-[10px] sm:text-sm font-medium text-gray-900">Beverages</div>
-            </button>
-            <button
-              onClick={() => navigate("/shop?category=Desserts")}
-              className="bg-white rounded-lg sm:rounded-2xl p-2 sm:p-6 shadow-sm hover:shadow-md transition border border-gray-100 text-center focus-ring"
-            >
-              <div className="mx-auto mb-1 sm:mb-3 w-6 h-6 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gray-100 flex items-center justify-center">
-                <Cookie className="w-3 h-3 sm:w-5 sm:h-5 text-gray-700" />
-              </div>
-              <div className="text-[10px] sm:text-sm font-medium text-gray-900">Desserts</div>
-            </button>
-            <button
-              onClick={() => navigate("/shop?category=Breakfast")}
-              className="bg-white rounded-lg sm:rounded-2xl p-2 sm:p-6 shadow-sm hover:shadow-md transition border border-gray-100 text-center focus-ring"
-            >
-              <div className="mx-auto mb-1 sm:mb-3 w-6 h-6 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gray-100 flex items-center justify-center">
-                <UtensilsCrossed className="w-3 h-3 sm:w-5 sm:h-5 text-gray-700" />
-              </div>
-              <div className="text-[10px] sm:text-sm font-medium text-gray-900">Breakfast</div>
-            </button>
+            {adminCategories.map((c) => (
+              <button
+                key={c}
+                onClick={() => navigate(`/shop?category=${encodeURIComponent(c)}`)}
+                className="bg-white rounded-lg sm:rounded-2xl p-2 sm:p-6 shadow-sm hover:shadow-md transition border border-gray-100 text-center focus-ring"
+              >
+                <div className="mx-auto mb-1 sm:mb-3 w-6 h-6 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gray-100 flex items-center justify-center">
+                  {c === 'Snacks' ? (
+                    <Cookie className="w-3 h-3 sm:w-5 sm:h-5 text-gray-700" />
+                  ) : c === 'Beverages' ? (
+                    <CupSoda className="w-3 h-3 sm:w-5 sm:h-5 text-gray-700" />
+                  ) : (
+                    <UtensilsCrossed className="w-3 h-3 sm:w-5 sm:h-5 text-gray-700" />
+                  )}
+                </div>
+                <div className="text-[10px] sm:text-sm font-medium text-gray-900">{c}</div>
+              </button>
+            ))}
           </div>
         </section>
 

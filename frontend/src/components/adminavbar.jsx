@@ -16,6 +16,7 @@ import {
   FileText,
   Bell,
   Trash2,
+  Filter,
 } from "lucide-react";
 import { api } from "../lib/api";
 import NotificationItem from './NotificationItem';
@@ -495,6 +496,7 @@ const NotificationPreviewModal = ({ notification, onClose, onDelete }) => {
 export default function AdminNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [topupsOpen, setTopupsOpen] = useState(false);
+  const [shopOpen, setShopOpen] = useState(false); // Add this
   const [notifOpen, setNotifOpen] = useState(false);
   const [previewNotif, setPreviewNotif] = useState(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -502,6 +504,7 @@ export default function AdminNavbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const topupsRef = useRef(null);
+  const shopRef = useRef(null); // Add this
   const notifRef = useRef(null);
 
   const {
@@ -514,6 +517,7 @@ export default function AdminNavbar() {
 
   // Close dropdowns when clicking outside
   useOutsideClick(topupsRef, () => setTopupsOpen(false));
+  useOutsideClick(shopRef, () => setShopOpen(false)); // Add this
   useOutsideClick(notifRef, () => setNotifOpen(false));
 
   // Close mobile menu on route change
@@ -563,7 +567,7 @@ export default function AdminNavbar() {
 
   const navLinks = [
     { name: "Dashboard", to: "/admin", Icon: LayoutDashboard },
-    { name: "Shops", to: "/admin/shops", Icon: ShoppingBag },
+    // Remove the old Shops link - we'll add it as a dropdown
     { name: "Inventory", to: "/admin/inventory", Icon: Box },
     { name: "Orders", to: "/admin/orders", Icon: ClipboardList },
     { name: "Reservations", to: "/admin/reservations", Icon: CalendarClock },
@@ -707,6 +711,40 @@ export default function AdminNavbar() {
                   <span>{name}</span>
                 </NavLink>
               ))}
+            </div>
+
+            {/* Shop dropdown */}
+            <div className="relative" ref={shopRef}>
+              <button
+                onClick={() => setShopOpen((v) => !v)}
+                className={`${baseClasses} ${idleClasses} ml-2`}
+                aria-expanded={shopOpen}
+                aria-haspopup="menu"
+              >
+                <ShoppingBag className="w-4 h-4" />
+                <span>Shop</span>
+              </button>
+
+              {shopOpen && (
+                <div className="absolute left-0 mt-2 w-56 bg-white border rounded-lg shadow-lg z-40 p-2 animate-in fade-in zoom-in-95 duration-200">
+                  <Link
+                    to="/admin/shops"
+                    className={`${baseClasses} ${idleClasses} w-full justify-start`}
+                    onClick={() => setShopOpen(false)}
+                  >
+                    <ShoppingBag className="w-4 h-4" />
+                    <span>Shop Management</span>
+                  </Link>
+                  <Link
+                    to="/admin/shop/categories"
+                    className={`${baseClasses} ${idleClasses} w-full justify-start`}
+                    onClick={() => setShopOpen(false)}
+                  >
+                    <Filter className="w-4 h-4" />
+                    <span>Category Management</span>
+                  </Link>
+                </div>
+              )}
             </div>
 
             {/* Topups dropdown */}
@@ -874,6 +912,27 @@ export default function AdminNavbar() {
                     <span>{name}</span>
                   </NavLink>
                 ))}
+                <div className="border-t pt-2 mt-1">
+                  <div className="text-[11px] font-medium uppercase text-gray-500 px-1 mb-1">
+                    Shop
+                  </div>
+                  <NavLink
+                    to="/admin/shops"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`${baseClasses} ${idleClasses}`}
+                  >
+                    <ShoppingBag className="w-4 h-4" />
+                    <span>Shop Management</span>
+                  </NavLink>
+                  <NavLink
+                    to="/admin/shop/categories"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`${baseClasses} ${idleClasses}`}
+                  >
+                    <Filter className="w-4 h-4" />
+                    <span>Category Management</span>
+                  </NavLink>
+                </div>
                 <div className="border-t pt-2 mt-1">
                   <div className="text-[11px] font-medium uppercase text-gray-500 px-1 mb-1">
                     Top-ups

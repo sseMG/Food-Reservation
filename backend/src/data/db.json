@@ -1,8 +1,424 @@
 {
-  "users": [],
-  "menu": [],
-  "reservations": [],
-  "topups": [],
-  "transactions": [],
-  "notifications": []
+  "users": [
+    {
+      "id": 1,
+      "name": "Admin",
+      "email": "admin@school.test",
+      "role": "admin",
+      "balance": 0,
+      "passwordHash": "$2a$10$rED3EwrK8WGE7kzkjlcHGe0Niwwhk2KyzOjOfjI/FjnUpPK/tM9Rq",
+      "studentId": "000000001"
+    },
+    {
+      "id": "usr_mie2b905",
+      "name": "Sean Dela",
+      "email": "syan@gmail.com",
+      "passwordHash": "$2a$10$fzEUjYs94YZQp4eF/hEIzua9b8ZWgHQyXyrZ.SeBOaURiHMzvOaCm",
+      "role": "student",
+      "grade": "",
+      "section": "",
+      "balance": 590,
+      "studentId": "202080189",
+      "phone": "09690636652",
+      "createdAt": "2025-11-25T04:15:02.741Z",
+      "updatedAt": "2025-11-25T04:34:15.700Z"
+    }
+  ],
+  "menu": [
+    {
+      "id": "ITM_1764043247803",
+      "name": "Cookies",
+      "category": "Snacks",
+      "price": 10,
+      "stock": 50,
+      "img": "/uploads/cookies-1764043247798_350782.jpg",
+      "isActive": true,
+      "visible": true,
+      "deleted": false,
+      "createdAt": "2025-11-25T04:00:47.803Z",
+      "updatedAt": "2025-11-25T04:01:04.182Z"
+    },
+    {
+      "id": "ITM_1764043429971",
+      "name": "Popcorn",
+      "category": "Snacks",
+      "price": 40,
+      "stock": 49,
+      "img": "/uploads/popcorn-1764043429967_318815.jpg",
+      "isActive": true,
+      "visible": true,
+      "deleted": false,
+      "createdAt": "2025-11-25T04:03:49.971Z",
+      "updatedAt": "2025-11-25T04:34:15.708Z"
+    },
+    {
+      "id": "ITM_1764044048789",
+      "name": "Chocolate Cake Slice",
+      "category": "Desserts",
+      "price": 80,
+      "stock": 19,
+      "img": "/uploads/chocolate-cake-slice-1764044048785_538685.jpg",
+      "isActive": true,
+      "visible": true,
+      "deleted": false,
+      "createdAt": "2025-11-25T04:14:08.789Z",
+      "updatedAt": "2025-11-25T04:34:15.702Z"
+    },
+    {
+      "id": "ITM_1764044595710",
+      "name": "Cappuccino heart coffee",
+      "category": "Warm Drink",
+      "price": 150,
+      "stock": 9,
+      "img": "/uploads/cappuccino-heart-coffee-1764044595705_619897.jpg",
+      "isActive": true,
+      "visible": true,
+      "deleted": false,
+      "createdAt": "2025-11-25T04:23:15.710Z",
+      "updatedAt": "2025-11-25T04:34:15.714Z"
+    },
+    {
+      "id": "ITM_1764044849234",
+      "name": "Cold Cappuccino Coffee",
+      "category": "Cold Drinks",
+      "price": 140,
+      "stock": 9,
+      "img": "/uploads/cold-cappuccino-coffee-1764044849230_494469.jpg",
+      "isActive": true,
+      "visible": true,
+      "deleted": false,
+      "createdAt": "2025-11-25T04:27:29.234Z",
+      "updatedAt": "2025-11-25T04:34:15.711Z"
+    }
+  ],
+  "reservations": [
+    {
+      "id": "RES_mie2zyn64b",
+      "userId": "usr_mie2b905",
+      "student": "Sean Dela",
+      "grade": "G10",
+      "section": "Psalms",
+      "when": "lunch",
+      "note": "",
+      "items": [
+        {
+          "id": "ITM_1764044048789",
+          "name": "Chocolate Cake Slice",
+          "price": 80,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764043429971",
+          "name": "Popcorn",
+          "price": 40,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764044849234",
+          "name": "Cold Cappuccino Coffee",
+          "price": 140,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764044595710",
+          "name": "Cappuccino heart coffee",
+          "price": 150,
+          "qty": 1
+        }
+      ],
+      "total": 410,
+      "status": "Claimed",
+      "transactionId": "txn_mie2zyn8",
+      "charged": true,
+      "chargedAt": "2025-11-25T04:34:15.714Z",
+      "stockDeducted": true,
+      "createdAt": "2025-11-25T04:34:15.718Z",
+      "updatedAt": "2025-11-25T04:37:17.304Z"
+    }
+  ],
+  "topups": [
+    {
+      "id": "top_mie2xah1",
+      "userId": "usr_mie2b905",
+      "student": "Sean Dela",
+      "studentId": "202080189",
+      "contact": "09690636652",
+      "email": "syan@gmail.com",
+      "provider": "gcash",
+      "amount": 1000,
+      "reference": "202392394",
+      "status": "Approved",
+      "proofUrl": "/uploads/topup-usr_mie2b905-1764045131074_291197.png",
+      "submittedAt": "2025-11-25T04:32:11.072Z",
+      "createdAt": "2025-11-25T04:32:11.077Z",
+      "updatedAt": "2025-11-25T04:32:55.192Z",
+      "credited": true,
+      "creditedAt": "2025-11-25T04:32:55.180Z"
+    }
+  ],
+  "transactions": [
+    {
+      "id": "txn_mie2y8id",
+      "userId": "usr_mie2b905",
+      "type": "TopUp",
+      "amount": 1000,
+      "reference": "202392394",
+      "topupId": "top_mie2xah1",
+      "status": "Success",
+      "createdAt": "2025-11-25T04:32:55.189Z"
+    },
+    {
+      "id": "txn_mie2zyn8",
+      "userId": "usr_mie2b905",
+      "title": "Reservation Hold",
+      "ref": "RES_mie2zyn64b",
+      "amount": 410,
+      "direction": "debit",
+      "status": "Success",
+      "createdAt": "2025-11-25T04:34:15.716Z"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "notif_mie33urd",
+      "for": "usr_mie2b905",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_mie2zyn64b Claimed",
+      "body": "Your reservation RES_mie2zyn64b is now Claimed.",
+      "data": {
+        "reservationId": "RES_mie2zyn64b",
+        "status": "Claimed"
+      },
+      "read": true,
+      "createdAt": "2025-11-25T04:37:17.305Z"
+    },
+    {
+      "id": "notif_mie33u4a",
+      "for": "usr_mie2b905",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_mie2zyn64b Ready",
+      "body": "Your reservation RES_mie2zyn64b is now Ready.",
+      "data": {
+        "reservationId": "RES_mie2zyn64b",
+        "status": "Ready"
+      },
+      "read": true,
+      "createdAt": "2025-11-25T04:37:16.474Z"
+    },
+    {
+      "id": "notif_mie33tkl",
+      "for": "usr_mie2b905",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_mie2zyn64b Preparing",
+      "body": "Your reservation RES_mie2zyn64b is now Preparing.",
+      "data": {
+        "reservationId": "RES_mie2zyn64b",
+        "status": "Preparing"
+      },
+      "read": true,
+      "createdAt": "2025-11-25T04:37:15.765Z"
+    },
+    {
+      "id": "notif_mie30l67",
+      "for": "usr_mie2b905",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_mie2zyn64b Approved",
+      "body": "Your reservation RES_mie2zyn64b has been approved.",
+      "data": {
+        "reservationId": "RES_mie2zyn64b",
+        "status": "Approved",
+        "items": [
+          {
+            "id": "ITM_1764044048789",
+            "name": "Chocolate Cake Slice",
+            "price": 80,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764043429971",
+            "name": "Popcorn",
+            "price": 40,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764044849234",
+            "name": "Cold Cappuccino Coffee",
+            "price": 140,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764044595710",
+            "name": "Cappuccino heart coffee",
+            "price": 150,
+            "qty": 1
+          }
+        ],
+        "total": 410,
+        "note": "",
+        "slot": "lunch",
+        "grade": "G10",
+        "section": "Psalms",
+        "student": "Sean Dela",
+        "transactionId": "txn_mie2zyn8"
+      },
+      "read": true,
+      "createdAt": "2025-11-25T04:34:44.911Z"
+    },
+    {
+      "id": "notif_mie2zynb",
+      "for": "admin",
+      "actor": {
+        "id": "usr_mie2b905",
+        "name": "Sean Dela",
+        "email": "syan@gmail.com"
+      },
+      "type": "reservation:created",
+      "title": "New reservation submitted",
+      "body": "Sean Dela submitted a reservation",
+      "data": {
+        "reservationId": "RES_mie2zyn64b",
+        "items": [
+          {
+            "id": "ITM_1764044048789",
+            "name": "Chocolate Cake Slice",
+            "price": 80,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764043429971",
+            "name": "Popcorn",
+            "price": 40,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764044849234",
+            "name": "Cold Cappuccino Coffee",
+            "price": 140,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764044595710",
+            "name": "Cappuccino heart coffee",
+            "price": 150,
+            "qty": 1
+          }
+        ],
+        "total": 410,
+        "note": "",
+        "slot": "lunch",
+        "grade": "G10",
+        "section": "Psalms",
+        "student": "Sean Dela"
+      },
+      "read": true,
+      "createdAt": "2025-11-25T04:34:15.718Z"
+    },
+    {
+      "id": "notif_mie2y8ih",
+      "for": "usr_mie2b905",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "topup:status",
+      "title": "Top-up Approved",
+      "body": "Your top-up request for ₱1,000.00 was approved",
+      "data": {
+        "topupId": "top_mie2xah1",
+        "status": "Approved",
+        "amount": 1000,
+        "rejectionReason": null
+      },
+      "read": true,
+      "createdAt": "2025-11-25T04:32:55.193Z"
+    },
+    {
+      "id": "notif_mie2xah5",
+      "for": "admin",
+      "actor": {
+        "id": "usr_mie2b905",
+        "name": "Sean Dela",
+        "email": "syan@gmail.com",
+        "profilePictureUrl": null
+      },
+      "type": "topup:created",
+      "title": "New Top-up Request",
+      "body": "Sean Dela submitted a top-up request for ₱1,000.00",
+      "data": {
+        "topupId": "top_mie2xah1",
+        "amount": 1000,
+        "provider": "gcash",
+        "studentId": "202080189",
+        "reference": "202392394",
+        "student": {
+          "name": "Sean Dela",
+          "contact": "09690636652",
+          "email": "syan@gmail.com"
+        }
+      },
+      "read": true,
+      "createdAt": "2025-11-25T04:32:11.072Z"
+    },
+    {
+      "id": "notif_mie2b906",
+      "for": "admin",
+      "actor": null,
+      "type": "student:registered",
+      "title": "New Student Registration: Sean Dela",
+      "body": "A new student account has been created.\n\nName: Sean Dela\nStudent ID: 202080189\nEmail: syan@gmail.com\nPhone: 09690636652",
+      "data": {
+        "userId": "usr_mie2b905",
+        "studentName": "Sean Dela",
+        "studentId": "202080189",
+        "email": "syan@gmail.com",
+        "phone": "09690636652",
+        "grade": "",
+        "section": ""
+      },
+      "read": true,
+      "createdAt": "2025-11-25T04:15:02.742Z"
+    }
+  ],
+  "carts": [
+    {
+      "id": "cart_mie0rb49",
+      "userId": 1,
+      "items": [],
+      "createdAt": "2025-11-25T03:31:32.745Z",
+      "updatedAt": "2025-11-25T03:31:32.747Z"
+    },
+    {
+      "id": "cart_mie2m0hc",
+      "userId": "usr_mie2b905",
+      "items": [],
+      "createdAt": "2025-11-25T04:23:24.912Z",
+      "updatedAt": "2025-11-25T04:34:17.088Z"
+    }
+  ]
 }

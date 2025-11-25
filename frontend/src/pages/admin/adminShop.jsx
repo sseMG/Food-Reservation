@@ -247,7 +247,7 @@ export default function AdminShop() {
 
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-2">
-            {/* Mobile: Dropdown menu for adding items */}
+            {/* Mobile: Dropdown menu for adding items (dynamic from stored categories) */}
             <div className="relative md:hidden flex-1">
               <button
                 onClick={() => setShowAddMenu(!showAddMenu)}
@@ -257,59 +257,59 @@ export default function AdminShop() {
                 Add Product
                 <ChevronDown className="w-4 h-4" />
               </button>
-              
+
               {showAddMenu && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowAddMenu(false)} />
                   <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
-                    <Link
-                      to="/admin/shop/add-rice"
-                      className="block px-4 py-3 text-sm hover:bg-gray-50 border-b"
-                      onClick={() => setShowAddMenu(false)}
-                    >
-                      Add Rice Meal
-                    </Link>
-                    <Link
-                      to="/admin/shop/add-snacks"
-                      className="block px-4 py-3 text-sm hover:bg-gray-50 border-b"
-                      onClick={() => setShowAddMenu(false)}
-                    >
-                      Add Snack
-                    </Link>
-                    <Link
-                      to="/admin/shop/add-drinks"
-                      className="block px-4 py-3 text-sm hover:bg-gray-50"
-                      onClick={() => setShowAddMenu(false)}
-                    >
-                      Add Drink
-                    </Link>
+                    {(() => {
+                      const stored = (() => {
+                        try {
+                          return JSON.parse(localStorage.getItem("admin_categories_v1") || "{}");
+                        } catch (e) {
+                          return {};
+                        }
+                      })();
+                      const list = Array.isArray(stored.list) ? stored.list : [];
+                      const merged = Array.from(new Set(["Meals", "Snacks", "Beverages", ...list]));
+                      return merged.map((c, idx) => (
+                        <Link
+                          key={c + idx}
+                          to={`/admin/shop/add/${encodeURIComponent(c)}`}
+                          className={`block px-4 py-3 text-sm hover:bg-gray-50 ${idx < merged.length - 1 ? 'border-b' : ''}`}
+                          onClick={() => setShowAddMenu(false)}
+                        >
+                          Add {c}
+                        </Link>
+                      ));
+                    })()}
                   </div>
                 </>
               )}
             </div>
 
-            {/* Desktop: Individual buttons */}
-            <Link
-              to="/admin/shop/add-rice"
-              className="hidden md:inline-flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 text-sm"
-            >
-              <PlusCircle className="w-4 h-4" />
-              Add Rice Meal
-            </Link>
-            <Link
-              to="/admin/shop/add-snacks"
-              className="hidden md:inline-flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 text-sm"
-            >
-              <PlusCircle className="w-4 h-4" />
-              Add Snack
-            </Link>
-            <Link
-              to="/admin/shop/add-drinks"
-              className="hidden md:inline-flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 text-sm"
-            >
-              <PlusCircle className="w-4 h-4" />
-              Add Drink
-            </Link>
+            {/* Desktop: Individual buttons generated from stored categories */}
+            {(() => {
+              const stored = (() => {
+                try {
+                  return JSON.parse(localStorage.getItem("admin_categories_v1") || "{}");
+                } catch (e) {
+                  return {};
+                }
+              })();
+              const list = Array.isArray(stored.list) ? stored.list : [];
+              const merged = Array.from(new Set(["Meals", "Snacks", "Beverages", ...list]));
+              return merged.map((c) => (
+                <Link
+                  key={c}
+                  to={`/admin/shop/add/${encodeURIComponent(c)}`}
+                  className="hidden md:inline-flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 text-sm"
+                >
+                  <PlusCircle className="w-4 h-4" />
+                  Add {c}
+                </Link>
+              ));
+            })()}
 
             {/* Edit Items button (all screens) */}
             <Link
