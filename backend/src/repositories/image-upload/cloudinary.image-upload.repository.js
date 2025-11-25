@@ -111,6 +111,7 @@ class CloudinaryImageUploadRepository extends BaseImageUploadRepository {
    */
   async delete(url) {
     if (!url || !this.isOwnUrl(url)) {
+      console.warn('[CloudinaryImageUpload] cannot delete, not own url:', url);
       return false;
     }
 
@@ -123,10 +124,14 @@ class CloudinaryImageUploadRepository extends BaseImageUploadRepository {
       // Extract public_id from URL
       const publicId = this.extractPublicId(url);
       if (!publicId) {
+        console.warn('[CloudinaryImageUpload] no public id found for url:', url);
         return false;
       }
 
-      const result = await cloudinary.uploader.destroy(publicId);
+      console.log(`[CloudinaryImageDelete] deleting ${publicId} -> ${url}`)
+
+      const result = await cloudinary.uploader.destroy(publicId, {invalidate: true });
+      console.log('[CloudinaryImageUpload] image delete operation done with delete result:', result);
       return result.result === 'ok' || result.result === 'not found';
     } catch (error) {
       console.error('[CloudinaryImageUpload] Delete error:', error);
