@@ -96,8 +96,8 @@ const coloredMorgan = morgan((tokens, req, res) => {
     `${colors.dim}${contentLength || '-'}${colors.reset}`,
     `${colors.dim}"${referrer || '-'}"${colors.reset}`,
     '\n',
-    `${colors.dim}"${userAgent}"${colors.reset}`,
-    '\n',
+    // `${colors.dim}"${userAgent}"${colors.reset}`,
+    // '\n',
   ].join(' ');
 
   return logLine;
