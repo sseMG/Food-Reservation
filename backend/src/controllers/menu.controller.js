@@ -1,4 +1,5 @@
 ﻿const RepositoryFactory = require("../repositories/repository.factory");
+const ImageUploadFactory = require("../repositories/image-upload/image-upload.factory");
 
 exports.list = async (req, res) => {
   try {
@@ -41,12 +42,32 @@ exports.update = async (req, res) => {
     const id = req.params.id;
     const payload = { ...(req.body || {}) };
     
+    // Get existing item to check for old image
+    const existing = await menuRepo.findById(id);
+    if (!existing) {
+      return res.status(404).json({ error: "Menu item id for update not found" });
+    }
+
+    // Handle image upload and delete old image if new one is provided
     if (req.file) {
-      if (req.file.filename) {
-        payload.img = payload.img || `/uploads/${req.file.filename}`;
-      } else if (req.file.path) {
-        payload.img = payload.img || req.file.path;
+      const imageRepo = ImageUploadFactory.getRepository();
+      
+      // Delete old image if it exists
+      if (existing.img) {
+        try {
+          await imageRepo.delete(existing.img);
+        } catch (err) {
+          console.error("[MENU] Failed to delete old menu image after update:", err);
+          // Continue even if delete fails
+        }
       }
+      
+      // Upload new image using repository pattern
+      const result = await imageRepo.upload(req.file, {
+        prefix: existing.name ? existing.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") : "item",
+        folder: 'menu'
+      });
+      payload.img = result.url;
     }
 
     if (payload.price != null) payload.price = Number(payload.price);
@@ -77,6 +98,23 @@ exports.remove = async (req, res) => {
   try {
     const menuRepo = RepositoryFactory.getMenuRepository();
     const id = req.params.id;
+    
+    // Get existing item to check for associated image
+    const existing = await menuRepo.findById(id);
+    if (!existing) {
+      return res.status(404).json({ error: "Menu item id for remove not found" });
+    }
+
+    // Delete associated image if it exists
+    if (existing.img) {
+      try {
+        const imageRepo = ImageUploadFactory.getRepository();
+        await imageRepo.delete(existing.img);
+      } catch (err) {
+        console.error("[MENU] Failed to delete associated menu image after remove:", err);
+        // Continue even if delete fails
+      }
+    }
     
     const result = await menuRepo.delete(id);
     if (!result) {
