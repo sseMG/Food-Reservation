@@ -42,7 +42,7 @@ export default function BottomNav({ badgeCounts = {} }) {
   const moreItems = [
     { to: "/topup", label: "Top-Up", Icon: Wallet },
     { to: "/topup-history", label: "Top-Up History", Icon: History },
-    { to: "/security", label: "Security", Icon: Shield },
+    { to: "/profile/security", label: "Security", Icon: Shield },
   ];
 
   const prefetch = (url) => {
