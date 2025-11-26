@@ -127,7 +127,12 @@ export default function AdminInventory() {
     return rows;
   }, [items, q, cat, status, sort]);
 
-  const lowStock = useMemo(() => items.filter((i) => Number(i.stock) <= LOW_STOCK_THRESHOLD), [items]);
+  // Low stock: strictly greater than 0 and less than or equal to threshold
+  const lowStock = useMemo(() => items.filter((i) => {
+    const s = Number(i.stock);
+    return s > 0 && s <= LOW_STOCK_THRESHOLD;
+  }), [items]);
+  // Out of stock: exactly 0
   const outOfStock = useMemo(() => items.filter((i) => Number(i.stock) === 0), [items]);
   const totalStock = useMemo(() => items.reduce((sum, i) => sum + Number(i.stock), 0), [items]);
 

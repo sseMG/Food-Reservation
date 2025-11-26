@@ -74,13 +74,13 @@
       "name": "Chocolate Cake Slice",
       "category": "Desserts",
       "price": 80,
-      "stock": 19,
+      "stock": 7,
       "img": "/uploads/chocolate-cake-slice-1764044048785_538685.jpg",
       "isActive": true,
       "visible": true,
       "deleted": false,
       "createdAt": "2025-11-25T04:14:08.789Z",
-      "updatedAt": "2025-11-25T04:34:15.702Z"
+      "updatedAt": "2025-11-26T12:09:29.992Z"
     },
     {
       "id": "ITM_1764044595710",
@@ -100,13 +100,13 @@
       "name": "Cold Cappuccino Coffee",
       "category": "Cold Drinks",
       "price": 140,
-      "stock": 9,
+      "stock": 0,
       "img": "/uploads/cold-cappuccino-coffee-1764044849230_494469.jpg",
       "isActive": true,
       "visible": true,
       "deleted": false,
       "createdAt": "2025-11-25T04:27:29.234Z",
-      "updatedAt": "2025-11-25T04:34:15.711Z"
+      "updatedAt": "2025-11-26T11:59:34.402Z"
     }
   ],
   "reservations": [
@@ -213,7 +213,7 @@
         "grade": "",
         "section": ""
       },
-      "read": false,
+      "read": true,
       "createdAt": "2025-11-26T01:03:46.360Z"
     },
     {
