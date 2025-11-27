@@ -24,22 +24,53 @@
       "updatedAt": "2025-11-25T04:34:15.700Z"
     },
     {
-      "id": "usr_mifax4fr",
+      "id": "usr_migylvcy",
       "name": "Anmol David Das",
       "email": "spadymold@gmail.com",
-      "passwordHash": "$2a$10$bZ8Roh6eS3xJps/LkQm0W.zvETVm3M1CETFzH02pOYveQD750rk0W",
+      "passwordHash": "$2a$10$1tENT.NNV7J/aTnlSXtsueltsHjl4o0ixWIe//FneXIsW0ib/ktmW",
+      "role": "student",
+      "grade": "",
+      "section": "",
+      "balance": 770,
+      "studentId": "202231211",
+      "phone": "09688523253",
+      "status": "approved",
+      "approvalNotes": "Congratulations!",
+      "createdAt": "2025-11-27T04:54:38.338Z",
+      "updatedAt": "2025-11-27T13:20:21.045Z",
+      "profilePictureUrl": "/uploads/profile-usr_migylvcy-1764220241693_331481.jpg"
+    },
+    {
+      "id": "usr_mih0aoeu",
+      "name": "Sean THOUGHTs",
+      "email": "syantut0617@gmail.com",
+      "passwordHash": "$2a$10$MkOsDMPyIyPlbV/QYWgDXOBbzKjZvFROTR1KQ9o0f.dn3ytfeCFkG",
       "role": "student",
       "grade": "",
       "section": "",
       "balance": 0,
-      "studentId": "1646523389",
+      "studentId": "202080183",
+      "phone": "09690336526",
+      "status": "approved",
+      "approvalNotes": "",
+      "createdAt": "2025-11-27T05:41:55.350Z",
+      "updatedAt": "2025-11-27T05:43:32.705Z"
+    },
+    {
+      "id": "usr_mihcp1j1",
+      "name": "King Shindeiru",
+      "email": "kingshindeiru@gmail.com",
+      "passwordHash": "$2a$10$ZBqccNN9B8OKgfkcrKqtZuGGRNJj78dmMCzEmxRx8YclEQNByBDye",
+      "role": "student",
+      "grade": "",
+      "section": "",
+      "balance": 0,
+      "studentId": "20230008",
       "phone": "09688523253",
-      "createdAt": "2025-11-26T01:03:46.359Z",
-      "updatedAt": "2025-11-26T01:04:03.797Z",
-      "passwordReset": {
-        "token": "8m284qvbfq0ihtky4700jd",
-        "expiresAt": "2025-11-26T02:04:03.795Z"
-      }
+      "status": "approved",
+      "approvalNotes": "",
+      "createdAt": "2025-11-27T11:29:00.925Z",
+      "updatedAt": "2025-11-27T11:29:13.934Z"
     }
   ],
   "menu": [
@@ -54,7 +85,7 @@
       "visible": true,
       "deleted": false,
       "createdAt": "2025-11-25T04:00:47.803Z",
-      "updatedAt": "2025-11-25T04:01:04.182Z"
+      "updatedAt": "2025-11-27T13:20:21.050Z"
     },
     {
       "id": "ITM_1764043429971",
@@ -67,46 +98,46 @@
       "visible": true,
       "deleted": false,
       "createdAt": "2025-11-25T04:03:49.971Z",
-      "updatedAt": "2025-11-25T04:34:15.708Z"
+      "updatedAt": "2025-11-27T13:20:21.056Z"
     },
     {
       "id": "ITM_1764044048789",
       "name": "Chocolate Cake Slice",
       "category": "Desserts",
       "price": 80,
-      "stock": 7,
+      "stock": 6,
       "img": "/uploads/chocolate-cake-slice-1764044048785_538685.jpg",
       "isActive": true,
       "visible": true,
       "deleted": false,
       "createdAt": "2025-11-25T04:14:08.789Z",
-      "updatedAt": "2025-11-26T12:09:29.992Z"
+      "updatedAt": "2025-11-27T11:38:48.767Z"
     },
     {
       "id": "ITM_1764044595710",
       "name": "Cappuccino heart coffee",
       "category": "Warm Drink",
       "price": 150,
-      "stock": 9,
+      "stock": 8,
       "img": "/uploads/cappuccino-heart-coffee-1764044595705_619897.jpg",
       "isActive": true,
       "visible": true,
       "deleted": false,
       "createdAt": "2025-11-25T04:23:15.710Z",
-      "updatedAt": "2025-11-25T04:34:15.714Z"
+      "updatedAt": "2025-11-27T11:38:48.762Z"
     },
     {
       "id": "ITM_1764044849234",
       "name": "Cold Cappuccino Coffee",
       "category": "Cold Drinks",
       "price": 140,
-      "stock": 0,
+      "stock": 3,
       "img": "/uploads/cold-cappuccino-coffee-1764044849230_494469.jpg",
       "isActive": true,
       "visible": true,
       "deleted": false,
       "createdAt": "2025-11-25T04:27:29.234Z",
-      "updatedAt": "2025-11-26T11:59:34.402Z"
+      "updatedAt": "2025-11-27T11:57:37.794Z"
     }
   ],
   "reservations": [
@@ -152,6 +183,70 @@
       "stockDeducted": true,
       "createdAt": "2025-11-25T04:34:15.718Z",
       "updatedAt": "2025-11-25T04:37:17.304Z"
+    },
+    {
+      "id": "RES_mihd1n3zkl",
+      "userId": "usr_migylvcy",
+      "student": "Anmol David Das",
+      "grade": "G10",
+      "section": "Proverbs",
+      "when": "lunch",
+      "note": "",
+      "items": [
+        {
+          "id": "ITM_1764044595710",
+          "name": "Cappuccino heart coffee",
+          "price": 150,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764044048789",
+          "name": "Chocolate Cake Slice",
+          "price": 80,
+          "qty": 1
+        }
+      ],
+      "total": 230,
+      "status": "Claimed",
+      "transactionId": "txn_mihd1n41",
+      "charged": true,
+      "chargedAt": "2025-11-27T11:38:48.767Z",
+      "stockDeducted": true,
+      "createdAt": "2025-11-27T11:38:48.771Z",
+      "updatedAt": "2025-11-27T11:57:46.590Z"
+    },
+    {
+      "id": "RES_mihgnuox9u",
+      "userId": "usr_migylvcy",
+      "student": "Anmol David Das",
+      "grade": "G10",
+      "section": "Proverbs",
+      "when": "recess",
+      "note": "",
+      "items": [
+        {
+          "id": "ITM_1764043247803",
+          "name": "Cookies",
+          "price": 10,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764043429971",
+          "name": "Popcorn",
+          "price": 40,
+          "qty": 1
+        }
+      ],
+      "total": 50,
+      "status": "Rejected",
+      "transactionId": "txn_mihgnup0",
+      "charged": true,
+      "chargedAt": "2025-11-27T13:20:03.873Z",
+      "stockDeducted": true,
+      "createdAt": "2025-11-27T13:20:03.879Z",
+      "updatedAt": "2025-11-27T13:20:21.064Z",
+      "refunded": true,
+      "refundTransactionId": "txn_mihgo7yc"
     }
   ],
   "topups": [
@@ -172,6 +267,24 @@
       "updatedAt": "2025-11-25T04:32:55.192Z",
       "credited": true,
       "creditedAt": "2025-11-25T04:32:55.180Z"
+    },
+    {
+      "id": "top_mihctgkb",
+      "userId": "usr_migylvcy",
+      "student": "Anmol David Das",
+      "studentId": "202231211",
+      "contact": "09688523253",
+      "email": "spadymold@gmail.com",
+      "provider": "gcash",
+      "amount": 1000,
+      "reference": "234234255",
+      "status": "Approved",
+      "proofUrl": "/uploads/topup-usr_migylvcy-1764243147030_484608.png",
+      "submittedAt": "2025-11-27T11:32:27.026Z",
+      "createdAt": "2025-11-27T11:32:27.035Z",
+      "updatedAt": "2025-11-27T11:32:45.313Z",
+      "credited": true,
+      "creditedAt": "2025-11-27T11:32:45.288Z"
     }
   ],
   "transactions": [
@@ -194,9 +307,656 @@
       "direction": "debit",
       "status": "Success",
       "createdAt": "2025-11-25T04:34:15.716Z"
+    },
+    {
+      "id": "txn_mihctuny",
+      "userId": "usr_migylvcy",
+      "type": "TopUp",
+      "amount": 1000,
+      "reference": "234234255",
+      "topupId": "top_mihctgkb",
+      "status": "Success",
+      "createdAt": "2025-11-27T11:32:45.310Z"
+    },
+    {
+      "id": "txn_mihd1n41",
+      "userId": "usr_migylvcy",
+      "title": "Reservation Hold",
+      "ref": "RES_mihd1n3zkl",
+      "amount": 230,
+      "direction": "debit",
+      "status": "Success",
+      "createdAt": "2025-11-27T11:38:48.769Z"
+    },
+    {
+      "id": "txn_mihgnup0",
+      "userId": "usr_migylvcy",
+      "title": "Reservation Hold",
+      "ref": "RES_mihgnuox9u",
+      "amount": 50,
+      "direction": "debit",
+      "status": "Pending",
+      "createdAt": "2025-11-27T13:20:03.876Z"
+    },
+    {
+      "id": "txn_mihgo7yc",
+      "userId": "usr_migylvcy",
+      "title": "Refund",
+      "ref": "RES_mihgnuox9u",
+      "amount": 50,
+      "direction": "credit",
+      "status": "Success",
+      "createdAt": "2025-11-27T13:20:21.060Z"
     }
   ],
   "notifications": [
+    {
+      "id": "notif_mihgo7yi",
+      "for": "usr_migylvcy",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_mihgnuox9u Rejected",
+      "body": "Your reservation RES_mihgnuox9u has been rejected. Refund has been applied.",
+      "data": {
+        "reservationId": "RES_mihgnuox9u",
+        "status": "Rejected",
+        "items": [
+          {
+            "id": "ITM_1764043247803",
+            "name": "Cookies",
+            "price": 10,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764043429971",
+            "name": "Popcorn",
+            "price": 40,
+            "qty": 1
+          }
+        ],
+        "total": 50,
+        "note": "",
+        "slot": "recess",
+        "grade": "G10",
+        "section": "Proverbs",
+        "student": "Anmol David Das"
+      },
+      "read": true,
+      "createdAt": "2025-11-27T13:20:21.066Z"
+    },
+    {
+      "id": "notif_mihgnup4",
+      "for": "admin",
+      "actor": {
+        "id": "usr_migylvcy",
+        "name": "Anmol David Das",
+        "email": "spadymold@gmail.com",
+        "profilePictureUrl": "/uploads/profile-usr_migylvcy-1764220241693_331481.jpg"
+      },
+      "type": "reservation:created",
+      "title": "New reservation submitted",
+      "body": "Anmol David Das submitted a reservation",
+      "data": {
+        "reservationId": "RES_mihgnuox9u",
+        "items": [
+          {
+            "id": "ITM_1764043247803",
+            "name": "Cookies",
+            "price": 10,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764043429971",
+            "name": "Popcorn",
+            "price": 40,
+            "qty": 1
+          }
+        ],
+        "total": 50,
+        "note": "",
+        "slot": "recess",
+        "grade": "G10",
+        "section": "Proverbs",
+        "student": "Anmol David Das"
+      },
+      "read": true,
+      "createdAt": "2025-11-27T13:20:03.879Z"
+    },
+    {
+      "id": "notif_mihdq128",
+      "for": "usr_migylvcy",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_mihd1n3zkl Claimed",
+      "body": "Your reservation RES_mihd1n3zkl is now Claimed.",
+      "data": {
+        "reservationId": "RES_mihd1n3zkl",
+        "status": "Claimed"
+      },
+      "read": true,
+      "createdAt": "2025-11-27T11:57:46.592Z"
+    },
+    {
+      "id": "notif_mihdq07w",
+      "for": "usr_migylvcy",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_mihd1n3zkl Ready",
+      "body": "Your reservation RES_mihd1n3zkl is now Ready.",
+      "data": {
+        "reservationId": "RES_mihd1n3zkl",
+        "status": "Ready"
+      },
+      "read": true,
+      "createdAt": "2025-11-27T11:57:45.500Z"
+    },
+    {
+      "id": "notif_mihdpzwc",
+      "for": "usr_migylvcy",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_mihd1n3zkl Preparing",
+      "body": "Your reservation RES_mihd1n3zkl is now Preparing.",
+      "data": {
+        "reservationId": "RES_mihd1n3zkl",
+        "status": "Preparing"
+      },
+      "read": true,
+      "createdAt": "2025-11-27T11:57:45.084Z"
+    },
+    {
+      "id": "notif_mihd2a27",
+      "for": "usr_migylvcy",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_mihd1n3zkl Approved",
+      "body": "Your reservation RES_mihd1n3zkl has been approved.",
+      "data": {
+        "reservationId": "RES_mihd1n3zkl",
+        "status": "Approved",
+        "items": [
+          {
+            "id": "ITM_1764044595710",
+            "name": "Cappuccino heart coffee",
+            "price": 150,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764044048789",
+            "name": "Chocolate Cake Slice",
+            "price": 80,
+            "qty": 1
+          }
+        ],
+        "total": 230,
+        "note": "",
+        "slot": "lunch",
+        "grade": "G10",
+        "section": "Proverbs",
+        "student": "Anmol David Das",
+        "transactionId": "txn_mihd1n41"
+      },
+      "read": true,
+      "createdAt": "2025-11-27T11:39:18.511Z"
+    },
+    {
+      "id": "notif_mihd1n44",
+      "for": "admin",
+      "actor": {
+        "id": "usr_migylvcy",
+        "name": "Anmol David Das",
+        "email": "spadymold@gmail.com",
+        "profilePictureUrl": "/uploads/profile-usr_migylvcy-1764220241693_331481.jpg"
+      },
+      "type": "reservation:created",
+      "title": "New reservation submitted",
+      "body": "Anmol David Das submitted a reservation",
+      "data": {
+        "reservationId": "RES_mihd1n3zkl",
+        "items": [
+          {
+            "id": "ITM_1764044595710",
+            "name": "Cappuccino heart coffee",
+            "price": 150,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764044048789",
+            "name": "Chocolate Cake Slice",
+            "price": 80,
+            "qty": 1
+          }
+        ],
+        "total": 230,
+        "note": "",
+        "slot": "lunch",
+        "grade": "G10",
+        "section": "Proverbs",
+        "student": "Anmol David Das"
+      },
+      "read": true,
+      "createdAt": "2025-11-27T11:38:48.771Z"
+    },
+    {
+      "id": "notif_mihctuo2",
+      "for": "usr_migylvcy",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "topup:status",
+      "title": "Top-up Approved",
+      "body": "Your top-up request for ₱1,000.00 was approved",
+      "data": {
+        "topupId": "top_mihctgkb",
+        "status": "Approved",
+        "amount": 1000,
+        "rejectionReason": null
+      },
+      "read": true,
+      "createdAt": "2025-11-27T11:32:45.314Z"
+    },
+    {
+      "id": "notif_mihctgkg",
+      "for": "admin",
+      "actor": {
+        "id": "usr_migylvcy",
+        "name": "Anmol David Das",
+        "email": "spadymold@gmail.com",
+        "profilePictureUrl": "/uploads/profile-usr_migylvcy-1764220241693_331481.jpg"
+      },
+      "type": "topup:created",
+      "title": "New Top-up Request",
+      "body": "Anmol David Das submitted a top-up request for ₱1,000.00",
+      "data": {
+        "topupId": "top_mihctgkb",
+        "amount": 1000,
+        "provider": "gcash",
+        "studentId": "202231211",
+        "reference": "234234255",
+        "student": {
+          "name": "Anmol David Das",
+          "contact": "09688523253",
+          "email": "spadymold@gmail.com"
+        }
+      },
+      "read": true,
+      "createdAt": "2025-11-27T11:32:27.026Z"
+    },
+    {
+      "id": "notif_mihcpdtm",
+      "for": "usr_mihcp1j1",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "student:approved",
+      "title": "Registration Approved!",
+      "body": "Congratulations! Your registration has been approved. You can now log in to the system.",
+      "data": {
+        "status": "approved"
+      },
+      "read": true,
+      "createdAt": "2025-11-27T11:29:16.858Z"
+    },
+    {
+      "id": "notif_mihcp1j2",
+      "for": "admin",
+      "actor": null,
+      "type": "student:pending-approval",
+      "title": "New Student Registration Pending Approval: King Shindeiru",
+      "body": "A new student registration requires approval.\n\nName: King Shindeiru\nStudent ID: 20230008\nEmail: kingshindeiru@gmail.com\nPhone: 09688523253\n\nPlease review and approve or reject this registration.",
+      "data": {
+        "userId": "usr_mihcp1j1",
+        "studentName": "King Shindeiru",
+        "studentId": "20230008",
+        "email": "kingshindeiru@gmail.com",
+        "phone": "09688523253",
+        "grade": "",
+        "section": "",
+        "status": "pending"
+      },
+      "read": true,
+      "createdAt": "2025-11-27T11:29:00.926Z"
+    },
+    {
+      "id": "notif_mihc9j11",
+      "for": "usr_mihc8ff7",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "student:approved",
+      "title": "Registration Approved!",
+      "body": "Congratulations! Your registration has been approved. You can now log in to the system.",
+      "data": {
+        "status": "approved"
+      },
+      "read": false,
+      "createdAt": "2025-11-27T11:16:57.109Z"
+    },
+    {
+      "id": "notif_mihc8ff9",
+      "for": "admin",
+      "actor": null,
+      "type": "student:pending-approval",
+      "title": "New Student Registration Pending Approval: King Shindeiru",
+      "body": "A new student registration requires approval.\n\nName: King Shindeiru\nStudent ID: 20230008\nEmail: kingshindeiru@gmail.com\nPhone: 09688523253\n\nPlease review and approve or reject this registration.",
+      "data": {
+        "userId": "usr_mihc8ff7",
+        "studentName": "King Shindeiru",
+        "studentId": "20230008",
+        "email": "kingshindeiru@gmail.com",
+        "phone": "09688523253",
+        "grade": "",
+        "section": "",
+        "status": "pending"
+      },
+      "read": true,
+      "createdAt": "2025-11-27T11:16:05.781Z"
+    },
+    {
+      "id": "notif_mihblixq",
+      "for": "admin",
+      "actor": null,
+      "type": "student:pending-approval",
+      "title": "New Student Registration Pending Approval: David Lian Tan",
+      "body": "A new student registration requires approval.\n\nName: David Lian Tan\nStudent ID: 202255566\nEmail: David@gmail.com\nPhone: +639453185798\n\nPlease review and approve or reject this registration.",
+      "data": {
+        "userId": "usr_mihblixp",
+        "studentName": "David Lian Tan",
+        "studentId": "202255566",
+        "email": "David@gmail.com",
+        "phone": "+639453185798",
+        "grade": "",
+        "section": "",
+        "status": "pending"
+      },
+      "read": true,
+      "createdAt": "2025-11-27T10:58:17.246Z"
+    },
+    {
+      "id": "notif_mih0ctvd",
+      "for": "usr_mih0aoeu",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "student:approved",
+      "title": "Registration Approved!",
+      "body": "Congratulations! Your registration has been approved. You can now log in to the system.",
+      "data": {
+        "status": "approved"
+      },
+      "read": false,
+      "createdAt": "2025-11-27T05:43:35.737Z"
+    },
+    {
+      "id": "notif_mih0aoev",
+      "for": "admin",
+      "actor": null,
+      "type": "student:pending-approval",
+      "title": "New Student Registration Pending Approval: Sean THOUGHTs",
+      "body": "A new student registration requires approval.\n\nName: Sean THOUGHTs\nStudent ID: 202080183\nEmail: syantut0617@gmail.com\nPhone: 09690336526\n\nPlease review and approve or reject this registration.",
+      "data": {
+        "userId": "usr_mih0aoeu",
+        "studentName": "Sean THOUGHTs",
+        "studentId": "202080183",
+        "email": "syantut0617@gmail.com",
+        "phone": "09690336526",
+        "grade": "",
+        "section": "",
+        "status": "pending"
+      },
+      "read": true,
+      "createdAt": "2025-11-27T05:41:55.351Z"
+    },
+    {
+      "id": "notif_mih014rc",
+      "for": "admin",
+      "actor": null,
+      "type": "student:pending-approval",
+      "title": "New Student Registration Pending Approval: Sean tuts",
+      "body": "A new student registration requires approval.\n\nName: Sean tuts\nStudent ID: 202080187\nEmail: showdowstormseanx3g@gmail.com\nPhone: 09690336526\n\nPlease review and approve or reject this registration.",
+      "data": {
+        "userId": "usr_mih014rb",
+        "studentName": "Sean tuts",
+        "studentId": "202080187",
+        "email": "showdowstormseanx3g@gmail.com",
+        "phone": "09690336526",
+        "grade": "",
+        "section": "",
+        "status": "pending"
+      },
+      "read": true,
+      "createdAt": "2025-11-27T05:34:29.976Z"
+    },
+    {
+      "id": "notif_migzw6tg",
+      "for": "admin",
+      "actor": null,
+      "type": "student:pending-approval",
+      "title": "New Student Registration Pending Approval: King Shindeiru",
+      "body": "A new student registration requires approval.\n\nName: King Shindeiru\nStudent ID: 202293841\nEmail: kingshindeiru@gmail.com\nPhone: 09685558594\n\nPlease review and approve or reject this registration.",
+      "data": {
+        "userId": "usr_migzw6te",
+        "studentName": "King Shindeiru",
+        "studentId": "202293841",
+        "email": "kingshindeiru@gmail.com",
+        "phone": "09685558594",
+        "grade": "",
+        "section": "",
+        "status": "pending"
+      },
+      "read": true,
+      "createdAt": "2025-11-27T05:30:39.364Z"
+    },
+    {
+      "id": "notif_migzl9py",
+      "for": "admin",
+      "actor": null,
+      "type": "student:pending-approval",
+      "title": "New Student Registration Pending Approval: King Shindeiru",
+      "body": "A new student registration requires approval.\n\nName: King Shindeiru\nStudent ID: 202235666\nEmail: kingshindeiru@gmail.com\nPhone: 09685558594\n\nPlease review and approve or reject this registration.",
+      "data": {
+        "userId": "usr_migzl9px",
+        "studentName": "King Shindeiru",
+        "studentId": "202235666",
+        "email": "kingshindeiru@gmail.com",
+        "phone": "09685558594",
+        "grade": "",
+        "section": "",
+        "status": "pending"
+      },
+      "read": true,
+      "createdAt": "2025-11-27T05:22:09.910Z"
+    },
+    {
+      "id": "notif_migz7s8j",
+      "for": "admin",
+      "actor": null,
+      "type": "student:pending-approval",
+      "title": "New Student Registration Pending Approval: King Shindeiru",
+      "body": "A new student registration requires approval.\n\nName: King Shindeiru\nStudent ID: 202231244\nEmail: kingshindeiru@gmail.com\nPhone: 09685558594\n\nPlease review and approve or reject this registration.",
+      "data": {
+        "userId": "usr_migz7s8i",
+        "studentName": "King Shindeiru",
+        "studentId": "202231244",
+        "email": "kingshindeiru@gmail.com",
+        "phone": "09685558594",
+        "grade": "",
+        "section": "",
+        "status": "pending"
+      },
+      "read": true,
+      "createdAt": "2025-11-27T05:11:40.723Z"
+    },
+    {
+      "id": "notif_migz6ip0",
+      "for": "usr_migylvcy",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "admin:profile-note",
+      "title": "Message from Admin",
+      "body": "Hi",
+      "data": {
+        "note": "Hi"
+      },
+      "read": true,
+      "createdAt": "2025-11-27T05:10:41.700Z"
+    },
+    {
+      "id": "notif_migz1zor",
+      "for": "usr_migz09r2",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "student:rejected",
+      "title": "Registration Status Update",
+      "body": "Your registration has been reviewed and cannot be approved at this time. Please contact support for more information.",
+      "data": {
+        "status": "rejected",
+        "reason": ""
+      },
+      "read": false,
+      "createdAt": "2025-11-27T05:07:10.443Z"
+    },
+    {
+      "id": "notif_migz09r3",
+      "for": "admin",
+      "actor": null,
+      "type": "student:pending-approval",
+      "title": "New Student Registration Pending Approval: King Shindeiru",
+      "body": "A new student registration requires approval.\n\nName: King Shindeiru\nStudent ID: 200033945\nEmail: kingshindeiru@gmail.com\nPhone: 09685558594\n\nPlease review and approve or reject this registration.",
+      "data": {
+        "userId": "usr_migz09r2",
+        "studentName": "King Shindeiru",
+        "studentId": "200033945",
+        "email": "kingshindeiru@gmail.com",
+        "phone": "09685558594",
+        "grade": "",
+        "section": "",
+        "status": "pending"
+      },
+      "read": true,
+      "createdAt": "2025-11-27T05:05:50.175Z"
+    },
+    {
+      "id": "notif_migyxqzx",
+      "for": "usr_migyw55d",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "student:approved",
+      "title": "Registration Approved!",
+      "body": "Congratulations! Your registration has been approved. You can now log in to the system.",
+      "data": {
+        "status": "approved"
+      },
+      "read": false,
+      "createdAt": "2025-11-27T05:03:52.557Z"
+    },
+    {
+      "id": "notif_migyw55e",
+      "for": "admin",
+      "actor": null,
+      "type": "student:pending-approval",
+      "title": "New Student Registration Pending Approval: King Shindeiru",
+      "body": "A new student registration requires approval.\n\nName: King Shindeiru\nStudent ID: 202294444\nEmail: kingshindeiru@gmail.com\nPhone: 09685558594\n\nPlease review and approve or reject this registration.",
+      "data": {
+        "userId": "usr_migyw55d",
+        "studentName": "King Shindeiru",
+        "studentId": "202294444",
+        "email": "kingshindeiru@gmail.com",
+        "phone": "09685558594",
+        "grade": "",
+        "section": "",
+        "status": "pending"
+      },
+      "read": true,
+      "createdAt": "2025-11-27T05:02:37.586Z"
+    },
+    {
+      "id": "notif_migynewe",
+      "for": "usr_migylvcy",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "student:approved",
+      "title": "Registration Approved!",
+      "body": "Congratulations! Your registration has been approved. You can now log in to the system.",
+      "data": {
+        "status": "approved"
+      },
+      "read": true,
+      "createdAt": "2025-11-27T04:55:50.318Z"
+    },
+    {
+      "id": "notif_migylvcz",
+      "for": "admin",
+      "actor": null,
+      "type": "student:pending-approval",
+      "title": "New Student Registration Pending Approval: Anmol David Das",
+      "body": "A new student registration requires approval.\n\nName: Anmol David Das\nStudent ID: 202231211\nEmail: spadymold@gmail.com\nPhone: 09688523253\n\nPlease review and approve or reject this registration.",
+      "data": {
+        "userId": "usr_migylvcy",
+        "studentName": "Anmol David Das",
+        "studentId": "202231211",
+        "email": "spadymold@gmail.com",
+        "phone": "09688523253",
+        "grade": "",
+        "section": "",
+        "status": "pending"
+      },
+      "read": true,
+      "createdAt": "2025-11-27T04:54:38.339Z"
+    },
     {
       "id": "notif_mifax4fs",
       "for": "admin",
@@ -463,6 +1223,27 @@
       "items": [],
       "createdAt": "2025-11-26T01:04:28.091Z",
       "updatedAt": "2025-11-26T01:04:28.091Z"
+    },
+    {
+      "id": "cart_migy8989",
+      "userId": "usr_mifax4fr",
+      "items": [],
+      "createdAt": "2025-11-27T04:44:03.129Z",
+      "updatedAt": "2025-11-27T04:44:03.129Z"
+    },
+    {
+      "id": "cart_migz6n2g",
+      "userId": "usr_migylvcy",
+      "items": [],
+      "createdAt": "2025-11-27T05:10:47.368Z",
+      "updatedAt": "2025-11-27T13:20:06.605Z"
+    },
+    {
+      "id": "cart_mihd657a",
+      "userId": "usr_mihcp1j1",
+      "items": [],
+      "createdAt": "2025-11-27T11:42:18.838Z",
+      "updatedAt": "2025-11-27T11:42:18.838Z"
     }
   ]
 }

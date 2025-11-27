@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const Notifications = require('./notifications.controller');
 const RepositoryFactory = require('../repositories/repository.factory');
 const ImageUploadFactory = require('../repositories/image-upload/image-upload.factory');
+const EmailService = require('../lib/emailService');
 
 const TOKEN_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
@@ -167,5 +168,100 @@ exports.deleteUser = async (req, res) => {
   } catch (err) {
     console.error("[ADMIN.USERS] deleteUser error:", err);
     res.status(500).json({ error: "Failed to delete user" });
+  }
+};
+
+// POST /admin/users/:id/approve - Approve a pending student registration
+exports.approveUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { approvalNotes } = req.body || {};
+
+    if (!id) return res.status(400).json({ error: "Missing user id" });
+
+    const userRepo = RepositoryFactory.getUserRepository();
+    const user = await userRepo.findById(id);
+    
+    if (!user) return res.status(404).json({ error: "User not found" });
+    if (user.role !== "student") {
+      return res.status(400).json({ error: "Only student accounts can be approved" });
+    }
+    if (user.status === "approved") {
+      return res.status(400).json({ error: "User is already approved" });
+    }
+
+    // Update user status to approved
+    const updated = await userRepo.update(id, {
+      status: "approved",
+      approvalNotes: String(approvalNotes || "").trim()
+    });
+
+    if (!updated) return res.status(404).json({ error: "User not found" });
+
+    // Send approval email
+    try {
+      await EmailService.sendApprovalEmail(user.email, user.name);
+    } catch (err) {
+      console.error("[ADMIN.USERS] Failed to send approval email:", err && err.message);
+    }
+
+    // Send notification to user
+    try {
+      await Notifications.addNotification({
+        id: "notif_" + Date.now().toString(36),
+        for: user.id,
+        actor: req.user?.id || "admin",
+        type: "student:approved",
+        title: "Registration Approved!",
+        body: "Congratulations! Your registration has been approved. You can now log in to the system.",
+        data: { status: "approved" },
+        read: false,
+        createdAt: new Date().toISOString()
+      });
+    } catch (err) {
+      console.error("[ADMIN.USERS] Failed to create approval notification:", err && err.message);
+    }
+
+    res.json({ ok: true, message: "User approved successfully", user: { id: updated.id, status: updated.status } });
+  } catch (err) {
+    console.error("[ADMIN.USERS] approveUser error:", err);
+    res.status(500).json({ error: "Failed to approve user" });
+  }
+};
+
+// POST /admin/users/:id/reject - Reject a pending student registration
+exports.rejectUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { rejectionReason } = req.body || {};
+
+    if (!id) return res.status(400).json({ error: "Missing user id" });
+
+    const userRepo = RepositoryFactory.getUserRepository();
+    const user = await userRepo.findById(id);
+    
+    if (!user) return res.status(404).json({ error: "User not found" });
+    if (user.role !== "student") {
+      return res.status(400).json({ error: "Only student accounts can be rejected" });
+    }
+    if (user.status === "rejected") {
+      return res.status(400).json({ error: "User is already rejected" });
+    }
+
+    // Send rejection email BEFORE deleting the account
+    try {
+      await EmailService.sendRejectionEmail(user.email, user.name, String(rejectionReason || "").trim());
+    } catch (err) {
+      console.error("[ADMIN.USERS] Failed to send rejection email:", err && err.message);
+    }
+
+    // Delete the user account
+    const deleted = await userRepo.delete(id);
+    if (!deleted) return res.status(404).json({ error: "User not found" });
+
+    res.json({ ok: true, message: "Registration rejected and user account deleted successfully" });
+  } catch (err) {
+    console.error("[ADMIN.USERS] rejectUser error:", err);
+    res.status(500).json({ error: "Failed to reject user" });
   }
 };

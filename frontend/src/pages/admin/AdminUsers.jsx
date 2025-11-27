@@ -1,10 +1,9 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Link } from "react-router-dom";
 import Navbar from "../../components/adminavbar";
 import { api } from "../../lib/api";
 import { 
   Pencil, X, Trash, Search, ArrowUpDown, ArrowUp, ArrowDown,
-  Users, Filter, Loader2, Upload, Camera, UserCircle2
+  Users, Filter, Loader2, Upload, Camera, UserCircle2, Check, AlertCircle
 } from "lucide-react";
 
 const peso = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" });
@@ -62,8 +61,21 @@ export default function AdminUsers() {
   
   const [searchQuery, setSearchQuery] = useState("");
   const [filterZeroBalance, setFilterZeroBalance] = useState(false);
+  const [filterPendingOnly, setFilterPendingOnly] = useState(false);
   const [sortField, setSortField] = useState("name");
   const [sortOrder, setSortOrder] = useState("asc");
+  const [approvingIdInline, setApprovingIdInline] = useState(null);
+  const [rejectingIdInline, setRejectingIdInline] = useState(null);
+  
+  // Approval system state
+  const [approvingId, setApprovingId] = useState(null);
+  const [approvalForm, setApprovalForm] = useState({
+    approvalNotes: ''
+  });
+  const [rejectionForm, setRejectionForm] = useState({
+    rejectionReason: ''
+  });
+  const [selectedPendingUser, setSelectedPendingUser] = useState(null);
 
   const load = async () => {
     setLoading(true);
@@ -104,6 +116,10 @@ export default function AdminUsers() {
 
     if (filterZeroBalance) {
       result = result.filter(u => Number(u.balance || 0) === 0);
+    }
+
+    if (filterPendingOnly) {
+      result = result.filter(u => u.status === "pending");
     }
 
     if (searchQuery.trim()) {
@@ -160,7 +176,7 @@ export default function AdminUsers() {
     });
 
     return result;
-  }, [users, searchQuery, filterZeroBalance, sortField, sortOrder]);
+  }, [users, searchQuery, filterZeroBalance, filterPendingOnly, sortField, sortOrder]);
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -277,6 +293,76 @@ export default function AdminUsers() {
     );
   };
 
+  const approveUser = async (userId) => {
+    if (!userId) return;
+    setApprovingId(userId);
+    try {
+      await api.post(`/admin/users/${userId}/approve`, {
+        approvalNotes: approvalForm.approvalNotes
+      });
+      
+      // Update user status in state
+      setUsers(users.map(u => 
+        u.id === userId ? { ...u, status: "approved" } : u
+      ));
+      
+      setSelectedPendingUser(null);
+      setApprovalForm({ approvalNotes: '' });
+      alert('User approved successfully. Confirmation email sent.');
+    } catch (err) {
+      console.error('Approval failed:', err);
+      alert(err.response?.data?.error || 'Failed to approve user');
+    } finally {
+      setApprovingId(null);
+    }
+  };
+
+  const rejectUser = async (userId) => {
+    if (!userId) return;
+    if (!window.confirm('Are you sure you want to reject this registration?')) return;
+    
+    setRejectingIdInline(userId);
+    try {
+      await api.post(`/admin/users/${userId}/reject`, {
+        rejectionReason: rejectionForm.rejectionReason
+      });
+      
+      // Remove user from state (account is deleted)
+      setUsers(users.filter(u => u.id !== userId));
+      
+      setSelectedPendingUser(null);
+      setRejectionForm({ rejectionReason: '' });
+      alert('Registration rejected. User account has been deleted.');
+    } catch (err) {
+      console.error('Rejection failed:', err);
+      alert(err.response?.data?.error || 'Failed to reject user');
+    } finally {
+      setRejectingIdInline(null);
+    }
+  };
+
+  const approveUserInline = async (userId) => {
+    if (!userId) return;
+    setApprovingIdInline(userId);
+    try {
+      await api.post(`/admin/users/${userId}/approve`, {
+        approvalNotes: ""
+      });
+      
+      // Update user status in state
+      setUsers(users.map(u => 
+        u.id === userId ? { ...u, status: "approved" } : u
+      ));
+      
+      alert('User approved successfully. Confirmation email sent.');
+    } catch (err) {
+      console.error('Approval failed:', err);
+      alert(err.response?.data?.error || 'Failed to approve user');
+    } finally {
+      setApprovingIdInline(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 pb-20 md:pb-8">
       <Navbar />
@@ -311,6 +397,19 @@ export default function AdminUsers() {
             </div>
             
             <button
+              onClick={() => setFilterPendingOnly(!filterPendingOnly)}
+              className={`px-4 py-2.5 rounded-xl font-medium text-sm transition-all flex items-center justify-center gap-2 ${
+                filterPendingOnly
+                  ? "bg-amber-600 text-white shadow-lg shadow-amber-200"
+                  : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+              }`}
+            >
+              <AlertCircle className="w-4 h-4" />
+              <span className="hidden sm:inline">Pending</span>
+              <span className="sm:hidden">⏳</span>
+            </button>
+
+            <button
               onClick={() => setFilterZeroBalance(!filterZeroBalance)}
               className={`px-4 py-2.5 rounded-xl font-medium text-sm transition-all flex items-center justify-center gap-2 ${
                 filterZeroBalance
@@ -325,7 +424,9 @@ export default function AdminUsers() {
           </div>
         </div>
 
-        {/* Desktop Table View */}
+
+
+        {/* Approved/Rejected Users Section */}
         <div className="hidden lg:block bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
@@ -377,6 +478,7 @@ export default function AdminUsers() {
                       <SortIcon field="balance" />
                     </div>
                   </th>
+                  <th className="px-6 py-4">Status</th>
                   <th className="px-6 py-4">Role</th>
                   <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
@@ -391,13 +493,14 @@ export default function AdminUsers() {
                       <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-56" /></td>
                       <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-36" /></td>
                       <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-28" /></td>
+                      <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-24" /></td>
                       <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-20" /></td>
                       <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-24" /></td>
                     </tr>
                   ))
                 ) : filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan="8" className="px-6 py-12 text-center">
+                    <td colSpan="9" className="px-6 py-12 text-center">
                       <UserCircle2 className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                       <p className="text-sm font-medium text-gray-900">No users found</p>
                       <p className="text-xs text-gray-500 mt-1">Try adjusting your search or filters</p>
@@ -425,6 +528,58 @@ export default function AdminUsers() {
                         <span className="font-semibold text-emerald-600">
                           {peso.format(Number(u.balance || 0))}
                         </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        {u.status === 'pending' ? (
+                          <div className="flex flex-col gap-1.5">
+                            <button
+                              onClick={() => approveUserInline(u.id)}
+                              disabled={approvingIdInline === u.id}
+                              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-medium hover:bg-emerald-700 transition disabled:opacity-60 disabled:cursor-not-allowed w-full"
+                            >
+                              {approvingIdInline === u.id ? (
+                                <>
+                                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                  Approving...
+                                </>
+                              ) : (
+                                <>
+                                  <Check className="w-3.5 h-3.5" />
+                                  Approve
+                                </>
+                              )}
+                            </button>
+                            <button
+                              onClick={() => {
+                                if (window.confirm(`Reject registration from ${u.name}?`)) {
+                                  rejectUser(u.id);
+                                }
+                              }}
+                              disabled={rejectingIdInline === u.id}
+                              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-red-600 text-white rounded-lg text-xs font-medium hover:bg-red-700 transition disabled:opacity-60 disabled:cursor-not-allowed w-full"
+                            >
+                              {rejectingIdInline === u.id ? (
+                                <>
+                                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                  Rejecting...
+                                </>
+                              ) : (
+                                <>
+                                  <X className="w-3.5 h-3.5" />
+                                  Reject
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        ) : (
+                          <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${
+                            u.status === 'approved'
+                              ? 'bg-green-100 text-green-700'
+                              : 'bg-gray-100 text-gray-700'
+                          }`}>
+                            {u.status ? u.status.charAt(0).toUpperCase() + u.status.slice(1) : 'Approved'}
+                          </span>
+                        )}
                       </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${
@@ -752,6 +907,89 @@ export default function AdminUsers() {
                     )}
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Approval Modal */}
+        {selectedPendingUser && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+            <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200">
+              <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-6 rounded-t-2xl">
+                <h3 className="text-xl font-bold text-white">Approve Registration</h3>
+                <p className="text-green-100 text-sm mt-1">Review and approve this student account</p>
+              </div>
+
+              <div className="p-6 space-y-4">
+                <div>
+                  <p className="text-sm text-gray-600">Student Name</p>
+                  <p className="text-lg font-semibold text-gray-900">{selectedPendingUser.name}</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl">
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase tracking-wide">Email</p>
+                    <p className="text-sm font-medium text-gray-900 truncate">{selectedPendingUser.email}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase tracking-wide">Student ID</p>
+                    <p className="text-sm font-mono font-medium text-gray-900">{selectedPendingUser.studentId}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase tracking-wide">Phone</p>
+                    <p className="text-sm font-medium text-gray-900">{selectedPendingUser.phone}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase tracking-wide">Registered</p>
+                    <p className="text-sm font-medium text-gray-900">{new Date(selectedPendingUser.createdAt || Date.now()).toLocaleDateString()}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Approval Notes (Optional)
+                  </label>
+                  <textarea
+                    value={approvalForm.approvalNotes}
+                    onChange={e => setApprovalForm({...approvalForm, approvalNotes: e.target.value})}
+                    placeholder="Add any notes about this approval..."
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition resize-none"
+                    rows={3}
+                  />
+                </div>
+              </div>
+
+              <div className="bg-gray-50 p-6 rounded-b-2xl flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedPendingUser(null);
+                    setApprovalForm({ approvalNotes: '' });
+                  }}
+                  disabled={approvingId === selectedPendingUser?.id}
+                  className="flex-1 px-4 py-3 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => approveUser(selectedPendingUser?.id)}
+                  disabled={approvingId === selectedPendingUser?.id}
+                  className="flex-1 px-4 py-3 text-sm font-semibold text-white bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl hover:from-green-700 hover:to-emerald-700 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {approvingId === selectedPendingUser?.id ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Approving...
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-4 h-4" />
+                      Approve
+                    </>
+                  )}
+                </button>
               </div>
             </div>
           </div>

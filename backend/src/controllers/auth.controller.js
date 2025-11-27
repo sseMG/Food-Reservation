@@ -45,16 +45,16 @@ exports.register = async (req, res) => {
     
     const userRepo = RepositoryFactory.getUserRepository();
     
+    // Check studentId uniqueness first
+    const existingStudentId = await userRepo.findOne({ studentId: String(studentId).trim() });
+    if (existingStudentId) {
+      return res.status(409).json({ error: "Student ID already registered" });
+    }
+    
     // Check email uniqueness
     const existingEmail = await userRepo.findOne({ email: email.trim().toLowerCase() });
     if (existingEmail) {
-      return res.status(409).json({ error: "Email already used" });
-    }
-    
-    // Check studentId uniqueness
-    const existingStudentId = await userRepo.findOne({ studentId: String(studentId).trim() });
-    if (existingStudentId) {
-      return res.status(409).json({ error: "studentId already used" });
+      return res.status(409).json({ error: "Email already registered" });
     }
 
     const newUser = await userRepo.create({
@@ -67,17 +67,19 @@ exports.register = async (req, res) => {
       balance: 0,
       studentId: String(studentId).trim(),
       phone: String(phone).trim(),
+      status: "pending",
+      approvalNotes: "",
     });
     
-    // Send notification to admin about new registration
+    // Send notification to admin about new registration requiring approval
     try {
       Notifications.addNotification({
         id: "notif_" + Date.now().toString(36),
         for: "admin",
         actor: null,
-        type: "student:registered",
-        title: `New Student Registration: ${name}`,
-        body: `A new student account has been created.\n\nName: ${name}\nStudent ID: ${String(studentId).trim()}\nEmail: ${email}\nPhone: ${String(phone).trim()}`,
+        type: "student:pending-approval",
+        title: `New Student Registration Pending Approval: ${name}`,
+        body: `A new student registration requires approval.\n\nName: ${name}\nStudent ID: ${String(studentId).trim()}\nEmail: ${email}\nPhone: ${String(phone).trim()}\n\nPlease review and approve or reject this registration.`,
         data: {
           userId: newUser.id,
           studentName: name,
@@ -85,7 +87,8 @@ exports.register = async (req, res) => {
           email: email,
           phone: String(phone).trim(),
           grade: grade || "",
-          section: section || ""
+          section: section || "",
+          status: "pending"
         },
         read: false,
         createdAt: new Date().toISOString()
@@ -109,6 +112,16 @@ exports.login = async (req, res) => {
     const u = await userRepo.findOne({ email: email.trim().toLowerCase() });
     
     if (!u) return res.status(401).json({ error: "Invalid credentials" });
+
+    // Check if student account is approved (skip for admins)
+    if (u.role === "student" && u.status !== "approved") {
+      if (u.status === "pending") {
+        return res.status(403).json({ error: "Your account is pending approval. Please wait for an admin to review your registration." });
+      } else if (u.status === "rejected") {
+        return res.status(403).json({ error: "Your registration has been rejected. Please contact support." });
+      }
+      return res.status(403).json({ error: "Your account is not approved. Please contact support." });
+    }
 
     // password check
     if (u.passwordHash) {

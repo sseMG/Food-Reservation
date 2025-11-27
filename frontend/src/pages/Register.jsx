@@ -5,7 +5,6 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 import { api, ApiError } from "../lib/api";
 import { refreshSessionForPublic } from "../lib/auth";
-import { setUserToStorage, setTokenToStorage } from "../lib/storage";
 import { Menu, X, Eye, EyeOff } from "lucide-react";
 
 export default function Register() {
@@ -80,16 +79,12 @@ export default function Register() {
         phone: form.phone.trim(),
       });
 
-      const data = await api.post("/auth/login", {
-        email: form.email.trim(),
-        password: form.password,
-      });
-
-      setTokenToStorage(data.token);
-      setUserToStorage(data.user);
-
       setIsLoading(false);
-      navigate("/dashboard", { replace: true });
+      // Show success message and redirect to pending approval page
+      navigate("/registration-pending", { 
+        replace: true,
+        state: { email: form.email.trim() }
+      });
       return;
     } catch (err) {
       setIsLoading(false);
@@ -101,17 +96,38 @@ export default function Register() {
           err.message ||
           "";
         if (status === ApiError.Conflict) {
-          setErrors({
-            email: "Email already registered. Please log in instead.",
-          });
+          // Handle 409 conflicts - could be email or studentId
+          if (/email/i.test(serverMsg)) {
+            setErrors({
+              email: "Email already registered. Please use a different email or log in instead.",
+            });
+          } else if (/student\s*id/i.test(serverMsg)) {
+            setErrors({
+              studentId: "Student ID already registered. Please use a different ID.",
+            });
+          } else {
+            setErrors({
+              email: "This information is already registered. Please use different details.",
+            });
+          }
           return;
         }
         if (status === 400) {
           if (/studentid/i.test(serverMsg) || /student id/i.test(serverMsg)) {
             setErrors({ studentId: serverMsg });
+          } else if (/phone/i.test(serverMsg) || /contact/i.test(serverMsg)) {
+            setErrors({ phone: serverMsg });
           } else {
             setErrors({ email: serverMsg || "Invalid registration data" });
           }
+          return;
+        }
+        if (status === 403) {
+          // Account pending approval
+          navigate("/registration-pending", { 
+            replace: true,
+            state: { email: form.email.trim() }
+          });
           return;
         }
         switch (status) {
@@ -127,7 +143,7 @@ export default function Register() {
         return;
       }
 
-      setErrors({ email: "Email already registered. Please log in instead." });
+      setErrors({ email: "Registration failed. Please try again." });
     }
   };
 

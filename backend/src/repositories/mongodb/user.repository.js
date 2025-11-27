@@ -31,10 +31,10 @@ class MongoUserRepository extends BaseRepository {
       mongoQuery.role = query.role;
     }
     if (query.email) {
-      mongoQuery.email = query.email.toLowerCase();
+      mongoQuery.email = String(query.email).toLowerCase().trim();
     }
     if (query.studentId) {
-      mongoQuery.studentId = String(query.studentId);
+      mongoQuery.studentId = String(query.studentId).trim();
     }
     
     const docs = await col.find(mongoQuery).toArray();
@@ -51,10 +51,10 @@ class MongoUserRepository extends BaseRepository {
       return doc ? sanitizeForResponse(normalizeMongoDoc(doc)) : null;
     }
     if (query.email) {
-      mongoQuery.email = query.email.toLowerCase();
+      mongoQuery.email = String(query.email).toLowerCase().trim();
     }
     if (query.studentId) {
-      mongoQuery.studentId = String(query.studentId);
+      mongoQuery.studentId = String(query.studentId).trim();
     }
     
     const doc = await col.findOne(mongoQuery);

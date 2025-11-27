@@ -22,10 +22,12 @@ class JsonUserRepository extends BaseRepository {
       users = users.filter(u => u.role === query.role);
     }
     if (query.email) {
-      users = users.filter(u => u.email === query.email);
+      const emailLower = String(query.email).toLowerCase().trim();
+      users = users.filter(u => String(u.email).toLowerCase().trim() === emailLower);
     }
     if (query.studentId) {
-      users = users.filter(u => String(u.studentId) === String(query.studentId));
+      const studentIdStr = String(query.studentId).trim();
+      users = users.filter(u => String(u.studentId).trim() === studentIdStr);
     }
     
     return users;
@@ -39,10 +41,12 @@ class JsonUserRepository extends BaseRepository {
       return users.find(u => String(u.id) === String(query.id)) || null;
     }
     if (query.email) {
-      return users.find(u => String(u.email).toLowerCase() === String(query.email).toLowerCase()) || null;
+      const emailLower = String(query.email).toLowerCase().trim();
+      return users.find(u => String(u.email).toLowerCase().trim() === emailLower) || null;
     }
     if (query.studentId) {
-      return users.find(u => String(u.studentId) === String(query.studentId)) || null;
+      const studentIdStr = String(query.studentId).trim();
+      return users.find(u => String(u.studentId).trim() === studentIdStr) || null;
     }
     
     return null;

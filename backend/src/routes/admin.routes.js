@@ -5,6 +5,7 @@ const fs = require("fs-extra");
 const M = require("../controllers/menu.controller");
 const AdminController = require("../controllers/admin.controller");
 const { requireAuth, requireAdmin } = require("../lib/auth");
+const adminUsersRoutes = require("./admin.users.routes");
 
 // Use memory storage for Cloudinary compatibility (works with both filesystem and Cloudinary)
 const upload = multer({
@@ -13,6 +14,9 @@ const upload = multer({
 });
 
 const router = express.Router();
+
+// Mount admin user routes
+router.use(adminUsersRoutes);
 
 /**
  * @swagger
