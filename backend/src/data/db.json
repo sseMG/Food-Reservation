@@ -1245,5 +1245,31 @@
       "createdAt": "2025-11-27T11:42:18.838Z",
       "updatedAt": "2025-11-27T11:42:18.838Z"
     }
+  ],
+  "food_categories": [
+    {
+      "name": "Meals",
+      "iconID": 0
+    },
+    {
+      "name": "Snacks",
+      "iconID": 1
+    },
+    {
+      "name": "Beverages",
+      "iconID": 2
+    },
+    {
+      "name": "Desserts",
+      "iconID": 3
+    },
+    {
+      "name": "Warm Drink",
+      "iconID": 4
+    },
+    {
+      "name": "Cold Drinks",
+      "iconID": 5
+    }
   ]
 }

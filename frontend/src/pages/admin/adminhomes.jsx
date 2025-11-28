@@ -200,7 +200,9 @@ export default function AdminHome() {
     const name = r.name || r.title || "Unnamed";
     const price = Number(r.price) || 0;
     const stock = Number(r.stock ?? r.quantity ?? 0);
-    const category = r.category || r.type || "";
+    const categoryRaw = r.category || r.type || "";
+    const category = typeof categoryRaw === 'string' ? categoryRaw : (categoryRaw && categoryRaw.name) || '';
+    const iconID = typeof r.iconID === 'number' ? r.iconID : (categoryRaw && typeof categoryRaw.iconID === 'number' ? categoryRaw.iconID : undefined);
     const activeFlag =
       r.visible !== undefined ? !!r.visible :
       r.active !== undefined ? !!r.active :
@@ -208,14 +210,13 @@ export default function AdminHome() {
     const available = stock > 0;
     const imageUrl = r.image || r.img || r.imageUrl || null;
 
-    return { id, name, price, stock, category, available, activeFlag, imageUrl };
+    return { id, name, price, stock, category, iconID, available, activeFlag, imageUrl };
   };
 
   const loadProducts = useCallback(async () => {
     setLoadingProducts(true);
     try {
-      const data = await api.get("/menu");
-      const rows = Array.isArray(data) ? data : [];
+      const rows = Array.isArray(await api.getMenu(false)) ? await api.getMenu(false) : [];
       const mapped = rows.map(mapMenuToRow);
       mapped.sort((a, b) => a.name.localeCompare(b.name));
       setCurrentProducts(mapped);

@@ -11,35 +11,21 @@ import {
   X,
   Check,
 } from "lucide-react";
+import CategoryIcon, { getIconPalette } from '../../lib/categories';
 import AdminBottomNav from "../../components/mobile/AdminBottomNav";
 import { api } from "../../lib/api";
 import { refreshSessionForProtected } from "../../lib/auth";
 
 const DEFAULT_CATEGORIES = ["Meals", "Snacks", "Beverages"];
-const STORAGE_KEY = "admin_categories_v1";
+// Icon mapping is persisted as iconID on server; no localStorage needed
 
-const FOOD_ICONS = [
-  "🍚",
-  "🍱",
-  "🍔",
-  "🍟",
-  "🍕",
-  "🌭",
-  "🥪",
-  "🌮",
-  "🍣",
-  "🍜",
-  "🍩",
-  "🍪",
-  "🧁",
-  "🍰",
-  "🍦",
-  "🥤",
-  "🧃",
-  "☕️",
-  "🍺",
-  "🍽️",
-];
+const notifyCategoryUpdate = () => {
+  try {
+    window.dispatchEvent(new Event("categories:updated"));
+  } catch (e) {
+    // ignore
+  }
+};
 
 export default function AdminCategories() {
   const navigate = useNavigate();
@@ -51,60 +37,37 @@ export default function AdminCategories() {
 
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [iconsMap, setIconsMap] = useState({});
+  // icons are represented by numeric iconID in each category object
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState(null);
 
   const [editingId, setEditingId] = useState(null);
   const [editName, setEditName] = useState("");
-  const [editIcon, setEditIcon] = useState("");
+  const [editIcon, setEditIcon] = useState(0);
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [newCatName, setNewCatName] = useState("");
-  const [newCatIcon, setNewCatIcon] = useState("📦");
+  const [newCatIconIndex, setNewCatIconIndex] = useState(0);
 
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+
+  const fetchCategories = async () => {
+    const data = await api.get("/categories");
+    return Array.isArray(data) ? data : [];
+  };
 
   // Load items and categories
   const load = async () => {
     setLoading(true);
     try {
-      const data = await api.getMenu(false);
-      setItems(Array.isArray(data) ? data : []);
-      // Extract unique categories from items
-      const uniqueCats = new Set((Array.isArray(data) ? data : []).map((i) => i.category).filter(Boolean));
-
-      // Read stored categories/icons from localStorage
-      const stored = (() => {
-        try {
-          return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-        } catch (e) {
-          return {};
-        }
-      })();
-
-      const storedList = Array.isArray(stored.list) ? stored.list : [];
-      const storedIcons = stored.icons || {};
-
-      // Merge: defaults -> stored custom -> categories from items
-      const merged = new Set([...DEFAULT_CATEGORIES, ...storedList, ...Array.from(uniqueCats)]);
-      setCategories(Array.from(merged));
-      setIconsMap({ ...storedIcons });
+      const [menuData, categoryData] = await Promise.all([api.getMenu(false), fetchCategories()]);
+      setItems(Array.isArray(menuData) ? menuData : []);
+      setCategories(Array.isArray(categoryData) ? categoryData : []);
     } catch (e) {
       console.error(e);
-      alert("Failed to load data.");
+      alert("Failed to load categories.");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const saveStorage = (cats, icons) => {
-    try {
-      const custom = (cats || categories).filter((c) => !DEFAULT_CATEGORIES.includes(c));
-      const payload = { list: custom, icons: icons || iconsMap };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-    } catch (e) {
-      console.error("Could not save categories to storage", e);
     }
   };
 
@@ -112,14 +75,16 @@ export default function AdminCategories() {
     load();
   }, []);
 
-  // Count items in each category
-  const getItemCount = (catName) => {
-    return items.filter((i) => i.category === catName).length;
+  // Count items in each category (accepts category object or name)
+  const getItemCount = (catNameOrObj) => {
+    const name = typeof catNameOrObj === 'string' ? catNameOrObj : (catNameOrObj && catNameOrObj.name);
+    return items.filter((i) => i.category === name).length;
   };
 
-  // Check if category is default (cannot delete, can only edit icon)
-  const isDefaultCategory = (catName) => {
-    return DEFAULT_CATEGORIES.includes(catName);
+  // Check if category is default (accepts category object or name)
+  const isDefaultCategory = (catOrName) => {
+    const name = typeof catOrName === 'string' ? catOrName : (catOrName && catOrName.name);
+    return DEFAULT_CATEGORIES.includes(name);
   };
 
   // Check if custom category can be deleted (no items in it)
@@ -128,10 +93,11 @@ export default function AdminCategories() {
   };
 
   // Start editing a category
-  const startEdit = (catName, icon) => {
-    setEditingId(catName);
-    setEditName(catName);
-    setEditIcon(icon || iconsMap[catName] || "📦");
+  const startEdit = (category) => {
+    const name = category && category.name ? category.name : String(category || '').trim();
+    setEditingId(name);
+    setEditName(name);
+    setEditIcon(typeof category.iconID === 'number' ? category.iconID : 0);
   };
 
   // Save category edit
@@ -143,60 +109,36 @@ export default function AdminCategories() {
 
     // If name changed and it's a custom category, validate it
     if (!isDefaultCategory(oldName) && editName !== oldName) {
-      if (categories.includes(editName)) {
+      if (categories.some((c) => c.name && c.name.toLowerCase() === editName.toLowerCase())) {
         alert("Category already exists.");
         return;
       }
     }
 
+    if (isDefaultCategory(oldName) && editName !== oldName) {
+      alert("Default categories cannot be renamed.");
+      return;
+    }
+
     setBusyId(oldName);
     try {
-      // Update all items with the old category name to the new name
       if (editName !== oldName) {
-        // If renaming a default category, don't allow rename
-        if (isDefaultCategory(oldName)) {
-          alert("Default categories cannot be renamed.");
-          return;
-        }
-
-        const itemsToUpdate = items.filter((i) => i.category === oldName);
-        for (const item of itemsToUpdate) {
-          // update backend
-          try {
-            await api.put(`/admin/menu/${item.id}`, { category: editName });
-          } catch (e) {
-            // ignore individual failures but log
-            console.warn("Failed to update item category", item.id, e);
-          }
-        }
-
-        // Update category list and items in state
-        const newCategories = categories.map((c) => (c === oldName ? editName : c));
-        setCategories(newCategories);
-        setItems((prev) => prev.map((i) => (i.category === oldName ? { ...i, category: editName } : i)));
-
-        // move icon mapping key
-        const newIcons = { ...iconsMap };
-        if (newIcons[oldName]) {
-          newIcons[editName] = newIcons[oldName];
-          delete newIcons[oldName];
-        }
-        newIcons[editName] = editIcon || newIcons[editName] || "📦";
-        setIconsMap(newIcons);
-        saveStorage(newCategories, newIcons);
+        await api.patch("/admin/categories", { oldName, newName: editName, iconID: editIcon });
+        await load();
+        notifyCategoryUpdate();
+        alert("Category renamed successfully.");
       } else {
         // only icon changed
-        const newIcons = { ...iconsMap, [oldName]: editIcon || iconsMap[oldName] || "📦" };
-        setIconsMap(newIcons);
-        saveStorage(categories, newIcons);
+        await api.patch("/admin/categories", { oldName, newName: oldName, iconID: editIcon });
+        await load();
       }
 
       setEditingId(null);
       setEditName("");
-      setEditIcon("");
+      setEditIcon(0);
     } catch (e) {
       console.error(e);
-      alert("Failed to update category.");
+      alert(e?.message || "Failed to update category.");
     } finally {
       setBusyId(null);
     }
@@ -206,7 +148,7 @@ export default function AdminCategories() {
   const cancelEdit = () => {
     setEditingId(null);
     setEditName("");
-    setEditIcon("");
+    setEditIcon(0);
   };
 
   // Delete custom category
@@ -219,16 +161,15 @@ export default function AdminCategories() {
     setBusyId(catName);
     setDeleteConfirm(null);
     try {
-      const newCategories = categories.filter((c) => c !== catName);
-      setCategories(newCategories);
-      const newIcons = { ...iconsMap };
-      delete newIcons[catName];
-      setIconsMap(newIcons);
-      saveStorage(newCategories, newIcons);
+      await api.del("/admin/categories", { body: { name: catName } });
+      const updated = await fetchCategories();
+      setCategories(updated);
+      await load();
+      notifyCategoryUpdate();
       alert("Category deleted successfully.");
     } catch (e) {
       console.error(e);
-      alert("Failed to delete category.");
+      alert(e?.message || "Failed to delete category.");
     } finally {
       setBusyId(null);
     }
@@ -236,30 +177,30 @@ export default function AdminCategories() {
 
   // Add new category
   const addCategory = async () => {
-    if (!newCatName.trim()) {
+    const trimmed = newCatName.trim();
+    if (!trimmed) {
       alert("Category name cannot be empty.");
       return;
     }
 
-    if (categories.includes(newCatName)) {
+    if (categories.some((c) => (c && c.name || '').toLowerCase() === trimmed.toLowerCase())) {
       alert("Category already exists.");
       return;
     }
 
     setBusyId("new");
     try {
-      const next = [...categories, newCatName];
-      setCategories(next);
-      const newIcons = { ...iconsMap, [newCatName]: newCatIcon || "📦" };
-      setIconsMap(newIcons);
-      saveStorage(next, newIcons);
+      await api.post("/admin/categories", { name: trimmed, iconID: newCatIconIndex });
+      const updated = await fetchCategories();
+      setCategories(Array.isArray(updated) ? updated : []);
       setNewCatName("");
-      setNewCatIcon("📦");
+      setNewCatIconIndex(0);
       setShowAddForm(false);
+      notifyCategoryUpdate();
       alert("Category added successfully.");
     } catch (e) {
       console.error(e);
-      alert("Failed to add category.");
+      alert(e?.message || "Failed to add category.");
     } finally {
       setBusyId(null);
     }
@@ -344,32 +285,32 @@ export default function AdminCategories() {
               </div>
               ) : (
               defaultCats.map((cat) => {
-                const itemCount = getItemCount(cat);
-                const isEditing = editingId === cat;
+                const itemCount = getItemCount(cat.name);
+                const isEditing = editingId === cat.name;
 
                 return (
                   <div
-                    key={cat}
+                    key={`${cat.name}-${cat.iconID}`}
                     className="bg-white rounded-lg border border-gray-100 p-4 flex items-center justify-between hover:shadow-sm transition-shadow"
                   >
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                       {isEditing ? (
                         <div className="w-40 grid grid-cols-6 gap-1">
-                          {FOOD_ICONS.map((ic) => (
+                          {getIconPalette().map((ic, idx) => (
                             <button
-                              key={ic}
+                              key={`${ic}-${idx}`}
                               type="button"
-                              onClick={() => setEditIcon(ic)}
-                              className={`w-8 h-8 rounded-lg flex items-center justify-center text-lg ${editIcon === ic ? 'ring-2 ring-blue-400' : 'bg-white'}`}
+                              onClick={() => setEditIcon(idx)}
+                              className={`w-8 h-8 rounded-lg flex items-center justify-center text-lg ${editIcon === idx ? 'ring-2 ring-blue-400' : 'bg-white'}`}
                             >
                               {ic}
                             </button>
                           ))}
                         </div>
                       ) : (
-                        <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-lg">
-                          {iconsMap[cat] || "📦"}
-                        </div>
+                          <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-lg">
+                            <CategoryIcon name={cat.name} iconID={cat.iconID} />
+                          </div>
                       )}
 
                       <div className="flex-1 min-w-0">
@@ -383,7 +324,7 @@ export default function AdminCategories() {
                           />
                         ) : (
                           <h3 className="font-medium text-gray-900 truncate">
-                            {cat}
+                            {cat.name}
                           </h3>
                         )}
                         <div className="text-xs text-gray-500 mt-0.5">
@@ -396,8 +337,8 @@ export default function AdminCategories() {
                       {isEditing ? (
                         <>
                           <button
-                            onClick={() => saveEdit(cat)}
-                            disabled={busyId === cat}
+                            onClick={() => saveEdit(cat.name)}
+                            disabled={busyId === cat.name}
                             className="p-2 rounded-lg text-green-600 hover:bg-green-50 disabled:opacity-60 transition-colors"
                             title="Save"
                           >
@@ -405,7 +346,7 @@ export default function AdminCategories() {
                           </button>
                           <button
                             onClick={cancelEdit}
-                            disabled={busyId === cat}
+                            disabled={busyId === cat.name}
                             className="p-2 rounded-lg text-gray-400 hover:bg-gray-100 disabled:opacity-60 transition-colors"
                             title="Cancel"
                           >
@@ -415,8 +356,8 @@ export default function AdminCategories() {
                       ) : (
                         <>
                           <button
-                            onClick={() => startEdit(cat, iconsMap[cat])}
-                            disabled={busyId === cat}
+                            onClick={() => startEdit(cat)}
+                            disabled={busyId === cat.name}
                             className="p-2 rounded-lg text-blue-600 hover:bg-blue-50 disabled:opacity-60 transition-colors"
                             title="Edit icon only"
                           >
@@ -445,23 +386,23 @@ export default function AdminCategories() {
             <div className="space-y-2">
               {customCats.map((cat) => {
                 const itemCount = getItemCount(cat);
-                const isEditing = editingId === cat;
+                const isEditing = editingId === cat.name;
                 const canDelete = canDeleteCategory(cat);
 
                 return (
                   <div
-                    key={cat}
+                    key={`${cat.name}-${cat.iconID}`}
                     className="bg-white rounded-lg border border-gray-100 p-4 flex items-center justify-between hover:shadow-sm transition-shadow"
                   >
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                       {isEditing ? (
                         <div className="w-40 grid grid-cols-6 gap-1">
-                          {FOOD_ICONS.map((ic) => (
+                          {getIconPalette().map((ic, idx) => (
                             <button
-                              key={ic}
+                              key={`${ic}-${idx}`}
                               type="button"
-                              onClick={() => setEditIcon(ic)}
-                              className={`w-8 h-8 rounded-lg flex items-center justify-center text-lg ${editIcon === ic ? 'ring-2 ring-blue-400' : 'bg-white'}`}
+                              onClick={() => setEditIcon(idx)}
+                              className={`w-8 h-8 rounded-lg flex items-center justify-center text-lg ${editIcon === idx ? 'ring-2 ring-blue-400' : 'bg-white'}`}
                             >
                               {ic}
                             </button>
@@ -469,7 +410,7 @@ export default function AdminCategories() {
                         </div>
                       ) : (
                         <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-lg">
-                          {iconsMap[cat] || "📦"}
+                          <CategoryIcon name={cat.name} iconID={cat.iconID} />
                         </div>
                       )}
 
@@ -483,7 +424,7 @@ export default function AdminCategories() {
                           />
                         ) : (
                           <h3 className="font-medium text-gray-900 truncate">
-                            {cat}
+                            {cat.name}
                           </h3>
                         )}
                         <div className="text-xs text-gray-500 mt-0.5">
@@ -496,8 +437,8 @@ export default function AdminCategories() {
                       {isEditing ? (
                         <>
                           <button
-                            onClick={() => saveEdit(cat)}
-                            disabled={busyId === cat}
+                            onClick={() => saveEdit(cat.name)}
+                            disabled={busyId === cat.name}
                             className="p-2 rounded-lg text-green-600 hover:bg-green-50 disabled:opacity-60 transition-colors"
                             title="Save"
                           >
@@ -505,7 +446,7 @@ export default function AdminCategories() {
                           </button>
                           <button
                             onClick={cancelEdit}
-                            disabled={busyId === cat}
+                            disabled={busyId === cat.name}
                             className="p-2 rounded-lg text-gray-400 hover:bg-gray-100 disabled:opacity-60 transition-colors"
                             title="Cancel"
                           >
@@ -515,16 +456,16 @@ export default function AdminCategories() {
                       ) : (
                         <>
                           <button
-                            onClick={() => startEdit(cat, iconsMap[cat])}
-                            disabled={busyId === cat}
+                            onClick={() => startEdit(cat)}
+                            disabled={busyId === cat.name}
                             className="p-2 rounded-lg text-blue-600 hover:bg-blue-50 disabled:opacity-60 transition-colors"
                             title="Edit"
                           >
                             <Edit className="w-4 h-4" />
                           </button>
                           <button
-                            onClick={() => setDeleteConfirm(cat)}
-                            disabled={busyId === cat || !canDelete}
+                            onClick={() => setDeleteConfirm(cat.name)}
+                            disabled={busyId === cat.name || !canDelete}
                             className={`p-2 rounded-lg transition-colors ${
                               canDelete
                                 ? "text-red-600 hover:bg-red-50 disabled:opacity-60"
@@ -559,16 +500,20 @@ export default function AdminCategories() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Icon
                   </label>
-                  <input
-                    type="text"
-                    value={newCatIcon}
-                    onChange={(e) => setNewCatIcon(e.target.value)}
-                    maxLength="2"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-center text-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="📦"
-                  />
+                  <div className="w-full grid grid-cols-6 gap-1">
+                    {getIconPalette().map((ic, idx) => (
+                      <button
+                        key={`${ic}-${idx}`}
+                        type="button"
+                        onClick={() => setNewCatIconIndex(idx)}
+                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-lg ${newCatIconIndex === idx ? 'ring-2 ring-blue-400' : 'bg-white'}`}
+                      >
+                        {ic}
+                      </button>
+                    ))}
+                  </div>
                   <p className="text-xs text-gray-500 mt-1">
-                    Use an emoji or character
+                    Choose an icon for this category (by selecting from the palette)
                   </p>
                 </div>
 
@@ -598,7 +543,7 @@ export default function AdminCategories() {
                   onClick={() => {
                     setShowAddForm(false);
                     setNewCatName("");
-                    setNewCatIcon("📦");
+                    setNewCatIconIndex(0);
                   }}
                   disabled={busyId === "new"}
                   className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 disabled:opacity-60 transition-colors"

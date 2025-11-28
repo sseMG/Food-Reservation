@@ -1,6 +1,7 @@
 ﻿// server/src/lib/db.js
 const fs = require("fs");
 const path = require("path");
+const { DEFAULT_CATEGORIES } = require("../constants/categories");
 const DB = path.join(__dirname, "..", "data", "db.json");
 
 function readRaw() {
@@ -16,7 +17,7 @@ function save(obj) {
 }
 
 function load() {
-  let data = { users: [], menu: [], reservations: [], topups: [], transactions: [], notifications: [], carts: [] };
+  let data = { users: [], menu: [], reservations: [], topups: [], transactions: [], notifications: [], carts: [], food_categories: [] };
   const raw = readRaw();
   if (raw) {
     try {
@@ -33,6 +34,54 @@ function load() {
   data.transactions = Array.isArray(data.transactions) ? data.transactions : [];
   data.notifications = Array.isArray(data.notifications) ? data.notifications : [];
   data.carts = Array.isArray(data.carts) ? data.carts : [];
+  data.food_categories = Array.isArray(data.food_categories) ? data.food_categories : [];
+
+  const catSeen = new Set();
+  const normalizedCategories = [];
+  // Gather existing iconIDs and map values; migrate legacy `id` -> `iconID`.
+  let maxIconID = -1;
+  for (const c of data.food_categories) {
+    let name = typeof c === 'string' ? String(c || '').trim() : (c && String(c.name || '').trim());
+    if (!name) continue;
+    const key = name.toLowerCase();
+    if (catSeen.has(key)) continue;
+    catSeen.add(key);
+    let iconID = null;
+    if (c && typeof c.iconID === 'number') {
+      iconID = c.iconID;
+    } else if (c && typeof c.id === 'number') {
+      // migrate older id field to iconID
+      iconID = c.id;
+    }
+    if (typeof iconID === 'number' && iconID > maxIconID) maxIconID = iconID;
+    normalizedCategories.push({ name, iconID });
+  }
+  // Ensure default categories (reserved icons 0..n)
+  for (let i = 0; i < DEFAULT_CATEGORIES.length; i++) {
+    const def = DEFAULT_CATEGORIES[i];
+    const norm = String(def || '').trim();
+    if (!norm) continue;
+    const key = norm.toLowerCase();
+    if (catSeen.has(key)) {
+      // overwrite iconID for default categories so they keep expected indices
+      for (const obj of normalizedCategories) {
+        if (obj.name.toLowerCase() === key) {
+          obj.iconID = i;
+        }
+      }
+    } else {
+      catSeen.add(key);
+      normalizedCategories.push({ name: norm, iconID: i });
+    }
+    if (i > maxIconID) maxIconID = i;
+  }
+  // Assign iconID to entries that are missing it
+  for (const obj of normalizedCategories) {
+    if (typeof obj.iconID !== 'number') {
+      obj.iconID = ++maxIconID;
+    }
+  }
+  data.food_categories = normalizedCategories;
 
   // --- migration: ensure studentId for all users ---
   const used = new Set();

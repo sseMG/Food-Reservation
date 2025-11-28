@@ -253,6 +253,25 @@ export const api = {
    */
   getMenu: async (includeDeleted = false, options = {}) => {
     const url = includeDeleted ? '/menu?includeDeleted=true' : '/menu';
-    return await api.get(url, options);
+    const res = await api.get(url, options);
+    const rows = Array.isArray(res) ? res : [];
+    return rows.map((r) => {
+      const categoryRaw = r.category;
+      const categoryName = typeof categoryRaw === 'string' ? categoryRaw : (categoryRaw && categoryRaw.name) || 'Others';
+      const itemIconID = (typeof r.iconID === 'number') ? r.iconID : (categoryRaw && typeof categoryRaw.iconID === 'number' ? categoryRaw.iconID : undefined);
+      return {
+        id: r.id ?? r._id,
+        name: r.name,
+        category: categoryName,
+        iconID: itemIconID,
+        price: Number(r.price) || 0,
+        stock: Number(r.stock ?? 0),
+        img: r.img || r.image || '',
+        desc: r.desc || r.description || '',
+        visible: r.visible,
+        createdAt: r.createdAt || r.created_at,
+        updatedAt: r.updatedAt || r.updated_at,
+      };
+    });
   }
 };

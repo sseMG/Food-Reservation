@@ -28,7 +28,6 @@ const peso = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP"
 
 // Admin category storage defaults
 const DEFAULT_CATEGORIES = ["Meals", "Snacks", "Beverages"];
-const STORAGE_KEY = "admin_categories_v1";
 
 // Canonical status mapping for consistency
 const STATUS = {
@@ -213,35 +212,35 @@ export default function Dashboard() {
   const [retryCount, setRetryCount] = useState(0);
   const abortControllerRef = React.useRef(null);
 
-  // Admin-provided categories (defaults + persisted custom categories)
-  const [adminCategories, setAdminCategories] = useState(() => {
-    try {
-      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-      const storedList = Array.isArray(stored.list) ? stored.list : [];
-      return Array.from(new Set([...DEFAULT_CATEGORIES, ...storedList]));
-    } catch (e) {
-      return DEFAULT_CATEGORIES.slice();
-    }
-  });
+  // Categories derived from menu items that currently have stock
+  const [adminCategories, setAdminCategories] = useState(DEFAULT_CATEGORIES);
 
   useEffect(() => {
-    const reload = () => {
+    let mounted = true;
+    const loadCategories = async () => {
       try {
-        const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-        const storedList = Array.isArray(stored.list) ? stored.list : [];
-        setAdminCategories(Array.from(new Set([...DEFAULT_CATEGORIES, ...storedList])));
+        const data = await api.get("/categories/from-menu");
+        if (!mounted) return;
+        const list = Array.isArray(data) && data.length ? data : DEFAULT_CATEGORIES;
+        // Ensure we set simple category names (strings) to avoid rendering objects as children
+        const names = list.map((c) => (typeof c === 'string' ? c : (c && c.name) || '')).filter(Boolean);
+        setAdminCategories(names.length ? names : DEFAULT_CATEGORIES);
       } catch (e) {
-        setAdminCategories(DEFAULT_CATEGORIES.slice());
+        console.error("Failed to load categories from menu", e);
+        if (mounted) {
+          setAdminCategories(DEFAULT_CATEGORIES);
+        }
       }
     };
+
+    loadCategories();
+    const reload = () => loadCategories();
 
     window.addEventListener("categories:updated", reload);
     window.addEventListener("menu:updated", reload);
 
-    // initial load
-    reload();
-
     return () => {
+      mounted = false;
       window.removeEventListener("categories:updated", reload);
       window.removeEventListener("menu:updated", reload);
     };

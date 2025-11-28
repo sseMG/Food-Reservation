@@ -62,8 +62,11 @@ export default function Cart() {
   useEffect(() => {
     let m = true;
     setMenuLoading(true);
-    api.get('/menu')
-      .then((d) => { if (!m) return; setProducts(d || []); })
+       api.getMenu(false)
+         .then((d) => { 
+           if (!m) return; 
+           setProducts(Array.isArray(d) ? d : []); 
+       })
       .catch(() => { if (!m) return; setProducts([]); })
       .finally(() => { if (!m) return; setMenuLoading(false); });
     return () => (m = false);

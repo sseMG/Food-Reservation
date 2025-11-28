@@ -23,6 +23,16 @@ const options = {
           bearerFormat: 'JWT',
         },
       },
+      schemas: {
+        Category: {
+          type: 'object',
+          properties: {
+            name: { type: 'string', description: 'Category name' },
+            iconID: { type: 'integer', description: 'Numeric icon index representing emoji', minimum: 0 }
+          },
+          required: ['name']
+        }
+      },
     },
     security: [{ bearerAuth: [] }],
   },

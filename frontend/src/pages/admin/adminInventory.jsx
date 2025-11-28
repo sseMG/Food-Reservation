@@ -53,15 +53,18 @@ export default function AdminInventory() {
   const load = async () => {
     setLoading(true);
     try {
-      const data = await api.get("/menu");
-      const rows = Array.isArray(data) ? data : [];
-      const mapped = rows.map((r) => ({
-        id: r.id ?? r._id,
-        name: r.name,
-        category: r.category || "Others",
-        stock: Number(r.stock ?? 0),
-        price: Number(r.price ?? 0),
-      }));
+      const rows = Array.isArray(await api.getMenu(false)) ? await api.getMenu(false) : [];
+      const mapped = rows.map((r) => {
+        const categoryRaw = r.category;
+        const categoryName = typeof categoryRaw === 'string' ? categoryRaw : (categoryRaw && categoryRaw.name) || 'Others';
+        return {
+          id: r.id ?? r._id,
+          name: r.name,
+          category: categoryName,
+          stock: Number(r.stock ?? 0),
+          price: Number(r.price ?? 0),
+        };
+      });
       setItems(mapped);
       const edits = {};
       for (const m of mapped) edits[m.id] = String(m.stock);

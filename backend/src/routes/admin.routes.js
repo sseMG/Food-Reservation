@@ -4,6 +4,7 @@ const path = require("path");
 const fs = require("fs-extra");
 const M = require("../controllers/menu.controller");
 const AdminController = require("../controllers/admin.controller");
+const CategoriesController = require("../controllers/categories.controller");
 const { requireAuth, requireAdmin } = require("../lib/auth");
 const adminUsersRoutes = require("./admin.users.routes");
 
@@ -236,5 +237,127 @@ const W = require("../controllers/wallets.controller");
  *         description: Wallet created/updated
  */
 router.post("/wallets", requireAuth, requireAdmin, upload.single("qr"), W.upsert);
+
+// Categories management
+/**
+ * @swagger
+ * /admin/categories:
+ *   get:
+ *     summary: Admin - list categories
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of categories (objects with name and iconID)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Category'
+ */
+router.get("/categories", requireAuth, requireAdmin, CategoriesController.list);
+/**
+ * @swagger
+ * /admin/categories:
+ *   post:
+ *     summary: Admin - create category
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Category'
+ *     responses:
+ *       200:
+ *         description: Category created and list returned
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 categories:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Category'
+ */
+router.post("/categories", requireAuth, requireAdmin, CategoriesController.create);
+/**
+ * @swagger
+ * /admin/categories:
+ *   patch:
+ *     summary: Admin - rename/update category and/or its icon
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               oldName:
+ *                 type: string
+ *               newName:
+ *                 type: string
+ *               iconID:
+ *                 type: integer
+ *                 minimum: 0
+ *     responses:
+ *       200:
+ *         description: Category renamed/updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 categories:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Category'
+ */
+router.patch("/categories", requireAuth, requireAdmin, CategoriesController.rename);
+/**
+ * @swagger
+ * /admin/categories:
+ *   delete:
+ *     summary: Admin - delete category
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Category deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 categories:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Category'
+ */
+router.delete("/categories", requireAuth, requireAdmin, CategoriesController.remove);
 
 module.exports = router;

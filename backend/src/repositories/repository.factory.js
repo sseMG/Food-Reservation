@@ -46,6 +46,21 @@ class RepositoryFactory {
   }
 
   /**
+   * Get Category Repository
+   */
+  static getCategoryRepository() {
+    const key = 'categories';
+    if (repositoryCache[key]) return repositoryCache[key];
+    
+    if (usingMongo()) {
+      repositoryCache[key] = require('./mongodb/category.repository');
+    } else {
+      repositoryCache[key] = require('./json/category.repository');
+    }
+    return repositoryCache[key];
+  }
+
+  /**
    * Get Reservation Repository
    */
   static getReservationRepository() {

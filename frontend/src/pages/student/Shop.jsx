@@ -6,6 +6,7 @@ import Navbar from "../../components/avbar";
 import BottomNav from "../../components/mobile/BottomNav";
 import FullScreenLoader from "../../components/FullScreenLoader";
 import { api } from "../../lib/api";
+import { getCategoryEmoji } from '../../lib/categories';
 import { useCart } from "../../contexts/CartContext";
 import { getUserFromStorage, setUserToStorage } from "../../lib/storage";
 import {
@@ -40,17 +41,7 @@ const SLOTS = [
   { id: "after", label: "After Class • 4:00–4:15 PM" },
 ];
 
-const CATEGORY_EMOJI = {
-  "Rice Meals": "🍚",
-  "Noodles": "🍜",
-  "Snacks": "🍪",
-  "Beverages": "🥤",
-  "Desserts": "🍰",
-  "Breakfast": "☕",
-  "Others": "🍽️",
-};
-
-const STORAGE_KEY = "admin_categories_v1";
+// For icon mapping we use the shared FOOD_ICONS and CategoryIcon
 
 function GuestHeader({ mobileMenuOpen, setMobileMenuOpen }) {
   return (
@@ -147,7 +138,7 @@ function Toast({ message, visible, onClose }) {
   );
 }
 
-function EmptyCartSuggestions({ items, onAdd }) {
+function EmptyCartSuggestions({ items, onAdd, categoriesMap = {} }) {
   const popularItems = useMemo(() => {
     return items
       .filter(i => i.stock > 0)
@@ -168,7 +159,7 @@ function EmptyCartSuggestions({ items, onAdd }) {
             {item.img ? (
               <img src={item.img} alt={item.name} className="w-full h-full object-cover rounded" />
             ) : (
-              <span className="text-xl">{CATEGORY_EMOJI[item.category] || "🍽️"}</span>
+              <span className="text-xl">{getCategoryEmoji(item.category, item.iconID ?? categoriesMap[item.category])}</span>
             )}
           </div>
           <div className="flex-1 min-w-0">
@@ -203,39 +194,20 @@ export default function Shop({ publicView = false }) {
   const [loading, setLoading] = useState(true);
   const [initialLoad, setInitialLoad] = useState(true);
 
-  // admin icons mapping (from admin categories localStorage)
-  const [adminIcons, setAdminIcons] = useState(() => {
-    try {
-      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-      return stored.icons || {};
-    } catch (e) {
-      return {};
+  // categories list and lookup (from public categories endpoint)
+  const [categoriesList, setCategoriesList] = useState([]);
+  const categoriesMap = useMemo(() => {
+    const map = {};
+    if (Array.isArray(categoriesList)) {
+      categoriesList.forEach(c => {
+        if (typeof c.name === 'string') map[c.name] = c.iconID;
+      });
     }
-  });
-
-  useEffect(() => {
-    const reload = () => {
-      try {
-        const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-        setAdminIcons(stored.icons || {});
-      } catch (e) {
-        setAdminIcons({});
-      }
-    };
-
-    window.addEventListener("categories:updated", reload);
-    window.addEventListener("menu:updated", reload);
-    // initial
-    reload();
-    return () => {
-      window.removeEventListener("categories:updated", reload);
-      window.removeEventListener("menu:updated", reload);
-    };
-  }, []);
+    return map;
+  }, [categoriesList]);
 
   const [wallet, setWallet] = useState({ balance: 0 });
   const [loadingWallet, setLoadingWallet] = useState(true);
-  const [walletError, setWalletError] = useState("");
 
   const urlCategory = searchParams.get('category');
   const [q, setQ] = useState("");
@@ -290,20 +262,10 @@ export default function Shop({ publicView = false }) {
   const fetchMenu = async () => {
     setLoading(true);
     try {
-      const data = await api.get("/menu");
+      const data = await api.getMenu(false);
       const rows = Array.isArray(data) ? data : [];
       const visibleRows = rows.filter((r) => r.visible !== false);
-      setItems(
-        visibleRows.map((r) => ({
-          id: r.id ?? r._id,
-          name: r.name,
-          category: r.category || "Others",
-          price: Number(r.price) || 0,
-          stock: Number(r.stock ?? 0),
-          img: r.img || r.image || "",
-          desc: r.desc || r.description || "",
-        }))
-      );
+      setItems(visibleRows);
     } catch {
       setItems([]);
     } finally {
@@ -314,11 +276,9 @@ export default function Shop({ publicView = false }) {
 
   const fetchWallet = async () => {
     setLoadingWallet(true);
-    setWalletError("");
     try {
       if (publicView) {
         setWallet({ balance: 0 });
-        setWalletError("Public view – log in to see wallet and place orders.");
         return;
       }
       const w = await api.get("/wallets/me");
@@ -332,7 +292,6 @@ export default function Shop({ publicView = false }) {
       }
     } catch (e) {
       setWallet({ balance: 0 });
-      setWalletError("Unable to load wallet. You might not be logged in.");
     } finally {
       setLoadingWallet(false);
     }
@@ -341,9 +300,38 @@ export default function Shop({ publicView = false }) {
   useEffect(() => {
     fetchMenu();
     fetchWallet();
-    const onMenuUpdated = () => fetchMenu();
+    let t = null;
+    const onMenuUpdated = () => {
+      if (t) clearTimeout(t);
+      t = setTimeout(() => fetchMenu(), 150);
+    };
     window.addEventListener("menu:updated", onMenuUpdated);
-    return () => window.removeEventListener("menu:updated", onMenuUpdated);
+    return () => {
+      window.removeEventListener("menu:updated", onMenuUpdated);
+      if (t) clearTimeout(t);
+    };
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    const loadCategories = async () => {
+      try {
+        const data = await api.get('/categories');
+        if (!mounted) return;
+        const rows = Array.isArray(data) ? data : [];
+        setCategoriesList(rows);
+      } catch (err) {
+        console.error('Failed to fetch categories', err);
+        if (mounted) setCategoriesList([]);
+      }
+    };
+
+    loadCategories();
+    window.addEventListener('categories:updated', loadCategories);
+    return () => {
+      mounted = false;
+      window.removeEventListener('categories:updated', loadCategories);
+    };
   }, []);
 
   useEffect(() => {
@@ -608,7 +596,7 @@ export default function Shop({ publicView = false }) {
                     }`}
                   >
                     {c !== "all" && (
-                      <span className="mr-1">{adminIcons[c] || CATEGORY_EMOJI[c] || "🍽️"}</span>
+                      <span className="mr-1">{getCategoryEmoji(c, categoriesMap[c])}</span>
                     )}
                     {c === "all" ? "All Items" : c}
                     {c !== "all" && (
@@ -731,7 +719,7 @@ export default function Shop({ publicView = false }) {
                           />
                         ) : (
                           <div className="h-full w-full flex items-center justify-center text-gray-400">
-                            <span className="text-5xl">{CATEGORY_EMOJI[it.category] || "🍽️"}</span>
+                            <span className="text-5xl">{getCategoryEmoji(it.category, it.iconID ?? categoriesMap[it.category])}</span>
                           </div>
                         )}
                         <button
@@ -818,7 +806,7 @@ export default function Shop({ publicView = false }) {
                           <img src={it.img} alt={it.name} className="w-full h-full object-cover" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-4xl">
-                            {CATEGORY_EMOJI[it.category] || "🍽️"}
+                            {getCategoryEmoji(it.category, it.iconID ?? categoriesMap[it.category])}
                           </div>
                         )}
                       </div>
@@ -865,7 +853,7 @@ export default function Shop({ publicView = false }) {
                       <ShoppingCart className="w-8 h-8 text-gray-400" />
                     </div>
                     <div className="text-sm text-gray-500">Your cart is empty.</div>
-                    <EmptyCartSuggestions items={items} onAdd={(id) => inc(id)} />
+                    <EmptyCartSuggestions items={items} onAdd={(id) => inc(id)} categoriesMap={categoriesMap} />
                   </div>
                 ) : (
                   list.map((it) => (
@@ -875,7 +863,7 @@ export default function Shop({ publicView = false }) {
                           <img src={it.img} alt={it.name} className="w-full h-full object-cover rounded" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-xl">
-                            {CATEGORY_EMOJI[it.category] || "🍽️"}
+                            {getCategoryEmoji(it.category, it.iconID ?? categoriesMap[it.category])}
                           </div>
                         )}
                       </div>
@@ -998,7 +986,7 @@ export default function Shop({ publicView = false }) {
                           <img src={it.img} alt={it.name} className="w-full h-full object-cover rounded" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-2xl">
-                            {CATEGORY_EMOJI[it.category] || "🍽️"}
+                            {getCategoryEmoji(it.category, it.iconID ?? categoriesMap[it.category])}
                           </div>
                         )}
                       </div>
@@ -1209,9 +1197,9 @@ export default function Shop({ publicView = false }) {
               <div className="relative h-56 bg-gray-100">
                 {preview.img ? (
                   <img src={preview.img} alt={preview.name} className="h-full w-full object-cover" />
-                ) : (
+                  ) : (
                   <div className="h-full w-full flex items-center justify-center text-6xl">
-                    {CATEGORY_EMOJI[preview.category] || "🍽️"}
+                    {getCategoryEmoji(preview.category, preview.iconID ?? categoriesMap[preview.category])}
                   </div>
                 )}
                 <button

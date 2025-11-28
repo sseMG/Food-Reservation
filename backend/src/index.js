@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const mongoose = require("mongoose");
+const { ensureDefaultCategories } = require("./lib/ensureCategories");
 
 const { coloredMorgan, printColorLegend } = require("./lib/coloredMorgan");
 
@@ -148,7 +149,13 @@ app.use("/reports-files", express.static(path.join(__dirname, "reports")));
 
 // Connect to MongoDB and start server (skip in test environment)
 if (process.env.NODE_ENV !== 'test') {
-  connectMongoDB().then(() => {
+  connectMongoDB().then(async () => {
+    try {
+      await ensureDefaultCategories();
+    } catch (err) {
+      console.error('[Startup] Failed to ensure default categories:', err && err.message ? err.message : err);
+    }
+
     const server = app.listen(PORT, () => {
       console.log('='.repeat(70));
       console.log(`🚀 FOOD RESERVATION API SERVER STARTED`);

@@ -24,6 +24,8 @@ const queryClient = new QueryClient({
 
 const root = createRoot(document.getElementById("root"));
 
+// icons are frontend-only; no server fetch required
+
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>

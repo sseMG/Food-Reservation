@@ -15,11 +15,12 @@ import {
   Image as ImageIcon,
   Loader2,
 } from "lucide-react";
+import { CategoryIcon } from '../../lib/categories';
 
 const peso = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" });
 
 const DEFAULT_CATEGORIES = ["Meals", "Snacks", "Beverages"];
-const STORAGE_KEY = "admin_categories_v1";
+// categories are provided by the server via /categories
 
 export default function AdminEditItems() {
   const navigate = useNavigate();
@@ -46,6 +47,7 @@ export default function AdminEditItems() {
   const [imgFile, setImgFile] = useState(null);
 
   const [deletingId, setDeletingId] = useState(null);
+  const [serverCategories, setServerCategories] = useState([]);
 
   // Per-item cache-bust seeds. When we save an item (upload/remove),
   // we bump its seed so <img src="...?...&v=seed"> forces a real fetch.
@@ -65,8 +67,11 @@ export default function AdminEditItems() {
     setLoading(true);
     setListError("");
     try {
-      const data = await api.get("/menu");
+      const data = await api.getMenu(false);
       setItems(Array.isArray(data) ? data : []);
+      // fetch categories too
+      const catData = await api.get('/categories');
+      setServerCategories(Array.isArray(catData) ? catData : []);
     } catch (e) {
       setListError(e?.message || "Failed to load menu.");
     } finally {
@@ -76,18 +81,12 @@ export default function AdminEditItems() {
 
   useEffect(() => { load(); }, []);
 
-  // Merge categories from defaults, stored custom categories, and categories discovered in menu items
+  // Merge categories from defaults, server categories, and categories discovered in menu items
   const mergedCategories = useMemo(() => {
-    let stored = {};
-    try {
-      stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-    } catch (e) {
-      stored = {};
-    }
-    const storedList = Array.isArray(stored.list) ? stored.list : [];
+    const serverList = Array.isArray(serverCategories) ? serverCategories.map(c => c.name) : [];
     const fromItems = Array.from(new Set((Array.isArray(items) ? items : []).map(i => i.category).filter(Boolean)));
-    return Array.from(new Set([...DEFAULT_CATEGORIES, ...storedList, ...fromItems]));
-  }, [items]);
+    return Array.from(new Set([...DEFAULT_CATEGORIES, ...serverList, ...fromItems]));
+  }, [items, serverCategories]);
 
   /* ---------------- Filters ---------------- */
   const filtered = useMemo(() => {
@@ -365,7 +364,10 @@ export default function AdminEditItems() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-700">{it.category}</td>
+                      <td className="px-4 py-3 text-sm text-gray-700 flex items-center gap-2">
+                        <CategoryIcon name={it.category} iconID={it.iconID} />
+                        <span>{it.category}</span>
+                      </td>
                       <td className="px-4 py-3 text-right text-sm font-semibold text-gray-900">
                         {peso.format(Number(it.price || 0))}
                       </td>

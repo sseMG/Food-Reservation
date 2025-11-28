@@ -18,8 +18,10 @@ import {
 } from "lucide-react";
 import AdminBottomNav from '../../components/mobile/AdminBottomNav';
 import { api } from "../../lib/api";
+import CategoryIcon from '../../lib/categories';
 import { refreshSessionForProtected } from "../../lib/auth";
 
+const DEFAULT_CATEGORIES = ["Meals", "Snacks", "Beverages"];
 const peso = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" });
 
 const SORT_OPTIONS = [
@@ -46,6 +48,7 @@ export default function AdminShop() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState(null);
+  const [categoryOptions, setCategoryOptions] = useState([]);
 
   // controls
   const [q, setQ] = useState("");
@@ -74,6 +77,24 @@ export default function AdminShop() {
   };
 
   useEffect(() => { load(); }, []);
+
+    const fetchCategoryOptions = async () => {
+    try {
+      const data = await api.get("/categories");
+      const list = Array.isArray(data) && data.length ? data : DEFAULT_CATEGORIES.map(name => ({ name, iconID: 0 }));
+      setCategoryOptions(Array.isArray(list) && list.length && typeof list[0] === 'object' ? list : list.map(n => ({ name: n, iconID: 0 })));
+    } catch (e) {
+      console.error("Failed to load categories list", e);
+      setCategoryOptions(DEFAULT_CATEGORIES.map((n, idx) => ({ name: n, iconID: idx })));
+    }
+  };
+
+  useEffect(() => {
+    fetchCategoryOptions();
+    const handler = () => fetchCategoryOptions();
+    window.addEventListener("categories:updated", handler);
+    return () => window.removeEventListener("categories:updated", handler);
+  }, []);
 
   const categories = useMemo(() => {
     const set = new Set(items.map(i => i.category).filter(Boolean));
@@ -262,54 +283,36 @@ export default function AdminShop() {
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowAddMenu(false)} />
                   <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
-                    {(() => {
-                      const stored = (() => {
-                        try {
-                          return JSON.parse(localStorage.getItem("admin_categories_v1") || "{}");
-                        } catch (e) {
-                          return {};
-                        }
-                      })();
-                      const list = Array.isArray(stored.list) ? stored.list : [];
-                      const merged = Array.from(new Set(["Meals", "Snacks", "Beverages", ...list]));
-                      return merged.map((c, idx) => (
-                        <Link
-                          key={c + idx}
-                          to={`/admin/shop/add/${encodeURIComponent(c)}`}
-                          className={`block px-4 py-3 text-sm hover:bg-gray-50 ${idx < merged.length - 1 ? 'border-b' : ''}`}
-                          onClick={() => setShowAddMenu(false)}
-                        >
-                          Add {c}
-                        </Link>
-                      ));
-                    })()}
+                    {categoryOptions.map((c, idx) => (
+                      <Link
+                        key={`${c.name}-${idx}`}
+                        to={`/admin/shop/add/${encodeURIComponent(c.name)}`}
+                        className={`block px-4 py-3 text-sm hover:bg-gray-50 ${idx < categoryOptions.length - 1 ? 'border-b' : ''}`}
+                        onClick={() => setShowAddMenu(false)}
+                      >
+                        Add {c.name}
+                      </Link>
+                    ))}
+                    {categoryOptions.length === 0 && (
+                      <div className="px-4 py-3 text-sm text-gray-500">No categories available.</div>
+                    )}
                   </div>
                 </>
               )}
             </div>
 
             {/* Desktop: Individual buttons generated from stored categories */}
-            {(() => {
-              const stored = (() => {
-                try {
-                  return JSON.parse(localStorage.getItem("admin_categories_v1") || "{}");
-                } catch (e) {
-                  return {};
-                }
-              })();
-              const list = Array.isArray(stored.list) ? stored.list : [];
-              const merged = Array.from(new Set(["Meals", "Snacks", "Beverages", ...list]));
-              return merged.map((c) => (
-                <Link
-                  key={c}
-                  to={`/admin/shop/add/${encodeURIComponent(c)}`}
-                  className="hidden md:inline-flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 text-sm"
-                >
-                  <PlusCircle className="w-4 h-4" />
-                  Add {c}
-                </Link>
-              ));
-            })()}
+              {categoryOptions.map((c) => (
+              <Link
+                key={c.name}
+                to={`/admin/shop/add/${encodeURIComponent(c.name)}`}
+                className="hidden md:inline-flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 text-sm"
+              >
+                <PlusCircle className="w-4 h-4" />
+                <CategoryIcon name={c.name} iconID={c.iconID} />
+                <span>Add {c.name}</span>
+              </Link>
+            ))}
 
             {/* Edit Items button (all screens) */}
             <Link

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../../lib/api";
 
 const DEFAULT_CATEGORIES = ["Meals", "Snacks", "Beverages"];
-const STORAGE_KEY = "admin_categories_v1";
+// categories are provided by server via /categories
 
 export default function EditItem() {
   const { id } = useParams();
@@ -12,6 +12,7 @@ export default function EditItem() {
   const [file, setFile] = useState(null);
   const [saving, setSaving] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [serverCategories, setServerCategories] = useState([]);
 
   useEffect(() => {
     const load = async () => {
@@ -30,27 +31,31 @@ export default function EditItem() {
           console.warn("Could not load menu list for categories", e);
         }
 
-        // stored custom categories
-        let stored = {};
+        // fetch server categories
+        let storedList = [];
         try {
-          stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+          const catData = await api.get('/categories');
+          if (Array.isArray(catData)) storedList = catData.map(c => c.name);
         } catch (e) {
-          stored = {};
+          storedList = [];
         }
-        const storedList = Array.isArray(stored.list) ? stored.list : [];
 
-        const fromMenu = Array.from(new Set((Array.isArray(all) ? all : []).map(i => i.category).filter(Boolean)));
+        const fromMenu = Array.from(new Set((Array.isArray(all) ? all : []).map(i => {
+          const c = i && i.category;
+          return typeof c === 'string' ? c : (c && c.name) || null;
+        }).filter(Boolean)));
         const merged = Array.from(new Set([...DEFAULT_CATEGORIES, ...storedList, ...fromMenu]));
         setCategories(merged);
 
         // find item by id
         const item = (Array.isArray(all) ? all : []).find(i => String(i.id) === String(id) || String(i._id) === String(id));
         if (item) {
+          const itemCat = item && item.category;
           setFields(f => ({
             ...f,
             name: item.name ?? f.name,
             price: item.price ?? f.price,
-            category: item.category ?? f.category,
+            category: typeof itemCat === 'string' ? itemCat : (itemCat && itemCat.name) || f.category,
             stock: item.stock ?? f.stock,
             desc: item.description ?? item.desc ?? f.desc,
           }));
@@ -59,11 +64,12 @@ export default function EditItem() {
           try {
             const single = await api.get(`/menu/${id}`);
             if (single) {
+              const singleCat = single && single.category;
               setFields(f => ({
                 ...f,
                 name: single.name ?? f.name,
                 price: single.price ?? f.price,
-                category: single.category ?? f.category,
+                category: typeof singleCat === 'string' ? singleCat : (singleCat && singleCat.name) || f.category,
                 stock: single.stock ?? f.stock,
                 desc: single.description ?? single.desc ?? f.desc,
               }));
