@@ -92,9 +92,12 @@ class MongoCategoryRepository extends BaseRepository {
     if (!existing) {
       throw new Error('Category not found');
     }
-    const duplicate = await col.findOne({ name: { $regex: `^${escapeRegex(to)}$`, $options: 'i' } });
-    if (duplicate) {
-      throw new Error('Category already exists');
+    // Only check for duplicates if the name is actually changing
+    if (toKey(from) !== toKey(to)) {
+      const duplicate = await col.findOne({ name: { $regex: `^${escapeRegex(to)}$`, $options: 'i' } });
+      if (duplicate) {
+        throw new Error('Category already exists');
+      }
     }
     const updateObj = { name: to };
     if (typeof newIconID !== 'undefined') {

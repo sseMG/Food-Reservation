@@ -87,7 +87,8 @@ exports.rename = async (req, res) => {
     if (!categories.some((c) => toKey(c.name || c) === toKey(from))) {
       return res.status(404).json({ error: "Category not found" });
     }
-    if (categories.some((c) => toKey(c.name || c) === toKey(to))) {
+    // Only check if target name exists if we're actually changing the name
+    if (toKey(from) !== toKey(to) && categories.some((c) => toKey(c.name || c) === toKey(to))) {
       return res.status(409).json({ error: "Target category name already exists" });
     }
 

@@ -31,13 +31,13 @@
       "role": "student",
       "grade": "",
       "section": "",
-      "balance": 770,
+      "balance": 578,
       "studentId": "202231211",
       "phone": "09688523253",
       "status": "approved",
       "approvalNotes": "Congratulations!",
       "createdAt": "2025-11-27T04:54:38.338Z",
-      "updatedAt": "2025-11-27T13:20:21.045Z",
+      "updatedAt": "2025-11-28T11:03:40.504Z",
       "profilePictureUrl": "/uploads/profile-usr_migylvcy-1764220241693_331481.jpg"
     },
     {
@@ -71,6 +71,22 @@
       "approvalNotes": "",
       "createdAt": "2025-11-27T11:29:00.925Z",
       "updatedAt": "2025-11-27T11:29:13.934Z"
+    },
+    {
+      "id": "usr_miippayf",
+      "name": "Anmmmm r",
+      "email": "anmoldavidd@gmail.com",
+      "passwordHash": "$2a$10$imzUcnnaSOT.i7oOlAYQ.eyq6zV7SduVKoXvHH.e/2kWkzgoR/1jO",
+      "role": "student",
+      "grade": "",
+      "section": "",
+      "balance": 0,
+      "studentId": "2022344455",
+      "phone": "09688523253",
+      "status": "approved",
+      "approvalNotes": "",
+      "createdAt": "2025-11-28T10:20:54.327Z",
+      "updatedAt": "2025-11-28T10:21:10.634Z"
     }
   ],
   "menu": [
@@ -79,13 +95,13 @@
       "name": "Cookies",
       "category": "Snacks",
       "price": 10,
-      "stock": 50,
+      "stock": 49,
       "img": "/uploads/cookies-1764043247798_350782.jpg",
       "isActive": true,
       "visible": true,
       "deleted": false,
       "createdAt": "2025-11-25T04:00:47.803Z",
-      "updatedAt": "2025-11-27T13:20:21.050Z"
+      "updatedAt": "2025-11-28T11:03:40.519Z"
     },
     {
       "id": "ITM_1764043429971",
@@ -111,7 +127,7 @@
       "visible": true,
       "deleted": false,
       "createdAt": "2025-11-25T04:14:08.789Z",
-      "updatedAt": "2025-11-27T11:38:48.767Z"
+      "updatedAt": "2025-11-28T10:56:47.460Z"
     },
     {
       "id": "ITM_1764044595710",
@@ -137,7 +153,46 @@
       "visible": true,
       "deleted": false,
       "createdAt": "2025-11-25T04:27:29.234Z",
-      "updatedAt": "2025-11-27T11:57:37.794Z"
+      "updatedAt": "2025-11-28T10:49:36.816Z"
+    },
+    {
+      "id": "ITM_1764325526167",
+      "name": "Piattos",
+      "category": "Junk Foods",
+      "price": 60,
+      "stock": 20,
+      "img": "/uploads/piattos-1764325526161_740675.jpg",
+      "isActive": true,
+      "visible": true,
+      "deleted": false,
+      "createdAt": "2025-11-28T10:25:26.167Z",
+      "updatedAt": "2025-11-28T10:50:34.747Z"
+    },
+    {
+      "id": "ITM_1764327544576",
+      "name": "Rice Meal A",
+      "category": "Meals",
+      "price": 80,
+      "stock": 28,
+      "img": "/uploads/rice-meal-a-1764327544571_957345.jpg",
+      "isActive": true,
+      "visible": true,
+      "deleted": false,
+      "createdAt": "2025-11-28T10:59:04.576Z",
+      "updatedAt": "2025-11-28T11:03:40.525Z"
+    },
+    {
+      "id": "ITM_1764327621968",
+      "name": "Beer",
+      "category": "Alak",
+      "price": 35,
+      "stock": 63,
+      "img": "/uploads/beer-1764327621962_79955.jpg",
+      "isActive": true,
+      "visible": true,
+      "deleted": false,
+      "createdAt": "2025-11-28T11:00:21.968Z",
+      "updatedAt": "2025-11-28T11:06:57.303Z"
     }
   ],
   "reservations": [
@@ -247,6 +302,43 @@
       "updatedAt": "2025-11-27T13:20:21.064Z",
       "refunded": true,
       "refundTransactionId": "txn_mihgo7yc"
+    },
+    {
+      "id": "RES_miir8b1r5g",
+      "userId": "usr_migylvcy",
+      "student": "Anmol David Das",
+      "grade": "G8",
+      "section": "Haggai",
+      "when": "lunch",
+      "note": "",
+      "items": [
+        {
+          "id": "ITM_1764327621968",
+          "name": "Beer",
+          "price": 34,
+          "qty": 3
+        },
+        {
+          "id": "ITM_1764043247803",
+          "name": "Cookies",
+          "price": 10,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764327544576",
+          "name": "Rice Meal A",
+          "price": 80,
+          "qty": 1
+        }
+      ],
+      "total": 192,
+      "status": "Ready",
+      "transactionId": "txn_miir8b1t",
+      "charged": true,
+      "chargedAt": "2025-11-28T11:03:40.527Z",
+      "stockDeducted": true,
+      "createdAt": "2025-11-28T11:03:40.533Z",
+      "updatedAt": "2025-11-28T11:04:39.729Z"
     }
   ],
   "topups": [
@@ -347,9 +439,185 @@
       "direction": "credit",
       "status": "Success",
       "createdAt": "2025-11-27T13:20:21.060Z"
+    },
+    {
+      "id": "txn_miir8b1t",
+      "userId": "usr_migylvcy",
+      "title": "Reservation Hold",
+      "ref": "RES_miir8b1r5g",
+      "amount": 192,
+      "direction": "debit",
+      "status": "Success",
+      "createdAt": "2025-11-28T11:03:40.529Z"
     }
   ],
   "notifications": [
+    {
+      "id": "notif_miir9kqa",
+      "for": "usr_migylvcy",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_miir8b1r5g Ready",
+      "body": "Your reservation RES_miir8b1r5g is now Ready.",
+      "data": {
+        "reservationId": "RES_miir8b1r5g",
+        "status": "Ready"
+      },
+      "read": true,
+      "createdAt": "2025-11-28T11:04:39.730Z"
+    },
+    {
+      "id": "notif_miir9hty",
+      "for": "usr_migylvcy",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_miir8b1r5g Preparing",
+      "body": "Your reservation RES_miir8b1r5g is now Preparing.",
+      "data": {
+        "reservationId": "RES_miir8b1r5g",
+        "status": "Preparing"
+      },
+      "read": true,
+      "createdAt": "2025-11-28T11:04:35.974Z"
+    },
+    {
+      "id": "notif_miir8w9p",
+      "for": "usr_migylvcy",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_miir8b1r5g Approved",
+      "body": "Your reservation RES_miir8b1r5g has been approved.",
+      "data": {
+        "reservationId": "RES_miir8b1r5g",
+        "status": "Approved",
+        "items": [
+          {
+            "id": "ITM_1764327621968",
+            "name": "Beer",
+            "price": 34,
+            "qty": 3
+          },
+          {
+            "id": "ITM_1764043247803",
+            "name": "Cookies",
+            "price": 10,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764327544576",
+            "name": "Rice Meal A",
+            "price": 80,
+            "qty": 1
+          }
+        ],
+        "total": 192,
+        "note": "",
+        "slot": "lunch",
+        "grade": "G8",
+        "section": "Haggai",
+        "student": "Anmol David Das",
+        "transactionId": "txn_miir8b1t"
+      },
+      "read": true,
+      "createdAt": "2025-11-28T11:04:08.029Z"
+    },
+    {
+      "id": "notif_miir8b1y",
+      "for": "admin",
+      "actor": {
+        "id": "usr_migylvcy",
+        "name": "Anmol David Das",
+        "email": "spadymold@gmail.com",
+        "profilePictureUrl": "/uploads/profile-usr_migylvcy-1764220241693_331481.jpg"
+      },
+      "type": "reservation:created",
+      "title": "New reservation submitted",
+      "body": "Anmol David Das submitted a reservation",
+      "data": {
+        "reservationId": "RES_miir8b1r5g",
+        "items": [
+          {
+            "id": "ITM_1764327621968",
+            "name": "Beer",
+            "price": 34,
+            "qty": 3
+          },
+          {
+            "id": "ITM_1764043247803",
+            "name": "Cookies",
+            "price": 10,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764327544576",
+            "name": "Rice Meal A",
+            "price": 80,
+            "qty": 1
+          }
+        ],
+        "total": 192,
+        "note": "",
+        "slot": "lunch",
+        "grade": "G8",
+        "section": "Haggai",
+        "student": "Anmol David Das"
+      },
+      "read": true,
+      "createdAt": "2025-11-28T11:03:40.533Z"
+    },
+    {
+      "id": "notif_miippq5y",
+      "for": "usr_miippayf",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "student:approved",
+      "title": "Registration Approved!",
+      "body": "Congratulations! Your registration has been approved. You can now log in to the system.",
+      "data": {
+        "status": "approved"
+      },
+      "read": true,
+      "createdAt": "2025-11-28T10:21:14.038Z"
+    },
+    {
+      "id": "notif_miippayh",
+      "for": "admin",
+      "actor": null,
+      "type": "student:pending-approval",
+      "title": "New Student Registration Pending Approval: Anmmmm r",
+      "body": "A new student registration requires approval.\n\nName: Anmmmm r\nStudent ID: 2022344455\nEmail: Anmoldavidd@gmail.com\nPhone: 09688523253\n\nPlease review and approve or reject this registration.",
+      "data": {
+        "userId": "usr_miippayf",
+        "studentName": "Anmmmm r",
+        "studentId": "2022344455",
+        "email": "Anmoldavidd@gmail.com",
+        "phone": "09688523253",
+        "grade": "",
+        "section": "",
+        "status": "pending"
+      },
+      "read": true,
+      "createdAt": "2025-11-28T10:20:54.329Z"
+    },
     {
       "id": "notif_mihgo7yi",
       "for": "usr_migylvcy",
@@ -1236,7 +1504,7 @@
       "userId": "usr_migylvcy",
       "items": [],
       "createdAt": "2025-11-27T05:10:47.368Z",
-      "updatedAt": "2025-11-27T13:20:06.605Z"
+      "updatedAt": "2025-11-28T11:03:42.176Z"
     },
     {
       "id": "cart_mihd657a",
@@ -1244,6 +1512,13 @@
       "items": [],
       "createdAt": "2025-11-27T11:42:18.838Z",
       "updatedAt": "2025-11-27T11:42:18.838Z"
+    },
+    {
+      "id": "cart_miipq0es",
+      "userId": "usr_miippayf",
+      "items": [],
+      "createdAt": "2025-11-28T10:21:27.316Z",
+      "updatedAt": "2025-11-28T10:21:27.316Z"
     }
   ],
   "food_categories": [
@@ -1261,7 +1536,7 @@
     },
     {
       "name": "Desserts",
-      "iconID": 3
+      "iconID": 15
     },
     {
       "name": "Warm Drink",
@@ -1269,7 +1544,15 @@
     },
     {
       "name": "Cold Drinks",
-      "iconID": 5
+      "iconID": 2
+    },
+    {
+      "name": "Junk Foods",
+      "iconID": 7
+    },
+    {
+      "name": "Alak",
+      "iconID": 20
     }
   ]
 }

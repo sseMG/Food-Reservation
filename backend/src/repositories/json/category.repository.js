@@ -105,7 +105,8 @@ class JsonCategoryRepository extends BaseRepository {
     if (!db[this.collectionName].some((c) => toKey(c.name) === toKey(from))) {
       throw new Error('Category not found');
     }
-    if (db[this.collectionName].some((c) => toKey(c.name) === toKey(to))) {
+    // Only check for duplicates if the name is actually changing
+    if (toKey(from) !== toKey(to) && db[this.collectionName].some((c) => toKey(c.name) === toKey(to))) {
       throw new Error('Category already exists');
     }
     if (typeof newIconID !== 'undefined' && (!Number.isInteger(newIconID) || newIconID < 0)) {
