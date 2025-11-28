@@ -79,6 +79,7 @@ export default function AdminAddDrinks() {
     const e = {};
     if (!form.name.trim()) e.name = "Drink name is required.";
     if (form.price === "" || Number(form.price) <= 0) e.price = "Price must be greater than 0.";
+    if (Number(form.price) > 20000) e.price = "Price cannot exceed ₱20,000.";
     if (form.stock === "" || Number(form.stock) < 0) e.stock = "Stock must be 0 or more.";
     if (!form.category) e.category = "Category is required.";
     return e;
@@ -293,7 +294,11 @@ export default function AdminAddDrinks() {
                 </label>
                 <input
                   value={form.price}
-                  onChange={(e) => setField("price", e.target.value.replace(/[^\d.]/g, ""))}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^\d.]/g, "");
+                    const num = Number(val);
+                    if (num <= 20000 || val === "") setField("price", val);
+                  }}
                   inputMode="decimal"
                   placeholder="e.g., 25.00"
                   className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 transition ${

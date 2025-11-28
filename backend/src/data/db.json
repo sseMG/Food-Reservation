@@ -193,6 +193,19 @@
       "deleted": false,
       "createdAt": "2025-11-28T11:00:21.968Z",
       "updatedAt": "2025-11-28T11:06:57.303Z"
+    },
+    {
+      "id": "ITM_1764330342264",
+      "name": "Iced Tea",
+      "category": "Cold Drinks",
+      "price": 30,
+      "stock": 34,
+      "img": "/uploads/iced-tea-1764330342259_832071.jpg",
+      "isActive": true,
+      "visible": true,
+      "deleted": false,
+      "createdAt": "2025-11-28T11:45:42.264Z",
+      "updatedAt": "2025-11-28T11:45:42.264Z"
     }
   ],
   "reservations": [
