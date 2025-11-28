@@ -257,7 +257,7 @@ router.post("/wallets", requireAuth, requireAdmin, upload.single("qr"), W.upsert
  *               items:
  *                 $ref: '#/components/schemas/Category'
  */
-router.get("/categories", requireAuth, requireAdmin, CategoriesController.list);
+router.get("/categories", CategoriesController.list);
 /**
  * @swagger
  * /admin/categories:

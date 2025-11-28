@@ -156,6 +156,7 @@ describe('Image Upload Integration Tests', () => {
           // Create a new user for this test
           const bcrypt = require('bcryptjs');
           testUser = await userRepo.create({
+            status: "approved",
             name: admin.name,
             email: `test${Date.now()}@example.com`,
             passwordHash: bcrypt.hashSync('password123', 10),
@@ -231,6 +232,7 @@ describe('Image Upload Integration Tests', () => {
           // Create a new user for this test
           const bcrypt = require('bcryptjs');
           testUser = await userRepo.create({
+            status: "approved",
             name: admin.name,
             email: `test${Date.now()}@example.com`,
             passwordHash: bcrypt.hashSync('password123', 10),
