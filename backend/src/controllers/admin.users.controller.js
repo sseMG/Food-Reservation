@@ -12,7 +12,10 @@ exports.list = async (req, res) => {
     const userRepo = RepositoryFactory.getUserRepository();
     const users = await userRepo.findAll({});
     
-    const safe = users.map(u => {
+    // Filter out archived users
+    const activeUsers = users.filter(u => !u.isArchived);
+    
+    const safe = activeUsers.map(u => {
       const { passwordHash, password, salt, ...safeUser } = u;
       return {
         ...safeUser,
@@ -24,6 +27,30 @@ exports.list = async (req, res) => {
   } catch (err) {
     console.error("[ADMIN.USERS] list error:", err);
     res.status(500).json({ error: "Failed to list users" });
+  }
+};
+
+// GET /admin/users/archived
+exports.listArchived = async (req, res) => {
+  try {
+    const userRepo = RepositoryFactory.getUserRepository();
+    const users = await userRepo.findAll({});
+    
+    // Filter for archived users only
+    const archivedUsers = users.filter(u => u.isArchived);
+    
+    const safe = archivedUsers.map(u => {
+      const { passwordHash, password, salt, ...safeUser } = u;
+      return {
+        ...safeUser,
+        passwordSet: !!(passwordHash || password),
+      };
+    });
+    
+    res.json({ status: 200, data: safe });
+  } catch (err) {
+    console.error("[ADMIN.USERS] listArchived error:", err);
+    res.status(500).json({ error: "Failed to list archived users" });
   }
 };
 
@@ -144,54 +171,83 @@ exports.updateUser = async (req, res) => {
   }
 };
 
-// DELETE /admin/users/:id
+// DELETE /admin/users/:id - Archive a user instead of deleting
 exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
     if (!id) return res.status(400).json({ error: "Missing user id" });
 
     const userRepo = RepositoryFactory.getUserRepository();
-    const cartRepo = RepositoryFactory.getCartRepository();
-    const notificationRepo = RepositoryFactory.getNotificationRepository();
     const user = await userRepo.findById(id);
     
     if (!user) return res.status(404).json({ error: "User not found" });
     if (String(user.role || '').toLowerCase() === 'admin') {
-      return res.status(403).json({ error: "Cannot delete administrator accounts" });
+      return res.status(403).json({ error: "Cannot archive administrator accounts" });
     }
     if ((user.balance || 0) !== 0) {
-      return res.status(400).json({ error: "User must have zero balance before deletion" });
+      return res.status(400).json({ error: "User must have zero balance before archival" });
     }
 
-    // Delete profile picture if it exists
-    if (user.profilePictureUrl) {
-      try {
-        const imageRepo = ImageUploadFactory.getRepository();
-        await imageRepo.delete(user.profilePictureUrl);
-      } catch (err) {
-        console.error("[ADMIN.USERS] Failed to delete profile picture:", err);
-        // Continue even if delete fails
-      }
-    }
+    // Archive the user instead of deleting
+    const result = await userRepo.update(id, {
+      isArchived: true,
+      archivedAt: new Date().toISOString(),
+      isActive: false
+    });
 
-    // Delete user's cart
-    try {
-      const cart = await cartRepo.findByUserId(id);
-      if (cart) {
-        await cartRepo.delete(cart.id);
-      }
-    } catch (err) {
-      console.error("[ADMIN.USERS] Failed to delete user cart:", err);
-      // Continue even if delete fails
-    }
-
-    const result = await userRepo.delete(id);
     if (!result) return res.status(404).json({ error: "User not found" });
     
     res.json({ ok: true });
   } catch (err) {
     console.error("[ADMIN.USERS] deleteUser error:", err);
-    res.status(500).json({ error: "Failed to delete user" });
+    res.status(500).json({ error: "Failed to archive user" });
+  }
+};
+
+// POST /admin/users/:id/restore - Restore an archived user
+exports.restoreUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) return res.status(400).json({ error: "Missing user id" });
+
+    const userRepo = RepositoryFactory.getUserRepository();
+    const user = await userRepo.findById(id);
+    
+    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user.isArchived) {
+      return res.status(400).json({ error: "User is not archived" });
+    }
+
+    // Restore the user
+    const result = await userRepo.update(id, {
+      isArchived: false,
+      archivedAt: null,
+      isActive: true
+    });
+
+    if (!result) return res.status(404).json({ error: "User not found" });
+
+    // Send notification to user
+    try {
+      await Notifications.addNotification({
+        id: "notif_" + Date.now().toString(36),
+        for: user.id,
+        actor: req.user?.id || "admin",
+        type: "account:restored",
+        title: "Account Restored",
+        body: "Your account has been restored and is now active.",
+        data: { isArchived: false },
+        read: false,
+        createdAt: new Date().toISOString()
+      });
+    } catch (err) {
+      console.error("[ADMIN.USERS] Failed to create restore notification:", err && err.message);
+    }
+    
+    res.json({ ok: true, message: "User restored successfully" });
+  } catch (err) {
+    console.error("[ADMIN.USERS] restoreUser error:", err);
+    res.status(500).json({ error: "Failed to restore user" });
   }
 };
 

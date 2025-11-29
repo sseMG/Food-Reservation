@@ -70,7 +70,10 @@
       "status": "approved",
       "approvalNotes": "",
       "createdAt": "2025-11-27T11:29:00.925Z",
-      "updatedAt": "2025-11-27T11:29:13.934Z"
+      "updatedAt": "2025-11-28T23:51:07.019Z",
+      "isArchived": false,
+      "archivedAt": null,
+      "isActive": true
     },
     {
       "id": "usr_miippayf",
@@ -87,6 +90,22 @@
       "approvalNotes": "",
       "createdAt": "2025-11-28T10:20:54.327Z",
       "updatedAt": "2025-11-28T10:21:10.634Z"
+    },
+    {
+      "id": "usr_mijisuue",
+      "name": "Student Test",
+      "email": "anmollovedas@gmail.com",
+      "passwordHash": "$2a$10$nPwiXWmdYely20wFbwA6wurARSjcMYyYBQdobE777mVF7xePitVSm",
+      "role": "student",
+      "grade": "",
+      "section": "",
+      "balance": 0,
+      "studentId": "207777886",
+      "phone": "0968775906",
+      "status": "approved",
+      "approvalNotes": "",
+      "createdAt": "2025-11-28T23:55:28.934Z",
+      "updatedAt": "2025-11-28T23:55:44.499Z"
     }
   ],
   "menu": [
@@ -465,6 +484,82 @@
     }
   ],
   "notifications": [
+    {
+      "id": "notif_mijqj29x",
+      "for": "admin",
+      "actor": null,
+      "type": "student:pending-approval",
+      "title": "New Student Registration Pending Approval: Noralyn",
+      "body": "A new student registration requires approval.\n\nName: Noralyn\nStudent ID: 203948485\nEmail: dasmolster@gmail.com\nPhone: 09258151814\n\nPlease review and approve or reject this registration.",
+      "data": {
+        "userId": "usr_mijqj29w",
+        "studentName": "Noralyn",
+        "studentId": "203948485",
+        "email": "dasmolster@gmail.com",
+        "phone": "09258151814",
+        "grade": "",
+        "section": "",
+        "status": "pending"
+      },
+      "read": true,
+      "createdAt": "2025-11-29T03:31:48.933Z"
+    },
+    {
+      "id": "notif_mijit8td",
+      "for": "usr_mijisuue",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "student:approved",
+      "title": "Registration Approved!",
+      "body": "Congratulations! Your registration has been approved. You can now log in to the system.",
+      "data": {
+        "status": "approved"
+      },
+      "read": true,
+      "createdAt": "2025-11-28T23:55:47.041Z"
+    },
+    {
+      "id": "notif_mijisuug",
+      "for": "admin",
+      "actor": null,
+      "type": "student:pending-approval",
+      "title": "New Student Registration Pending Approval: Student Test",
+      "body": "A new student registration requires approval.\n\nName: Student Test\nStudent ID: 207777886\nEmail: anmollovedas@gmail.com\nPhone: 0968775906\n\nPlease review and approve or reject this registration.",
+      "data": {
+        "userId": "usr_mijisuue",
+        "studentName": "Student Test",
+        "studentId": "207777886",
+        "email": "anmollovedas@gmail.com",
+        "phone": "0968775906",
+        "grade": "",
+        "section": "",
+        "status": "pending"
+      },
+      "read": true,
+      "createdAt": "2025-11-28T23:55:28.936Z"
+    },
+    {
+      "id": "notif_mijin8r1",
+      "for": "usr_mihcp1j1",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "account:restored",
+      "title": "Account Restored",
+      "body": "Your account has been restored and is now active.",
+      "data": {
+        "isArchived": false
+      },
+      "read": false,
+      "createdAt": "2025-11-28T23:51:07.021Z"
+    },
     {
       "id": "notif_miir9kqa",
       "for": "usr_migylvcy",
@@ -1532,6 +1627,13 @@
       "items": [],
       "createdAt": "2025-11-28T10:21:27.316Z",
       "updatedAt": "2025-11-28T10:21:27.316Z"
+    },
+    {
+      "id": "cart_mijittxz",
+      "userId": "usr_mijisuue",
+      "items": [],
+      "createdAt": "2025-11-28T23:56:14.423Z",
+      "updatedAt": "2025-11-28T23:56:14.423Z"
     }
   ],
   "food_categories": [

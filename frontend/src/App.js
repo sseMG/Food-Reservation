@@ -40,6 +40,7 @@ import AdminStats          from "./pages/admin/adminStats";
 import AdminInventory      from "./pages/admin/adminInventory";
 import AdminReports        from "./pages/admin/adminReports";
 import AdminUsers          from "./pages/admin/AdminUsers";
+import ArchivedUsers       from "./pages/admin/ArchivedUsers";
 import AdminCategories     from "./pages/admin/adminCategories"; // Add this import
 
 /* --------------- Other pages --------------- */
@@ -129,6 +130,7 @@ function App() {
         {/* Reports */}
         <Route path="/admin/reports"                element={<AdminReports />} />
         <Route path="/admin/users"                element={<AdminUsers />} />
+        <Route path="/admin/archived-users"        element={<ArchivedUsers />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/admin/notifications" element={<AdminNotifications />} />
 

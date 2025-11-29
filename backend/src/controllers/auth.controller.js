@@ -113,6 +113,11 @@ exports.login = async (req, res) => {
     
     if (!u) return res.status(401).json({ error: "Invalid credentials" });
 
+    // Check if account is archived
+    if (u.isArchived) {
+      return res.status(403).json({ error: "Your account has been archived. Please contact support." });
+    }
+
     // Check if student account is approved (skip for admins)
     if (u.role === "student" && u.status !== "approved") {
       if (u.status === "pending") {

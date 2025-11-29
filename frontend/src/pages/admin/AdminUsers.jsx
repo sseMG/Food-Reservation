@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useMemo } from "react";
 import Navbar from "../../components/adminavbar";
 import { api } from "../../lib/api";
+import { Link } from "react-router-dom";
 import { 
   Pencil, X, Trash, Search, ArrowUpDown, ArrowUp, ArrowDown,
-  Users, Filter, Loader2, Upload, Camera, UserCircle2, Check, AlertCircle
+  Users, Filter, Loader2, Upload, Camera, UserCircle2, Check, AlertCircle, Archive
 } from "lucide-react";
 
 const peso = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" });
@@ -46,6 +47,7 @@ const Avatar = ({ user, size = "md" }) => {
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
+  const [archivedCount, setArchivedCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [editUser, setEditUser] = useState(null);
   const [editForm, setEditForm] = useState({
@@ -81,7 +83,7 @@ export default function AdminUsers() {
     setLoading(true);
     try {
       const data = await api.get("/admin/users");
-      const usersArr = Array.isArray(data) ? data : [];
+      const usersArr = Array.isArray(data) ? data : (data.data ? data.data : []);
 
       const balances = await Promise.all(
         usersArr.map(async (u) => {
@@ -102,6 +104,16 @@ export default function AdminUsers() {
 
       const merged = usersArr.map((u, i) => ({ ...u, balance: balances[i] }));
       setUsers(merged);
+
+      // Load archived count
+      try {
+        const archivedData = await api.get("/admin/users/archived");
+        const archivedArr = Array.isArray(archivedData) ? archivedData : (archivedData.data ? archivedData.data : []);
+        setArchivedCount(archivedArr.length);
+      } catch (err) {
+        console.error("Failed to load archived users count:", err);
+        setArchivedCount(0);
+      }
     } catch (e) {
       console.error("load users failed", e);
       setUsers([]);
@@ -277,6 +289,8 @@ export default function AdminUsers() {
     try {
       await api.delete(`/admin/users/${id}`);
       setUsers(prev => prev.filter(x => String(x.id) !== String(id)));
+      // Update archived count
+      setArchivedCount(prev => prev + 1);
     } catch (err) {
       console.error("delete user failed", err);
       alert(err.message || "Failed to delete user");
@@ -381,6 +395,20 @@ export default function AdminUsers() {
                 </p>
               </div>
             </div>
+
+            <Link
+              to="/admin/archived-users"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-600 text-white rounded-xl font-medium text-sm hover:bg-amber-700 transition"
+              title={`View ${archivedCount} archived user${archivedCount !== 1 ? 's' : ''}`}
+            >
+              <Archive className="w-4 h-4" />
+              <span className="hidden sm:inline">Archived</span>
+              {archivedCount > 0 && (
+                <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full ml-1">
+                  {archivedCount}
+                </span>
+              )}
+            </Link>
           </div>
 
           {/* Search and Filter */}
