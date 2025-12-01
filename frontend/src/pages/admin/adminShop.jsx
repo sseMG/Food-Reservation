@@ -208,7 +208,7 @@ export default function AdminShop() {
     const outOfStock = total - available;
     const lowStock = items.filter(i => {
       const stock = i.stock ?? 0;
-      return stock > 0 && stock < 5;
+      return stock > 0 && stock <= 5;
     }).length;
     return { total, available, outOfStock, lowStock };
   }, [items]);
@@ -435,7 +435,7 @@ export default function AdminShop() {
               <div className="md:hidden space-y-3">
                 {filtered.map((p) => {
                   const available = (p.stock ?? 0) > 0;
-                  const isLowStock = p.stock > 0 && p.stock < 5;
+                  const isLowStock = p.stock > 0 && p.stock <= 5;
                   
                   return (
                     <div key={p.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
@@ -544,7 +544,7 @@ export default function AdminShop() {
                     <tbody className="divide-y divide-gray-200">
                       {filtered.map((p) => {
                         const available = (p.stock ?? 0) > 0;
-                        const isLowStock = p.stock > 0 && p.stock < 5;
+                        const isLowStock = p.stock > 0 && p.stock <= 5;
                         
                         return (
                           <tr key={p.id} className="hover:bg-gray-50">

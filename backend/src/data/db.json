@@ -31,13 +31,13 @@
       "role": "student",
       "grade": "",
       "section": "",
-      "balance": 0,
-      "studentId": "awawawaw",
+      "balance": 1669,
+      "studentId": "202231211",
       "phone": "09688523253",
       "status": "approved",
       "approvalNotes": "Congratulations!",
       "createdAt": "2025-11-27T04:54:38.338Z",
-      "updatedAt": "2025-11-30T09:32:51.742Z",
+      "updatedAt": "2025-12-01T04:52:39.642Z",
       "profilePictureUrl": "/uploads/profile-usr_migylvcy-1764495171737_989580.jpg"
     },
     {
@@ -70,10 +70,11 @@
       "status": "approved",
       "approvalNotes": "",
       "createdAt": "2025-11-27T11:29:00.925Z",
-      "updatedAt": "2025-11-28T23:51:07.019Z",
+      "updatedAt": "2025-12-01T04:23:28.944Z",
       "isArchived": false,
       "archivedAt": null,
-      "isActive": true
+      "isActive": true,
+      "profilePictureUrl": "/uploads/profile-usr_mihcp1j1-1764563008940_611166.png"
     },
     {
       "id": "usr_miippayf",
@@ -89,7 +90,10 @@
       "status": "approved",
       "approvalNotes": "",
       "createdAt": "2025-11-28T10:20:54.327Z",
-      "updatedAt": "2025-11-28T10:21:10.634Z"
+      "updatedAt": "2025-12-01T04:05:11.693Z",
+      "isArchived": true,
+      "archivedAt": "2025-12-01T04:05:11.688Z",
+      "isActive": false
     },
     {
       "id": "usr_mijisuue",
@@ -125,6 +129,22 @@
       "isArchived": true,
       "archivedAt": "2025-11-30T09:26:26.260Z",
       "isActive": false
+    },
+    {
+      "id": "usr_mimo6urw",
+      "name": "NORALYN S DAS",
+      "email": "dasmolster@gmail.com",
+      "passwordHash": "$2a$10$UYnRaeRps9qmT09HiS6BaOva..5mNNMKJ7u9ITPacWEm7HoOmjS4.",
+      "role": "student",
+      "grade": "",
+      "section": "",
+      "balance": 0,
+      "studentId": "4435364677",
+      "phone": "09258151814",
+      "status": "approved",
+      "approvalNotes": "",
+      "createdAt": "2025-12-01T04:49:38.636Z",
+      "updatedAt": "2025-12-01T04:49:54.226Z"
     }
   ],
   "menu": [
@@ -146,65 +166,65 @@
       "name": "Popcorn",
       "category": "Snacks",
       "price": 40,
-      "stock": 48,
+      "stock": 47,
       "img": "/uploads/popcorn-1764043429967_318815.jpg",
       "isActive": true,
       "visible": true,
       "deleted": false,
       "createdAt": "2025-11-25T04:03:49.971Z",
-      "updatedAt": "2025-11-30T06:00:06.433Z"
+      "updatedAt": "2025-12-01T04:15:04.649Z"
     },
     {
       "id": "ITM_1764044048789",
       "name": "Chocolate Cake Slice",
       "category": "Desserts",
       "price": 80,
-      "stock": 5,
+      "stock": 0,
       "img": "/uploads/chocolate-cake-slice-1764044048785_538685.jpg",
       "isActive": true,
-      "visible": true,
+      "visible": false,
       "deleted": false,
       "createdAt": "2025-11-25T04:14:08.789Z",
-      "updatedAt": "2025-11-30T05:56:28.932Z"
+      "updatedAt": "2025-12-01T04:20:58.841Z"
     },
     {
       "id": "ITM_1764044595710",
       "name": "Cappuccino heart coffee",
       "category": "Warm Drink",
       "price": 150,
-      "stock": 7,
+      "stock": 6,
       "img": "/uploads/cappuccino-heart-coffee-1764044595705_619897.jpg",
       "isActive": true,
       "visible": true,
       "deleted": false,
       "createdAt": "2025-11-25T04:23:15.710Z",
-      "updatedAt": "2025-11-30T05:56:28.924Z"
+      "updatedAt": "2025-12-01T04:15:04.657Z"
     },
     {
       "id": "ITM_1764044849234",
       "name": "Cold Cappuccino Coffee",
       "category": "Cold Drinks",
       "price": 140,
-      "stock": 0,
+      "stock": 5,
       "img": "/uploads/cold-cappuccino-coffee-1764044849230_494469.jpg",
       "isActive": true,
       "visible": true,
       "deleted": false,
       "createdAt": "2025-11-25T04:27:29.234Z",
-      "updatedAt": "2025-11-30T09:30:56.411Z"
+      "updatedAt": "2025-12-01T04:31:45.639Z"
     },
     {
       "id": "ITM_1764325526167",
       "name": "Piattos",
       "category": "Junk Foods",
       "price": 60,
-      "stock": 19,
+      "stock": 17,
       "img": "/uploads/piattos-1764325526161_740675.jpg",
       "isActive": true,
       "visible": true,
       "deleted": false,
       "createdAt": "2025-11-28T10:25:26.167Z",
-      "updatedAt": "2025-11-30T05:56:28.963Z"
+      "updatedAt": "2025-12-01T04:52:39.660Z"
     },
     {
       "id": "ITM_1764327544576",
@@ -244,6 +264,19 @@
       "deleted": false,
       "createdAt": "2025-11-28T11:45:42.264Z",
       "updatedAt": "2025-11-30T05:56:28.956Z"
+    },
+    {
+      "id": "ITM_1764563620378",
+      "name": "Dutch Mill",
+      "category": "Beverages",
+      "price": 20,
+      "stock": 9,
+      "img": "/uploads/dutch-mill-1764563620371_307071.jpg",
+      "isActive": true,
+      "visible": true,
+      "deleted": false,
+      "createdAt": "2025-12-01T04:33:40.378Z",
+      "updatedAt": "2025-12-01T04:52:39.652Z"
     }
   ],
   "reservations": [
@@ -383,13 +416,13 @@
         }
       ],
       "total": 192,
-      "status": "Ready",
+      "status": "Claimed",
       "transactionId": "txn_miir8b1t",
       "charged": true,
       "chargedAt": "2025-11-28T11:03:40.527Z",
       "stockDeducted": true,
       "createdAt": "2025-11-28T11:03:40.533Z",
-      "updatedAt": "2025-11-28T11:04:39.729Z"
+      "updatedAt": "2025-12-01T04:17:18.253Z"
     },
     {
       "id": "RES_milb4yibi5",
@@ -450,13 +483,13 @@
         }
       ],
       "total": 590,
-      "status": "Preparing",
+      "status": "Claimed",
       "transactionId": "txn_milb4yie",
       "charged": true,
       "chargedAt": "2025-11-30T05:56:28.979Z",
       "stockDeducted": true,
       "createdAt": "2025-11-30T05:56:28.986Z",
-      "updatedAt": "2025-11-30T05:58:01.416Z"
+      "updatedAt": "2025-12-01T04:27:50.867Z"
     },
     {
       "id": "RES_milb92do39",
@@ -490,6 +523,107 @@
       "updatedAt": "2025-11-30T06:00:06.440Z",
       "refunded": true,
       "refundTransactionId": "txn_milb9mat"
+    },
+    {
+      "id": "RES_mimmyehn74",
+      "userId": "usr_migylvcy",
+      "student": "Anmol David Das",
+      "grade": "G10",
+      "section": "Proverbs",
+      "when": "recess",
+      "note": "Hi",
+      "items": [
+        {
+          "id": "ITM_1764043429971",
+          "name": "Popcorn",
+          "price": 40,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764044595710",
+          "name": "Cappuccino heart coffee",
+          "price": 150,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764325526167",
+          "name": "Piattos",
+          "price": 60,
+          "qty": 1
+        }
+      ],
+      "total": 250,
+      "status": "Claimed",
+      "transactionId": "txn_mimmyehs",
+      "charged": true,
+      "chargedAt": "2025-12-01T04:15:04.667Z",
+      "stockDeducted": true,
+      "createdAt": "2025-12-01T04:15:04.679Z",
+      "updatedAt": "2025-12-01T04:17:15.092Z"
+    },
+    {
+      "id": "RES_mimnnobj4h",
+      "userId": "usr_migylvcy",
+      "student": "Anmol David Das",
+      "grade": "G9",
+      "section": "Corinthians",
+      "when": "recess",
+      "note": "",
+      "items": [
+        {
+          "id": "ITM_1764563620378",
+          "name": "Dutch Mill",
+          "price": 20,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764325526167",
+          "name": "Piattos",
+          "price": 60,
+          "qty": 1
+        }
+      ],
+      "total": 80,
+      "status": "Rejected",
+      "transactionId": "txn_mimnnobn",
+      "charged": true,
+      "chargedAt": "2025-12-01T04:34:43.807Z",
+      "stockDeducted": true,
+      "createdAt": "2025-12-01T04:34:43.815Z",
+      "updatedAt": "2025-12-01T04:35:21.279Z",
+      "refunded": true,
+      "refundTransactionId": "txn_mimnoh89"
+    },
+    {
+      "id": "RES_mimoaqge93",
+      "userId": "usr_migylvcy",
+      "student": "Anmol David Das",
+      "grade": "G11",
+      "section": "Ermer",
+      "when": "recess",
+      "note": "",
+      "items": [
+        {
+          "id": "ITM_1764563620378",
+          "name": "Dutch Mill",
+          "price": 20,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764325526167",
+          "name": "Piattos",
+          "price": 60,
+          "qty": 1
+        }
+      ],
+      "total": 80,
+      "status": "Approved",
+      "transactionId": "txn_mimoaqgg",
+      "charged": true,
+      "chargedAt": "2025-12-01T04:52:39.662Z",
+      "stockDeducted": true,
+      "createdAt": "2025-12-01T04:52:39.669Z",
+      "updatedAt": "2025-12-01T04:53:09.874Z"
     }
   ],
   "topups": [
@@ -564,6 +698,24 @@
       "updatedAt": "2025-11-30T09:27:52.761Z",
       "credited": true,
       "creditedAt": "2025-11-30T09:27:52.738Z"
+    },
+    {
+      "id": "top_mimm5uy9",
+      "userId": "usr_migylvcy",
+      "student": "Anmol David Das",
+      "studentId": "202231211",
+      "contact": "09688523253",
+      "email": "spadymold@gmail.com",
+      "provider": "gcash",
+      "amount": 2000,
+      "reference": "1234567890",
+      "status": "Approved",
+      "proofUrl": "/uploads/topup-usr_migylvcy-1764561172972_322593.jpg",
+      "submittedAt": "2025-12-01T03:52:52.966Z",
+      "createdAt": "2025-12-01T03:52:52.977Z",
+      "updatedAt": "2025-12-01T03:53:15.549Z",
+      "credited": true,
+      "creditedAt": "2025-12-01T03:53:15.519Z"
     }
   ],
   "transactions": [
@@ -686,9 +838,544 @@
       "topupId": "top_milio6qr",
       "status": "Success",
       "createdAt": "2025-11-30T09:27:52.757Z"
+    },
+    {
+      "id": "txn_mimm6cd3",
+      "userId": "usr_migylvcy",
+      "type": "TopUp",
+      "amount": 2000,
+      "reference": "1234567890",
+      "topupId": "top_mimm5uy9",
+      "status": "Success",
+      "createdAt": "2025-12-01T03:53:15.543Z"
+    },
+    {
+      "id": "txn_mimmyehs",
+      "userId": "usr_migylvcy",
+      "title": "Reservation Hold",
+      "ref": "RES_mimmyehn74",
+      "amount": 250,
+      "direction": "debit",
+      "status": "Success",
+      "createdAt": "2025-12-01T04:15:04.672Z"
+    },
+    {
+      "id": "txn_mimnnobn",
+      "userId": "usr_migylvcy",
+      "title": "Reservation Hold",
+      "ref": "RES_mimnnobj4h",
+      "amount": 80,
+      "direction": "debit",
+      "status": "Pending",
+      "createdAt": "2025-12-01T04:34:43.811Z"
+    },
+    {
+      "id": "txn_mimnoh89",
+      "userId": "usr_migylvcy",
+      "title": "Refund",
+      "ref": "RES_mimnnobj4h",
+      "amount": 80,
+      "direction": "credit",
+      "status": "Success",
+      "createdAt": "2025-12-01T04:35:21.273Z"
+    },
+    {
+      "id": "txn_mimoaqgg",
+      "userId": "usr_migylvcy",
+      "title": "Reservation Hold",
+      "ref": "RES_mimoaqge93",
+      "amount": 80,
+      "direction": "debit",
+      "status": "Success",
+      "createdAt": "2025-12-01T04:52:39.664Z"
     }
   ],
   "notifications": [
+    {
+      "id": "notif_mimobdrv",
+      "for": "usr_migylvcy",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_mimoaqge93 Approved",
+      "body": "Your reservation RES_mimoaqge93 has been approved.",
+      "data": {
+        "reservationId": "RES_mimoaqge93",
+        "status": "Approved",
+        "items": [
+          {
+            "id": "ITM_1764563620378",
+            "name": "Dutch Mill",
+            "price": 20,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764325526167",
+            "name": "Piattos",
+            "price": 60,
+            "qty": 1
+          }
+        ],
+        "total": 80,
+        "note": "",
+        "slot": "recess",
+        "grade": "G11",
+        "section": "Ermer",
+        "student": "Anmol David Das",
+        "transactionId": "txn_mimoaqgg"
+      },
+      "read": true,
+      "createdAt": "2025-12-01T04:53:09.883Z"
+    },
+    {
+      "id": "notif_mimoaqgn",
+      "for": "admin",
+      "actor": {
+        "id": "usr_migylvcy",
+        "name": "Anmol David Das",
+        "email": "spadymold@gmail.com",
+        "profilePictureUrl": "/uploads/profile-usr_migylvcy-1764495171737_989580.jpg"
+      },
+      "type": "reservation:created",
+      "title": "New reservation submitted",
+      "body": "Anmol David Das submitted a reservation",
+      "data": {
+        "reservationId": "RES_mimoaqge93",
+        "items": [
+          {
+            "id": "ITM_1764563620378",
+            "name": "Dutch Mill",
+            "price": 20,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764325526167",
+            "name": "Piattos",
+            "price": 60,
+            "qty": 1
+          }
+        ],
+        "total": 80,
+        "note": "",
+        "slot": "recess",
+        "grade": "G11",
+        "section": "Ermer",
+        "student": "Anmol David Das"
+      },
+      "read": true,
+      "createdAt": "2025-12-01T04:52:39.669Z"
+    },
+    {
+      "id": "notif_mimo78tr",
+      "for": "usr_mimo6urw",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "student:approved",
+      "title": "Registration Approved!",
+      "body": "Congratulations! Your registration has been approved. You can now log in to the system.",
+      "data": {
+        "status": "approved"
+      },
+      "read": true,
+      "createdAt": "2025-12-01T04:49:56.847Z"
+    },
+    {
+      "id": "notif_mimo6ury",
+      "for": "admin",
+      "actor": null,
+      "type": "student:pending-approval",
+      "title": "New Student Registration Pending Approval: NORALYN S DAS",
+      "body": "A new student registration requires approval.\n\nName: NORALYN S DAS\nStudent ID: 4435364677\nEmail: dasmolster@gmail.com\nPhone: 09258151814\n\nPlease review and approve or reject this registration.",
+      "data": {
+        "userId": "usr_mimo6urw",
+        "studentName": "NORALYN S DAS",
+        "studentId": "4435364677",
+        "email": "dasmolster@gmail.com",
+        "phone": "09258151814",
+        "grade": "",
+        "section": "",
+        "status": "pending"
+      },
+      "read": true,
+      "createdAt": "2025-12-01T04:49:38.638Z"
+    },
+    {
+      "id": "notif_mimo26dv",
+      "for": "admin",
+      "actor": null,
+      "type": "student:pending-approval",
+      "title": "New Student Registration Pending Approval: NORALYN S DAS",
+      "body": "A new student registration requires approval.\n\nName: NORALYN S DAS\nStudent ID: 555477567\nEmail: dasmolster@gmail.com\nPhone: +639258151814\n\nPlease review and approve or reject this registration.",
+      "data": {
+        "userId": "usr_mimo26ds",
+        "studentName": "NORALYN S DAS",
+        "studentId": "555477567",
+        "email": "dasmolster@gmail.com",
+        "phone": "+639258151814",
+        "grade": "",
+        "section": "",
+        "status": "pending"
+      },
+      "read": true,
+      "createdAt": "2025-12-01T04:46:00.403Z"
+    },
+    {
+      "id": "notif_mimnoh8g",
+      "for": "usr_migylvcy",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_mimnnobj4h Rejected",
+      "body": "Your reservation RES_mimnnobj4h has been rejected. Refund has been applied.",
+      "data": {
+        "reservationId": "RES_mimnnobj4h",
+        "status": "Rejected",
+        "items": [
+          {
+            "id": "ITM_1764563620378",
+            "name": "Dutch Mill",
+            "price": 20,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764325526167",
+            "name": "Piattos",
+            "price": 60,
+            "qty": 1
+          }
+        ],
+        "total": 80,
+        "note": "",
+        "slot": "recess",
+        "grade": "G9",
+        "section": "Corinthians",
+        "student": "Anmol David Das"
+      },
+      "read": true,
+      "createdAt": "2025-12-01T04:35:21.280Z"
+    },
+    {
+      "id": "notif_mimnnobt",
+      "for": "admin",
+      "actor": {
+        "id": "usr_migylvcy",
+        "name": "Anmol David Das",
+        "email": "spadymold@gmail.com",
+        "profilePictureUrl": "/uploads/profile-usr_migylvcy-1764495171737_989580.jpg"
+      },
+      "type": "reservation:created",
+      "title": "New reservation submitted",
+      "body": "Anmol David Das submitted a reservation",
+      "data": {
+        "reservationId": "RES_mimnnobj4h",
+        "items": [
+          {
+            "id": "ITM_1764563620378",
+            "name": "Dutch Mill",
+            "price": 20,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764325526167",
+            "name": "Piattos",
+            "price": 60,
+            "qty": 1
+          }
+        ],
+        "total": 80,
+        "note": "",
+        "slot": "recess",
+        "grade": "G9",
+        "section": "Corinthians",
+        "student": "Anmol David Das"
+      },
+      "read": true,
+      "createdAt": "2025-12-01T04:34:43.815Z"
+    },
+    {
+      "id": "notif_mimnetp1",
+      "for": "usr_migylvcy",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_milb4yibi5 Claimed",
+      "body": "Your reservation RES_milb4yibi5 is now Claimed.",
+      "data": {
+        "reservationId": "RES_milb4yibi5",
+        "status": "Claimed"
+      },
+      "read": true,
+      "createdAt": "2025-12-01T04:27:50.869Z"
+    },
+    {
+      "id": "notif_mimnet6m",
+      "for": "usr_migylvcy",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_milb4yibi5 Ready",
+      "body": "Your reservation RES_milb4yibi5 is now Ready.",
+      "data": {
+        "reservationId": "RES_milb4yibi5",
+        "status": "Ready"
+      },
+      "read": true,
+      "createdAt": "2025-12-01T04:27:50.206Z"
+    },
+    {
+      "id": "notif_mimn19kg",
+      "for": "usr_migylvcy",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_miir8b1r5g Claimed",
+      "body": "Your reservation RES_miir8b1r5g is now Claimed.",
+      "data": {
+        "reservationId": "RES_miir8b1r5g",
+        "status": "Claimed"
+      },
+      "read": true,
+      "createdAt": "2025-12-01T04:17:18.256Z"
+    },
+    {
+      "id": "notif_mimn174l",
+      "for": "usr_migylvcy",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_mimmyehn74 Claimed",
+      "body": "Your reservation RES_mimmyehn74 is now Claimed.",
+      "data": {
+        "reservationId": "RES_mimmyehn74",
+        "status": "Claimed"
+      },
+      "read": true,
+      "createdAt": "2025-12-01T04:17:15.093Z"
+    },
+    {
+      "id": "notif_mimn1649",
+      "for": "usr_migylvcy",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_mimmyehn74 Ready",
+      "body": "Your reservation RES_mimmyehn74 is now Ready.",
+      "data": {
+        "reservationId": "RES_mimmyehn74",
+        "status": "Ready"
+      },
+      "read": true,
+      "createdAt": "2025-12-01T04:17:13.785Z"
+    },
+    {
+      "id": "notif_mimn14q4",
+      "for": "usr_migylvcy",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_mimmyehn74 Preparing",
+      "body": "Your reservation RES_mimmyehn74 is now Preparing.",
+      "data": {
+        "reservationId": "RES_mimmyehn74",
+        "status": "Preparing"
+      },
+      "read": true,
+      "createdAt": "2025-12-01T04:17:11.980Z"
+    },
+    {
+      "id": "notif_mimn0pzi",
+      "for": "usr_migylvcy",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_mimmyehn74 Approved",
+      "body": "Your reservation RES_mimmyehn74 has been approved.",
+      "data": {
+        "reservationId": "RES_mimmyehn74",
+        "status": "Approved",
+        "items": [
+          {
+            "id": "ITM_1764043429971",
+            "name": "Popcorn",
+            "price": 40,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764044595710",
+            "name": "Cappuccino heart coffee",
+            "price": 150,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764325526167",
+            "name": "Piattos",
+            "price": 60,
+            "qty": 1
+          }
+        ],
+        "total": 250,
+        "note": "Hi",
+        "slot": "recess",
+        "grade": "G10",
+        "section": "Proverbs",
+        "student": "Anmol David Das",
+        "transactionId": "txn_mimmyehs"
+      },
+      "read": true,
+      "createdAt": "2025-12-01T04:16:52.878Z"
+    },
+    {
+      "id": "notif_mimmyei1",
+      "for": "admin",
+      "actor": {
+        "id": "usr_migylvcy",
+        "name": "Anmol David Das",
+        "email": "spadymold@gmail.com",
+        "profilePictureUrl": "/uploads/profile-usr_migylvcy-1764495171737_989580.jpg"
+      },
+      "type": "reservation:created",
+      "title": "New reservation submitted",
+      "body": "Anmol David Das submitted a reservation",
+      "data": {
+        "reservationId": "RES_mimmyehn74",
+        "items": [
+          {
+            "id": "ITM_1764043429971",
+            "name": "Popcorn",
+            "price": 40,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764044595710",
+            "name": "Cappuccino heart coffee",
+            "price": 150,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764325526167",
+            "name": "Piattos",
+            "price": 60,
+            "qty": 1
+          }
+        ],
+        "total": 250,
+        "note": "Hi",
+        "slot": "recess",
+        "grade": "G10",
+        "section": "Proverbs",
+        "student": "Anmol David Das"
+      },
+      "read": true,
+      "createdAt": "2025-12-01T04:15:04.679Z"
+    },
+    {
+      "id": "notif_mimmhm00",
+      "for": "admin",
+      "actor": null,
+      "type": "student:pending-approval",
+      "title": "New Student Registration Pending Approval: Finance F Bertund",
+      "body": "A new student registration requires approval.\n\nName: Finance F Bertund\nStudent ID: 2022556730\nEmail: saurinanmol@gmail.com\nPhone: 09684598564\n\nPlease review and approve or reject this registration.",
+      "data": {
+        "userId": "usr_mimmhlzx",
+        "studentName": "Finance F Bertund",
+        "studentId": "2022556730",
+        "email": "saurinanmol@gmail.com",
+        "phone": "09684598564",
+        "grade": "",
+        "section": "",
+        "status": "pending"
+      },
+      "read": true,
+      "createdAt": "2025-12-01T04:02:01.248Z"
+    },
+    {
+      "id": "notif_mimm6cdb",
+      "for": "usr_migylvcy",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "topup:status",
+      "title": "Top-up Approved",
+      "body": "Your top-up request for ₱2,000.00 was approved",
+      "data": {
+        "topupId": "top_mimm5uy9",
+        "status": "Approved",
+        "amount": 2000,
+        "rejectionReason": null
+      },
+      "read": true,
+      "createdAt": "2025-12-01T03:53:15.551Z"
+    },
+    {
+      "id": "notif_mimm5uyj",
+      "for": "admin",
+      "actor": {
+        "id": "usr_migylvcy",
+        "name": "Anmol David Das",
+        "email": "spadymold@gmail.com",
+        "profilePictureUrl": "/uploads/profile-usr_migylvcy-1764495171737_989580.jpg"
+      },
+      "type": "topup:created",
+      "title": "New Top-up Request",
+      "body": "Anmol David Das submitted a top-up request for ₱2,000.00",
+      "data": {
+        "topupId": "top_mimm5uy9",
+        "amount": 2000,
+        "provider": "gcash",
+        "studentId": "202231211",
+        "reference": "1234567890",
+        "student": {
+          "name": "Anmol David Das",
+          "contact": "09688523253",
+          "email": "spadymold@gmail.com"
+        }
+      },
+      "read": true,
+      "createdAt": "2025-12-01T03:52:52.966Z"
+    },
     {
       "id": "notif_miliotdm",
       "for": "usr_migylvcy",
@@ -707,7 +1394,7 @@
         "amount": 2000,
         "rejectionReason": null
       },
-      "read": false,
+      "read": true,
       "createdAt": "2025-11-30T09:27:52.762Z"
     },
     {
@@ -1162,7 +1849,7 @@
       "data": {
         "isArchived": false
       },
-      "read": false,
+      "read": true,
       "createdAt": "2025-11-28T23:51:07.021Z"
     },
     {
@@ -1702,7 +2389,7 @@
       "data": {
         "status": "approved"
       },
-      "read": false,
+      "read": true,
       "createdAt": "2025-11-27T05:43:35.737Z"
     },
     {
@@ -2217,7 +2904,7 @@
       "userId": "usr_migylvcy",
       "items": [],
       "createdAt": "2025-11-27T05:10:47.368Z",
-      "updatedAt": "2025-11-30T05:59:42.672Z"
+      "updatedAt": "2025-12-01T04:52:41.077Z"
     },
     {
       "id": "cart_mihd657a",
@@ -2246,6 +2933,20 @@
       "items": [],
       "createdAt": "2025-11-30T09:25:56.086Z",
       "updatedAt": "2025-11-30T09:25:56.086Z"
+    },
+    {
+      "id": "cart_mimmvuxi",
+      "userId": "usr_mih0aoeu",
+      "items": [],
+      "createdAt": "2025-12-01T04:13:06.006Z",
+      "updatedAt": "2025-12-01T04:13:06.006Z"
+    },
+    {
+      "id": "cart_mimo9liv",
+      "userId": "usr_mimo6urw",
+      "items": [],
+      "createdAt": "2025-12-01T04:51:46.615Z",
+      "updatedAt": "2025-12-01T04:51:46.615Z"
     }
   ],
   "food_categories": [

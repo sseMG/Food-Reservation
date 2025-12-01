@@ -279,7 +279,7 @@ export default function AdminOrders() {
 
   const ordersRef = useRef([]);
   useEffect(() => {
-    ordersRef.current = orders;
+    ordersRef.current = [...orders];
   }, [orders]);
 
   const fetchOrders = async (signal) => {
@@ -291,7 +291,7 @@ export default function AdminOrders() {
       setOrders(arr);
       setLastUpdated(new Date());
     } catch (e) {
-      if (e.name === 'AbortError' || e.message?.includes('abort')) {
+      if (e.name === 'AbortError' || e.code === 'ABORT_ERR' || e.message?.includes('abort')) {
         return;
       }
       console.error("Load orders failed:", e);
@@ -361,11 +361,21 @@ export default function AdminOrders() {
     return () => clearTimeout(timer);
   }, [q]);
 
-  const orderTotal = (o) =>
-    (o?.items || []).reduce(
-      (acc, it) => acc + (Number(it?.qty ?? it?.quantity ?? 0) || 0) * (Number(it?.price ?? it?.unitPrice ?? 0) || 0),
-      0
-    );
+  const orderTotal = (o) => {
+    try {
+      return (o?.items || []).reduce((acc, it) => {
+        const qty = Number(it?.qty ?? it?.quantity ?? 0) || 0;
+        const price = Number(it?.price ?? it?.unitPrice ?? 0) || 0;
+        if (isFinite(qty) && isFinite(price)) {
+          return acc + (qty * price);
+        }
+        return acc;
+      }, 0);
+    } catch (e) {
+      console.warn("Error calculating order total:", e);
+      return 0;
+    }
+  };
 
   const getPickupTimeValue = (o) => {
     const when = o.when || o.slot || o.slotLabel || o.pickup || o.pickupTime || "";
@@ -434,8 +444,9 @@ export default function AdminOrders() {
           if (field === "total") {
             const orderTotalNum = orderTotal(o);
             const matches = values.some(value => {
-              const numericValue = parseFloat(value.replace(/[^\d.]/g, ""));
-              if (!isNaN(numericValue)) {
+              const cleaned = String(value).replace(/[^\d.]/g, "");
+              const numericValue = parseFloat(cleaned);
+              if (!isNaN(numericValue) && isFinite(numericValue)) {
                 return Math.abs(orderTotalNum - numericValue) < 0.01;
               }
               return fieldData.includes(value);
@@ -503,6 +514,10 @@ export default function AdminOrders() {
   }, [orders, tab, parsedQuery, sortField, sortOrder]);
 
   const transition = async (id, next) => {
+    if (!id) {
+      alert("Invalid order ID");
+      return;
+    }
     setBusyId(id);
     try {
       const data = await api.patch(`/reservations/admin/${id}`, { status: next });
@@ -667,24 +682,26 @@ export default function AdminOrders() {
             <div className="p-4 bg-white border border-gray-200 rounded-lg space-y-2">
               <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide">Sort By</label>
               <select
-                value={`${sortField}-${sortOrder}`}
+                value={`${sortField}|${sortOrder}`}
                 onChange={(e) => {
-                  const [field, order] = e.target.value.split("-");
-                  setSortField(field);
-                  setSortOrder(order);
+                  const [field, order] = e.target.value.split("|");
+                  if (field && order) {
+                    setSortField(field);
+                    setSortOrder(order);
+                  }
                 }}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="pickup-asc">Pickup Time (Early → Late)</option>
-                <option value="pickup-desc">Pickup Time (Late → Early)</option>
-                <option value="name-asc">Student Name (A → Z)</option>
-                <option value="name-desc">Student Name (Z → A)</option>
-                <option value="total-asc">Total (Low → High)</option>
-                <option value="total-desc">Total (High → Low)</option>
-                <option value="status-asc">Status (A → Z)</option>
-                <option value="status-desc">Status (Z → A)</option>
-                <option value="id-asc">Order ID (A → Z)</option>
-                <option value="id-desc">Order ID (Z → A)</option>
+                <option value="pickup|asc">Pickup Time (Early → Late)</option>
+                <option value="pickup|desc">Pickup Time (Late → Early)</option>
+                <option value="name|asc">Student Name (A → Z)</option>
+                <option value="name|desc">Student Name (Z → A)</option>
+                <option value="total|asc">Total (Low → High)</option>
+                <option value="total|desc">Total (High → Low)</option>
+                <option value="status|asc">Status (A → Z)</option>
+                <option value="status|desc">Status (Z → A)</option>
+                <option value="id|asc">Order ID (A → Z)</option>
+                <option value="id|desc">Order ID (Z → A)</option>
               </select>
             </div>
           )}
@@ -828,24 +845,26 @@ export default function AdminOrders() {
             </div>
 
             <select
-              value={`${sortField}-${sortOrder}`}
+              value={`${sortField}|${sortOrder}`}
               onChange={(e) => {
-                const [field, order] = e.target.value.split("-");
-                setSortField(field);
-                setSortOrder(order);
+                const [field, order] = e.target.value.split("|");
+                if (field && order) {
+                  setSortField(field);
+                  setSortOrder(order);
+                }
               }}
               className="border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-shrink-0"
             >
-              <option value="pickup-asc">Pickup Time (Early → Late)</option>
-              <option value="pickup-desc">Pickup Time (Late → Early)</option>
-              <option value="name-asc">Student Name (A → Z)</option>
-              <option value="name-desc">Student Name (Z → A)</option>
-              <option value="total-asc">Total (Low → High)</option>
-              <option value="total-desc">Total (High → Low)</option>
-              <option value="status-asc">Status (A → Z)</option>
-              <option value="status-desc">Status (Z → A)</option>
-              <option value="id-asc">Order ID (A → Z)</option>
-              <option value="id-desc">Order ID (Z → A)</option>
+              <option value="pickup|asc">Pickup Time (Early → Late)</option>
+              <option value="pickup|desc">Pickup Time (Late → Early)</option>
+              <option value="name|asc">Student Name (A → Z)</option>
+              <option value="name|desc">Student Name (Z → A)</option>
+              <option value="total|asc">Total (Low → High)</option>
+              <option value="total|desc">Total (High → Low)</option>
+              <option value="status|asc">Status (A → Z)</option>
+              <option value="status|desc">Status (Z → A)</option>
+              <option value="id|asc">Order ID (A → Z)</option>
+              <option value="id|desc">Order ID (Z → A)</option>
             </select>
           </div>
         </div>
@@ -1003,16 +1022,20 @@ export default function AdminOrders() {
                   {/* Items - Mobile optimized */}
                   <div className="mt-3 border-t pt-3">
                     <div className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">Items Ordered</div>
-                    <div className="space-y-1.5">
-                      {(o.items || []).map((it, idx) => (
-                        <div key={idx} className="flex items-start justify-between text-xs sm:text-sm py-1 hover:bg-gray-50 px-2 -mx-2 rounded">
-                          <div className="text-gray-700 flex-1 pr-2 break-words">{it.name}</div>
-                          <div className="text-gray-600 font-medium flex-shrink-0">
-                            <span className="text-gray-500">×</span>{it.qty ?? it.quantity ?? 0}
+                    {(o.items || []).length > 0 ? (
+                      <div className="space-y-1.5">
+                        {(o.items || []).map((it, idx) => (
+                          <div key={`${o.id}-item-${idx}-${it.name || 'unknown'}`} className="flex items-start justify-between text-xs sm:text-sm py-1 hover:bg-gray-50 px-2 -mx-2 rounded">
+                            <div className="text-gray-700 flex-1 pr-2 break-words">{it.name}</div>
+                            <div className="text-gray-600 font-medium flex-shrink-0">
+                              <span className="text-gray-500">×</span>{it.qty ?? it.quantity ?? 0}
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-xs text-gray-500 italic">No items in this order</div>
+                    )}
                   </div>
 
                   {/* Actions - Full width on mobile */}

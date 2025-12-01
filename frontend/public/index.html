@@ -30,6 +30,14 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>JCKL Food Reservation & Allowance System</title>
+    <script>
+      // Suppress ResizeObserver loop error (non-critical browser notification)
+      window.addEventListener('error', (event) => {
+        if (event.message === 'ResizeObserver loop completed with undelivered notifications.') {
+          event.stopImmediatePropagation();
+        }
+      }, true);
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

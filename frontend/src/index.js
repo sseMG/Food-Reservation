@@ -7,6 +7,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { CartProvider } from "./contexts/CartContext";
 
+// Suppress ResizeObserver loop error (non-critical browser notification issue)
+const errorHandler = window.addEventListener('error', (event) => {
+  if (event.message === 'ResizeObserver loop completed with undelivered notifications.') {
+    event.preventDefault();
+  }
+});
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

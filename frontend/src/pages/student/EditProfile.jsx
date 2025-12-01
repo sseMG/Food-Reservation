@@ -207,7 +207,7 @@ export default function EditProfile() {
                   className="mt-1 block w-full border border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
                   placeholder={`Enter your ${field === 'studentId' ? 'student ID' : 
                               field === 'phone' ? 'phone number' : field}`}
-                  disabled={loading}
+                  disabled={loading || field === 'studentId'}
                 />
               </div>
             ))}

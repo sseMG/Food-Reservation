@@ -32,7 +32,9 @@ const Avatar = ({ user, size = "md" }) => {
           const fallback = document.createElement("div");
           fallback.className = `${sizeClasses[size]} rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center font-semibold text-blue-600`;
           fallback.textContent = fallbackInitial;
-          e.target.parentElement.appendChild(fallback);
+          if (e.target.parentElement) {
+            e.target.parentElement.appendChild(fallback);
+          }
         }}
       />
     );
@@ -78,6 +80,7 @@ export default function AdminUsers() {
     rejectionReason: ''
   });
   const [selectedPendingUser, setSelectedPendingUser] = useState(null);
+  const [selectedRejectUser, setSelectedRejectUser] = useState(null);
   
   // Balance editing state
   const [balanceEditUser, setBalanceEditUser] = useState(null);
@@ -85,6 +88,7 @@ export default function AdminUsers() {
   const [balanceLoginPassword, setBalanceLoginPassword] = useState('');
   const [balanceLoginLoading, setBalanceLoginLoading] = useState(false);
   const [balanceLoginError, setBalanceLoginError] = useState('');
+  const [balancePasswordVerified, setBalancePasswordVerified] = useState(false);
   const [newBalance, setNewBalance] = useState('');
   const [balanceUpdateLoading, setBalanceUpdateLoading] = useState(false);
 
@@ -102,8 +106,8 @@ export default function AdminUsers() {
             }
             
             const walletRes = await api.get(`/admin/users/${u.id}/wallet`);
-            const wallet = walletRes;
-            return Number(wallet?.balance ?? wallet?.wallet ?? 0);
+            const balance = walletRes?.balance ?? walletRes?.wallet?.balance ?? walletRes?.wallet ?? 0;
+            return Number(balance);
           } catch (err) {
             console.error(`Failed to load wallet for user ${u.id}:`, err);
             return 0;
@@ -151,7 +155,7 @@ export default function AdminUsers() {
         const matchName = String(u.name || '').toLowerCase().includes(query);
         const matchEmail = String(u.email || '').toLowerCase().includes(query);
         const matchPhone = String(u.phone || '').toLowerCase().includes(query);
-        const matchBalance = peso.format(Number(u.balance || 0)).toLowerCase().includes(query);
+        const matchBalance = String(Number(u.balance || 0)).includes(query);
         
         return matchId || matchStudentId || matchName || matchEmail || matchPhone || matchBalance;
       });
@@ -170,8 +174,8 @@ export default function AdminUsers() {
           bVal = b.email?.toLowerCase() || "";
           break;
         case "studentId":
-          aVal = a.studentId?.toLowerCase() || "";
-          bVal = b.studentId?.toLowerCase() || "";
+          aVal = String(a.studentId || '').toLowerCase();
+          bVal = String(b.studentId || '').toLowerCase();
           break;
         case "phone":
           aVal = a.phone?.toLowerCase() || "";
@@ -326,7 +330,7 @@ export default function AdminUsers() {
       
       // Update user status in state
       setUsers(users.map(u => 
-        u.id === userId ? { ...u, status: "approved" } : u
+        String(u.id) === String(userId) ? { ...u, status: "approved" } : u
       ));
       
       setSelectedPendingUser(null);
@@ -342,7 +346,6 @@ export default function AdminUsers() {
 
   const rejectUser = async (userId) => {
     if (!userId) return;
-    if (!window.confirm('Are you sure you want to reject this registration?')) return;
     
     setRejectingIdInline(userId);
     try {
@@ -351,9 +354,9 @@ export default function AdminUsers() {
       });
       
       // Remove user from state (account is deleted)
-      setUsers(users.filter(u => u.id !== userId));
+      setUsers(users.filter(u => String(u.id) !== String(userId)));
       
-      setSelectedPendingUser(null);
+      setSelectedRejectUser(null);
       setRejectionForm({ rejectionReason: '' });
       alert('Registration rejected. User account has been deleted.');
     } catch (err) {
@@ -374,7 +377,7 @@ export default function AdminUsers() {
       
       // Update user status in state
       setUsers(users.map(u => 
-        u.id === userId ? { ...u, status: "approved" } : u
+        String(u.id) === String(userId) ? { ...u, status: "approved" } : u
       ));
       
       alert('User approved successfully. Confirmation email sent.');
@@ -393,6 +396,7 @@ export default function AdminUsers() {
     setBalanceLoginPassword('');
     setNewBalance(String(user.balance || 0));
     setBalanceLoginError('');
+    setBalancePasswordVerified(false);
     setSearchQuery(''); // Clear search to prevent filtering
   };
 
@@ -415,7 +419,8 @@ export default function AdminUsers() {
       // The api wrapper unwraps the response, so loginRes will have token and user
       if (loginRes && loginRes.token && loginRes.user) {
         // Credentials verified - move to balance edit interface
-        setBalanceLoginPassword('verified');
+        setBalancePasswordVerified(true);
+        setBalanceLoginPassword('');
       } else {
         setBalanceLoginError('Authentication failed. Please try again.');
       }
@@ -445,7 +450,7 @@ export default function AdminUsers() {
 
       // Update local state
       setUsers(users.map(u =>
-        u.id === balanceEditUser.id ? { ...u, balance: newBalanceNum } : u
+        String(u.id) === String(balanceEditUser.id) ? { ...u, balance: newBalanceNum } : u
       ));
 
       alert('Balance updated successfully');
@@ -468,6 +473,7 @@ export default function AdminUsers() {
     setBalanceLoginPassword('');
     setNewBalance('');
     setBalanceLoginError('');
+    setBalancePasswordVerified(false);
   };
 
   return (
@@ -689,9 +695,8 @@ export default function AdminUsers() {
                             </button>
                             <button
                               onClick={() => {
-                                if (window.confirm(`Reject registration from ${u.name}?`)) {
-                                  rejectUser(u.id);
-                                }
+                                setSelectedRejectUser(u);
+                                setRejectionForm({ rejectionReason: '' });
                               }}
                               disabled={rejectingIdInline === u.id}
                               className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-red-600 text-white rounded-lg text-xs font-medium hover:bg-red-700 transition disabled:opacity-60 disabled:cursor-not-allowed w-full"
@@ -715,7 +720,7 @@ export default function AdminUsers() {
                               ? 'bg-green-100 text-green-700'
                               : 'bg-gray-100 text-gray-700'
                           }`}>
-                            {u.status ? u.status.charAt(0).toUpperCase() + u.status.slice(1) : 'Approved'}
+                            {u.status && u.status !== 'approved' ? u.status.charAt(0).toUpperCase() + u.status.slice(1) : 'Approved'}
                           </span>
                         )}
                       </td>
@@ -1019,36 +1024,33 @@ export default function AdminUsers() {
 
                   {/* Spacer for button visibility */}
                   <div className="h-4" />
-                </form>
-              </div>
 
-              {/* Sticky Footer with Action Buttons */}
-              <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 sm:p-6 flex-shrink-0">
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setEditUser(null)}
-                    disabled={submitting}
-                    className="flex-1 px-4 py-3 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition disabled:opacity-60 disabled:cursor-not-allowed"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    onClick={handleSubmit}
-                    disabled={submitting}
-                    className="flex-1 px-4 py-3 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl hover:from-blue-700 hover:to-blue-800 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg"
-                  >
-                    {submitting ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Saving...
-                      </>
-                    ) : (
-                      "Save Changes"
-                    )}
-                  </button>
-                </div>
+                  {/* Action Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-2 pt-4 border-t border-gray-200">
+                    <button
+                      type="button"
+                      onClick={() => setEditUser(null)}
+                      disabled={submitting}
+                      className="flex-1 px-4 py-3 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="flex-1 px-4 py-3 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl hover:from-blue-700 hover:to-blue-800 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg"
+                    >
+                      {submitting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        "Save Changes"
+                      )}
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
@@ -1137,6 +1139,77 @@ export default function AdminUsers() {
           </div>
         )}
 
+        {/* Rejection Modal */}
+        {selectedRejectUser && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+            <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200">
+              <div className="bg-gradient-to-r from-red-500 to-red-600 p-6 rounded-t-2xl">
+                <h3 className="text-xl font-bold text-white">Reject Registration</h3>
+                <p className="text-red-100 text-sm mt-1">Reject this student account</p>
+              </div>
+
+              <div className="p-6 space-y-4">
+                <div>
+                  <p className="text-sm text-gray-600">Student Name</p>
+                  <p className="text-lg font-semibold text-gray-900">{selectedRejectUser.name}</p>
+                </div>
+
+                <div className="bg-red-50 p-4 rounded-xl">
+                  <p className="text-xs text-red-600 uppercase tracking-wide font-semibold mb-1">⚠️ Warning</p>
+                  <p className="text-xs text-red-700">
+                    This will permanently delete the user account and send a rejection email to {selectedRejectUser.email}
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Rejection Reason (Optional)
+                  </label>
+                  <textarea
+                    value={rejectionForm.rejectionReason}
+                    onChange={e => setRejectionForm({...rejectionForm, rejectionReason: e.target.value})}
+                    placeholder="Provide a reason for rejecting this registration..."
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition resize-none"
+                    rows={3}
+                  />
+                </div>
+              </div>
+
+              <div className="bg-gray-50 p-6 rounded-b-2xl flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedRejectUser(null);
+                    setRejectionForm({ rejectionReason: '' });
+                  }}
+                  disabled={rejectingIdInline === selectedRejectUser?.id}
+                  className="flex-1 px-4 py-3 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => rejectUser(selectedRejectUser?.id)}
+                  disabled={rejectingIdInline === selectedRejectUser?.id}
+                  className="flex-1 px-4 py-3 text-sm font-semibold text-white bg-gradient-to-r from-red-600 to-red-700 rounded-xl hover:from-red-700 hover:to-red-800 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {rejectingIdInline === selectedRejectUser?.id ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Rejecting...
+                    </>
+                  ) : (
+                    <>
+                      <X className="w-4 h-4" />
+                      Reject Registration
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Balance Edit Modal */}
         {balanceEditUser && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
@@ -1150,7 +1223,7 @@ export default function AdminUsers() {
               {/* Content */}
               <div className="p-6 space-y-4">
                 {/* Only show login form if password hasn't been verified */}
-                {balanceLoginPassword !== 'verified' ? (
+                {!balancePasswordVerified ? (
                   <>
                     {/* Warning Banner */}
                     <div className="bg-red-50 border-l-4 border-red-600 p-4 rounded">
@@ -1251,6 +1324,7 @@ export default function AdminUsers() {
                           onChange={(e) => setNewBalance(e.target.value)}
                           placeholder="0.00"
                           min="0"
+                          max="999999999.99"
                           step="0.01"
                           className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition text-sm"
                         />
