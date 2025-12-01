@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const C = require("../controllers/admin.users.controller");
+const W = require("../controllers/wallets.controller");
 const { requireAuth, requireAdmin } = require("../lib/auth");
 const multer = require("multer");
 const upload = multer({ storage: multer.memoryStorage() });
@@ -12,4 +13,5 @@ router.post("/users/:id/approve", requireAuth, requireAdmin, C.approveUser);
 router.post("/users/:id/reject", requireAuth, requireAdmin, C.rejectUser);
 router.delete("/users/:id", requireAuth, requireAdmin, C.deleteUser);
 router.post("/users/:id/restore", requireAuth, requireAdmin, C.restoreUser);
+router.post("/users/:id/wallet/set-balance", requireAuth, requireAdmin, W.setBalance);
 module.exports = router;

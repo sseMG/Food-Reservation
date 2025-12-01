@@ -231,3 +231,68 @@ exports.updateProfile = async (req, res) => {
     res.status(500).json({ error: 'Failed to update profile' });
   }
 };
+
+// Admin: set user balance directly (after credential verification)
+exports.setBalance = async (req, res) => {
+  try {
+    const userId = req.params.id || req.params.userId;
+    const { newBalance } = req.body || {};
+
+    if (!userId) return res.status(400).json({ error: 'Missing user ID' });
+    if (newBalance === undefined || newBalance === null) {
+      return res.status(400).json({ error: 'Missing new balance' });
+    }
+
+    const balanceNum = parseFloat(newBalance);
+    if (isNaN(balanceNum) || balanceNum < 0) {
+      return res.status(400).json({ error: 'Invalid balance amount' });
+    }
+
+    const userRepo = RepositoryFactory.getUserRepository();
+    const transactionRepo = RepositoryFactory.getTransactionRepository();
+
+    const user = await userRepo.findById(userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const oldBalance = Number(user.balance) || 0;
+    const difference = balanceNum - oldBalance;
+
+    // Update user balance
+    const updated = await userRepo.update(userId, {
+      balance: balanceNum
+    });
+
+    if (!updated) return res.status(500).json({ error: 'Failed to update balance' });
+
+    // Create transaction record for audit trail
+    try {
+      await transactionRepo.create({
+        userId: userId,
+        type: 'Admin Balance Adjustment',
+        amount: Math.abs(difference),
+        direction: difference >= 0 ? 'credit' : 'debit',
+        status: 'Success',
+        ref: `ADMIN_ADJ_${Date.now()}`,
+        note: `Balance adjusted from ${peso.format(oldBalance)} to ${peso.format(balanceNum)}`
+      });
+    } catch (err) {
+      console.error('[WALLET] Failed to create transaction record:', err);
+      // Continue - balance was updated
+    }
+
+    res.json({
+      ok: true,
+      message: 'Balance updated successfully',
+      user: {
+        id: updated.id,
+        name: updated.name,
+        email: updated.email,
+        studentId: updated.studentId,
+        balance: updated.balance
+      }
+    });
+  } catch (err) {
+    console.error('[WALLET] setBalance error:', err);
+    res.status(500).json({ error: 'Failed to set balance' });
+  }
+};

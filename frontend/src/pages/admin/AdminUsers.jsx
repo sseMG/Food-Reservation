@@ -78,6 +78,15 @@ export default function AdminUsers() {
     rejectionReason: ''
   });
   const [selectedPendingUser, setSelectedPendingUser] = useState(null);
+  
+  // Balance editing state
+  const [balanceEditUser, setBalanceEditUser] = useState(null);
+  const [balanceLoginEmail, setBalanceLoginEmail] = useState('');
+  const [balanceLoginPassword, setBalanceLoginPassword] = useState('');
+  const [balanceLoginLoading, setBalanceLoginLoading] = useState(false);
+  const [balanceLoginError, setBalanceLoginError] = useState('');
+  const [newBalance, setNewBalance] = useState('');
+  const [balanceUpdateLoading, setBalanceUpdateLoading] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -137,11 +146,11 @@ export default function AdminUsers() {
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
       result = result.filter(u => {
-        const matchId = u.id?.toLowerCase().includes(query);
-        const matchStudentId = u.studentId?.toLowerCase().includes(query);
-        const matchName = u.name?.toLowerCase().includes(query);
-        const matchEmail = u.email?.toLowerCase().includes(query);
-        const matchPhone = u.phone?.toLowerCase().includes(query);
+        const matchId = String(u.id || '').toLowerCase().includes(query);
+        const matchStudentId = String(u.studentId || '').toLowerCase().includes(query);
+        const matchName = String(u.name || '').toLowerCase().includes(query);
+        const matchEmail = String(u.email || '').toLowerCase().includes(query);
+        const matchPhone = String(u.phone || '').toLowerCase().includes(query);
         const matchBalance = peso.format(Number(u.balance || 0)).toLowerCase().includes(query);
         
         return matchId || matchStudentId || matchName || matchEmail || matchPhone || matchBalance;
@@ -377,6 +386,90 @@ export default function AdminUsers() {
     }
   };
 
+  // Balance editing functions
+  const handleBalanceClick = (user) => {
+    setBalanceEditUser(user);
+    setBalanceLoginEmail(user.email);
+    setBalanceLoginPassword('');
+    setNewBalance(String(user.balance || 0));
+    setBalanceLoginError('');
+    setSearchQuery(''); // Clear search to prevent filtering
+  };
+
+  const handleBalanceLogin = async () => {
+    if (!balanceEditUser || !balanceLoginPassword.trim()) {
+      setBalanceLoginError('Password is required');
+      return;
+    }
+
+    setBalanceLoginLoading(true);
+    setBalanceLoginError('');
+    try {
+      // Verify credentials before allowing balance edit
+      const loginRes = await api.post('/auth/login', {
+        email: balanceLoginEmail,
+        password: balanceLoginPassword
+      });
+
+      // Check if login was successful - if we get here without throwing an error, it succeeded
+      // The api wrapper unwraps the response, so loginRes will have token and user
+      if (loginRes && loginRes.token && loginRes.user) {
+        // Credentials verified - move to balance edit interface
+        setBalanceLoginPassword('verified');
+      } else {
+        setBalanceLoginError('Authentication failed. Please try again.');
+      }
+    } catch (err) {
+      console.error('Login verification failed:', err);
+      setBalanceLoginError(err.response?.data?.error || err.message || 'Invalid credentials');
+    } finally {
+      setBalanceLoginLoading(false);
+    }
+  };
+
+  const handleBalanceUpdate = async () => {
+    if (!balanceEditUser) return;
+
+    const newBalanceNum = parseFloat(newBalance);
+    if (isNaN(newBalanceNum) || newBalanceNum < 0) {
+      alert('Please enter a valid balance amount');
+      return;
+    }
+
+    setBalanceUpdateLoading(true);
+    try {
+      // Update user balance through wallet endpoint
+      await api.post(`/admin/users/${balanceEditUser.id}/wallet/set-balance`, {
+        newBalance: newBalanceNum
+      });
+
+      // Update local state
+      setUsers(users.map(u =>
+        u.id === balanceEditUser.id ? { ...u, balance: newBalanceNum } : u
+      ));
+
+      alert('Balance updated successfully');
+      closeBalanceModal();
+    } catch (err) {
+      console.error('Balance update failed:', err);
+      alert(err.response?.data?.error || 'Failed to update balance');
+    } finally {
+      setBalanceUpdateLoading(false);
+    }
+  };
+
+  const totalBalance = useMemo(() => {
+    return filteredUsers.reduce((sum, u) => sum + Number(u.balance || 0), 0);
+  }, [filteredUsers]);
+
+  const closeBalanceModal = () => {
+    setBalanceEditUser(null);
+    setBalanceLoginEmail('');
+    setBalanceLoginPassword('');
+    setNewBalance('');
+    setBalanceLoginError('');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 pb-20 md:pb-8">
       <Navbar />
@@ -409,6 +502,19 @@ export default function AdminUsers() {
                 </span>
               )}
             </Link>
+          </div>
+
+          {/* Total Balance Counter */}
+          <div className="bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 rounded-xl p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wide">Total Balance (Filtered Users)</p>
+              <p className="text-2xl sm:text-3xl font-bold text-emerald-600 mt-1">
+                {peso.format(totalBalance)}
+              </p>
+            </div>
+            <div className="hidden sm:flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100">
+              <span className="text-2xl">💰</span>
+            </div>
           </div>
 
           {/* Search and Filter */}
@@ -553,9 +659,13 @@ export default function AdminUsers() {
                         <span className="text-gray-600">{u.phone || "—"}</span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="font-semibold text-emerald-600">
+                        <button
+                          onClick={() => handleBalanceClick(u)}
+                          className="font-semibold text-emerald-600 hover:text-emerald-700 hover:underline cursor-pointer transition"
+                          title="Click to edit balance"
+                        >
                           {peso.format(Number(u.balance || 0))}
-                        </span>
+                        </button>
                       </td>
                       <td className="px-6 py-4">
                         {u.status === 'pending' ? (
@@ -708,9 +818,13 @@ export default function AdminUsers() {
                     </span>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm font-bold text-emerald-600">
+                    <button
+                      onClick={() => handleBalanceClick(u)}
+                      className="text-sm font-bold text-emerald-600 hover:text-emerald-700 hover:underline cursor-pointer transition"
+                      title="Click to edit balance"
+                    >
                       {peso.format(Number(u.balance || 0))}
-                    </div>
+                    </button>
                   </div>
                 </div>
 
@@ -1018,6 +1132,169 @@ export default function AdminUsers() {
                     </>
                   )}
                 </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Balance Edit Modal */}
+        {balanceEditUser && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+            <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200">
+              {/* Header */}
+              <div className="bg-gradient-to-r from-red-500 to-red-600 p-6 rounded-t-2xl">
+                <h3 className="text-xl font-bold text-white">Edit User Balance</h3>
+                <p className="text-red-100 text-sm mt-1">{balanceEditUser.name}</p>
+              </div>
+
+              {/* Content */}
+              <div className="p-6 space-y-4">
+                {/* Only show login form if password hasn't been verified */}
+                {balanceLoginPassword !== 'verified' ? (
+                  <>
+                    {/* Warning Banner */}
+                    <div className="bg-red-50 border-l-4 border-red-600 p-4 rounded">
+                      <p className="text-sm font-semibold text-red-900 mb-2">⚠️ Authorization Warning</p>
+                      <p className="text-xs text-red-800">
+                        By logging in, you authorize the Administrator to edit or clear the balance of your user profile. This action will be logged for security purposes.
+                      </p>
+                    </div>
+
+                    {/* Error Message */}
+                    {balanceLoginError && (
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                        <p className="text-xs text-red-700 font-medium">{balanceLoginError}</p>
+                      </div>
+                    )}
+
+                    {/* Email (Read-only) */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        value={balanceLoginEmail}
+                        disabled
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 text-sm"
+                      />
+                    </div>
+
+                    {/* Password */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        User Password
+                      </label>
+                      <input
+                        type="password"
+                        value={balanceLoginPassword}
+                        onChange={(e) => {
+                          setBalanceLoginPassword(e.target.value);
+                          setBalanceLoginError('');
+                        }}
+                        placeholder="Enter user's password to authorize"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition text-sm"
+                        onKeyPress={(e) => e.key === 'Enter' && handleBalanceLogin()}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        This verifies the user's identity before allowing balance modification
+                      </p>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-3 pt-2">
+                      <button
+                        type="button"
+                        onClick={closeBalanceModal}
+                        disabled={balanceLoginLoading}
+                        className="flex-1 px-4 py-3 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleBalanceLogin}
+                        disabled={balanceLoginLoading || !balanceLoginPassword.trim()}
+                        className="flex-1 px-4 py-3 text-sm font-semibold text-white bg-gradient-to-r from-red-600 to-red-700 rounded-lg hover:from-red-700 hover:to-red-800 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      >
+                        {balanceLoginLoading ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Verifying...
+                          </>
+                        ) : (
+                          'Verify & Continue'
+                        )}
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Balance Edit Interface */}
+                    <div className="bg-emerald-50 p-4 rounded-lg">
+                      <p className="text-xs text-emerald-700 font-semibold uppercase tracking-wide mb-1">Current Balance</p>
+                      <p className="text-2xl font-bold text-emerald-600">
+                        {peso.format(Number(balanceEditUser.balance || 0))}
+                      </p>
+                    </div>
+
+                    {/* New Balance Input */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        New Balance Amount
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-semibold">₱</span>
+                        <input
+                          type="number"
+                          value={newBalance}
+                          onChange={(e) => setNewBalance(e.target.value)}
+                          placeholder="0.00"
+                          min="0"
+                          step="0.01"
+                          className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition text-sm"
+                        />
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Set the new balance amount for this user
+                      </p>
+                    </div>
+
+                    {/* Verification Info */}
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                      <p className="text-xs text-blue-800">
+                        ✓ User credentials verified. You can now update the balance.
+                      </p>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-3 pt-2">
+                      <button
+                        type="button"
+                        onClick={closeBalanceModal}
+                        disabled={balanceUpdateLoading}
+                        className="flex-1 px-4 py-3 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleBalanceUpdate}
+                        disabled={balanceUpdateLoading || !newBalance}
+                        className="flex-1 px-4 py-3 text-sm font-semibold text-white bg-gradient-to-r from-emerald-600 to-emerald-700 rounded-lg hover:from-emerald-700 hover:to-emerald-800 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      >
+                        {balanceUpdateLoading ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Updating...
+                          </>
+                        ) : (
+                          'Update Balance'
+                        )}
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
