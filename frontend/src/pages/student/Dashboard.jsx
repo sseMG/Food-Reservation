@@ -7,6 +7,7 @@ import BottomNav from "../../components/mobile/BottomNav";
 import { api, ApiError } from "../../lib/api";
 import { refreshSessionForProtected } from "../../lib/auth";
 import { getUserFromStorage, setUserToStorage, clearAllAuthStorage } from "../../lib/storage";
+import { CategoryIcon, getCategoryEmoji } from "../../lib/categories";
 import {
   ShoppingBag,
   Wallet,
@@ -14,9 +15,6 @@ import {
   LogOut,
   ArrowRight,
   Clock,
-  UtensilsCrossed,
-  Cookie,
-  CupSoda,
   CheckCircle2,
   X,
   Facebook,
@@ -25,9 +23,6 @@ import {
 } from "lucide-react";
 
 const peso = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" });
-
-// Admin category storage defaults
-const DEFAULT_CATEGORIES = ["Meals", "Snacks", "Beverages"];
 
 // Canonical status mapping for consistency
 const STATUS = {
@@ -213,22 +208,38 @@ export default function Dashboard() {
   const abortControllerRef = React.useRef(null);
 
   // Categories derived from menu items that currently have stock
-  const [adminCategories, setAdminCategories] = useState(DEFAULT_CATEGORIES);
+  const [adminCategories, setAdminCategories] = useState([]);
 
   useEffect(() => {
     let mounted = true;
     const loadCategories = async () => {
       try {
-        const data = await api.get("/categories/from-menu");
+        // Fetch full category objects with icon data
+        const data = await api.get("/categories");
         if (!mounted) return;
-        const list = Array.isArray(data) && data.length ? data : DEFAULT_CATEGORIES;
-        // Ensure we set simple category names (strings) to avoid rendering objects as children
-        const names = list.map((c) => (typeof c === 'string' ? c : (c && c.name) || '')).filter(Boolean);
-        setAdminCategories(names.length ? names : DEFAULT_CATEGORIES);
+        
+        if (Array.isArray(data) && data.length > 0) {
+          // Store full category objects
+          setAdminCategories(data);
+        } else {
+          // Fallback to defaults if no categories returned
+          const defaults = [
+            { name: "Meals", iconID: 0 },
+            { name: "Snacks", iconID: 1 },
+            { name: "Beverages", iconID: 2 }
+          ];
+          setAdminCategories(defaults);
+        }
       } catch (e) {
-        console.error("Failed to load categories from menu", e);
+        console.error("Failed to load categories", e);
+        // Fallback to defaults
+        const defaults = [
+          { name: "Meals", iconID: 0 },
+          { name: "Snacks", iconID: 1 },
+          { name: "Beverages", iconID: 2 }
+        ];
         if (mounted) {
-          setAdminCategories(DEFAULT_CATEGORIES);
+          setAdminCategories(defaults);
         }
       }
     };
@@ -842,7 +853,7 @@ export default function Dashboard() {
           ) : activity.length === 0 ? (
             <div className="bg-blue-50 rounded-lg sm:rounded-xl p-4 sm:p-8 text-center">
               <div className="w-12 h-12 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 bg-blue-100 rounded-full flex items-center justify-center">
-                <UtensilsCrossed className="w-6 h-6 sm:w-10 sm:h-10 text-blue-600" />
+                <ShoppingBag className="w-6 h-6 sm:w-10 sm:h-10 text-blue-600" />
               </div>
               <h3 className="text-sm sm:text-lg font-bold text-gray-900 mb-1 sm:mb-2">Welcome to JCKL Canteen!</h3>
               <p className="text-xs sm:text-base text-gray-600 mb-4 sm:mb-6">
@@ -872,24 +883,22 @@ export default function Dashboard() {
         <section>
           <h2 className="text-base sm:text-xl font-bold text-gray-900 mb-2 sm:mb-4">Categories</h2>
           <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-1.5 sm:gap-4">
-            {adminCategories.map((c) => (
-              <button
-                key={c}
-                onClick={() => navigate(`/shop?category=${encodeURIComponent(c)}`)}
-                className="bg-white rounded-lg sm:rounded-2xl p-2 sm:p-6 shadow-sm hover:shadow-md transition border border-gray-100 text-center focus-ring"
-              >
-                <div className="mx-auto mb-1 sm:mb-3 w-6 h-6 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gray-100 flex items-center justify-center">
-                  {c === 'Snacks' ? (
-                    <Cookie className="w-3 h-3 sm:w-5 sm:h-5 text-gray-700" />
-                  ) : c === 'Beverages' ? (
-                    <CupSoda className="w-3 h-3 sm:w-5 sm:h-5 text-gray-700" />
-                  ) : (
-                    <UtensilsCrossed className="w-3 h-3 sm:w-5 sm:h-5 text-gray-700" />
-                  )}
-                </div>
-                <div className="text-[10px] sm:text-sm font-medium text-gray-900">{c}</div>
-              </button>
-            ))}
+            {adminCategories.map((c) => {
+              const catName = typeof c === 'string' ? c : (c && c.name) || '';
+              const iconID = (c && typeof c === 'object' && typeof c.iconID === 'number') ? c.iconID : 0;
+              return (
+                <button
+                  key={catName}
+                  onClick={() => navigate(`/shop?category=${encodeURIComponent(catName)}`)}
+                  className="bg-white rounded-lg sm:rounded-2xl p-2 sm:p-6 shadow-sm hover:shadow-md transition border border-gray-100 text-center focus-ring"
+                >
+                  <div className="mx-auto mb-1 sm:mb-3 w-6 h-6 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gray-100 flex items-center justify-center text-xl sm:text-3xl">
+                    {getCategoryEmoji(catName, iconID)}
+                  </div>
+                  <div className="text-[10px] sm:text-sm font-medium text-gray-900">{catName}</div>
+                </button>
+              );
+            })}
           </div>
         </section>
 

@@ -15,7 +15,7 @@ import {
   Image as ImageIcon,
   Loader2,
 } from "lucide-react";
-import { CategoryIcon } from '../../lib/categories';
+import { getCategoryEmoji } from '../../lib/categories';
 
 const peso = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" });
 
@@ -81,7 +81,16 @@ export default function AdminEditItems() {
 
   useEffect(() => { load(); }, []);
 
-  // Merge categories from defaults, server categories, and categories discovered in menu items
+  // Create a map of category name to full category object for quick lookup
+  const categoriesMap = useMemo(() => {
+    const map = {};
+    (Array.isArray(serverCategories) ? serverCategories : []).forEach((c) => {
+      if (c && c.name) {
+        map[c.name] = c;
+      }
+    });
+    return map;
+  }, [serverCategories]);
   const mergedCategories = useMemo(() => {
     const serverList = Array.isArray(serverCategories) ? serverCategories.map(c => c.name) : [];
     const fromItems = Array.from(new Set((Array.isArray(items) ? items : []).map(i => i.category).filter(Boolean)));
@@ -365,8 +374,16 @@ export default function AdminEditItems() {
                         </div>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-700 flex items-center gap-2">
-                        <CategoryIcon name={it.category} iconID={it.iconID} />
-                        <span>{it.category}</span>
+                        {(() => {
+                          const cat = categoriesMap[it.category];
+                          const iconID = cat && typeof cat.iconID === 'number' ? cat.iconID : 0;
+                          return (
+                            <>
+                              <span className="text-lg">{getCategoryEmoji(it.category, iconID)}</span>
+                              <span>{it.category}</span>
+                            </>
+                          );
+                        })()}
                       </td>
                       <td className="px-4 py-3 text-right text-sm font-semibold text-gray-900">
                         {peso.format(Number(it.price || 0))}

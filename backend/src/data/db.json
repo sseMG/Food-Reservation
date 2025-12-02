@@ -295,6 +295,19 @@
       "deleted": false,
       "createdAt": "2025-12-02T07:45:40.162Z",
       "updatedAt": "2025-12-02T07:47:00.212Z"
+    },
+    {
+      "id": "ITM_1764666640140",
+      "name": "kupal",
+      "category": "tite ni lando",
+      "price": 46,
+      "stock": 19,
+      "img": "/uploads/kupal-1764666640133_7227.jpg",
+      "isActive": true,
+      "visible": true,
+      "deleted": false,
+      "createdAt": "2025-12-02T09:10:40.140Z",
+      "updatedAt": "2025-12-02T09:10:40.140Z"
     }
   ],
   "reservations": [
@@ -3379,6 +3392,10 @@
     {
       "name": "Biology Foods",
       "iconID": 8
+    },
+    {
+      "name": "tite ni lando",
+      "iconID": 6
     }
   ]
 }
