@@ -275,6 +275,12 @@ export default function Profile() {
               Purchase History
             </Link>
             <Link
+              to="/profile/change-email"
+              className="px-3 py-2 rounded-lg border border-gray-200 text-xs sm:text-sm hover:bg-gray-50 transition"
+            >
+              Change Email
+            </Link>
+            <Link
               to="/profile/security"
               className="px-3 py-2 rounded-lg border border-gray-200 text-xs sm:text-sm hover:bg-gray-50 transition"
             >

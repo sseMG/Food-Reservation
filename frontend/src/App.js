@@ -17,6 +17,7 @@ import TopUp        from "./pages/student/TopUp";
 import Cart         from "./pages/student/Cart";
 import Profile      from "./pages/student/Profile";
 import EditProfile  from "./pages/student/EditProfile";
+import ChangeEmail  from "./pages/student/ChangeEmail";
 import TxHistory    from "./pages/student/TxHistory";
 import TopUpHistory from "./pages/student/TopUpHistory";
 import Security     from "./pages/student/Security"; // added import
@@ -82,6 +83,7 @@ function App() {
         <Route path="/cart"           element={<Cart />} />
         <Route path="/dashboard"      element={<Dashboard />} />
         <Route path="/profile/edit"   element={<EditProfile />} />
+        <Route path="/profile/change-email" element={<ChangeEmail />} />
         <Route path="/profile"        element={<Profile />} />
         <Route path="/shop"           element={<Shop />} />
         <Route path="/topup"          element={<TopUp />} />

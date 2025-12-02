@@ -88,6 +88,10 @@ router.post("/forgot-password", P.forgotPassword);
 router.post("/reset-password", P.resetPassword);
 router.post("/change-password", requireAuth, P.changePassword);
 
+// Email change endpoints
+router.post("/request-email-change", requireAuth, P.requestEmailChange);
+router.post("/confirm-email-change", requireAuth, P.confirmEmailChange);
+
 /**
  * @swagger
  * /auth/logout:

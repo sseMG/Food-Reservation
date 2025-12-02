@@ -161,3 +161,144 @@ exports.changePassword = async (req, res) => {
     return res.status(500).json({ error: "Failed to change password" });
   }
 };
+
+exports.requestEmailChange = async (req, res) => {
+  try {
+    const { newEmail } = req.body || {};
+    const uid = req.user?.id || req.user?._id;
+
+    if (!uid) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    if (!newEmail || !newEmail.trim()) {
+      return res.status(400).json({ error: "New email is required" });
+    }
+
+    const cleanEmail = newEmail.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      return res.status(400).json({ error: "Invalid email format" });
+    }
+
+    const userRepo = RepositoryFactory.getUserRepository();
+    const user = await userRepo.findById(uid);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (cleanEmail === user.email.toLowerCase()) {
+      return res.status(400).json({ error: "New email must be different from current email" });
+    }
+
+    // Check if new email is already taken
+    const existingUser = await userRepo.findOne({ email: cleanEmail });
+    if (existingUser) {
+      return res.status(400).json({ error: "Email already in use" });
+    }
+
+    // Generate email change token
+    const emailChangeToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const tokenExpiry = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+
+    await userRepo.update(user.id, {
+      emailChange: { token: emailChangeToken, newEmail: cleanEmail, expiresAt: tokenExpiry }
+    });
+
+    // Send verification email to current email address
+    const changeLink = `${process.env.FRONTEND_URL || "http://localhost:3000"}/profile/change-email?token=${emailChangeToken}&email=${encodeURIComponent(cleanEmail)}`;
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: user.email,
+      subject: "Email Change Verification - Food Reservation System",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #333;">Email Change Request</h2>
+          <p>Hi ${user.name || "User"},</p>
+          <p>We received a request to change your email address to:</p>
+          <p style="font-weight: bold; color: #2563eb;">${cleanEmail}</p>
+          <p>Click the button below to confirm this change:</p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${changeLink}" 
+               style="background-color: #2563eb; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+              Confirm Email Change
+            </a>
+          </div>
+
+          <p style="color: #666;">Or copy this link: <a href="${changeLink}">${changeLink}</a></p>
+
+          <p style="color: #999; font-size: 12px; margin-top: 30px;">
+            This link will expire in 1 hour.<br>
+            If you didn't request this, ignore this email and your email will remain unchanged.
+          </p>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    console.log(`[PASSWORD] Email change verification sent to ${user.email}`);
+    return res.json({ ok: true, message: "Verification link sent to your current email" });
+
+  } catch (err) {
+    console.error("[PASSWORD] Request email change failed:", err);
+    return res.status(500).json({ error: "Failed to send verification email: " + err.message });
+  }
+};
+
+exports.confirmEmailChange = async (req, res) => {
+  try {
+    const { token, newEmail } = req.body || {};
+    const uid = req.user?.id || req.user?._id;
+
+    if (!uid) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    if (!token || !newEmail) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const userRepo = RepositoryFactory.getUserRepository();
+    const user = await userRepo.findById(uid);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (!user.emailChange || user.emailChange.token !== token) {
+      return res.status(400).json({ error: "Invalid verification token" });
+    }
+
+    if (new Date() > new Date(user.emailChange.expiresAt)) {
+      await userRepo.update(user.id, { emailChange: null });
+      return res.status(400).json({ error: "Verification token expired. Please request a new one." });
+    }
+
+    const cleanEmail = newEmail.trim().toLowerCase();
+    if (cleanEmail !== user.emailChange.newEmail.toLowerCase()) {
+      return res.status(400).json({ error: "Email mismatch. Request a new verification." });
+    }
+
+    // Check again if new email is still available
+    const existingUser = await userRepo.findOne({ email: cleanEmail });
+    if (existingUser && existingUser.id !== user.id) {
+      return res.status(400).json({ error: "Email already in use" });
+    }
+
+    // Update user email and clear email change data
+    await userRepo.update(user.id, {
+      email: cleanEmail,
+      emailChange: null
+    });
+
+    console.log(`[PASSWORD] Email changed for user ${user.id} to ${cleanEmail}`);
+    return res.json({ ok: true, message: "Email changed successfully" });
+
+  } catch (err) {
+    console.error("[PASSWORD] Confirm email change failed:", err);
+    return res.status(500).json({ error: "Failed to confirm email change" });
+  }
+};

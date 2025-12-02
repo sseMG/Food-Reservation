@@ -94,7 +94,7 @@ export default function EditProfile() {
       // Add user ID to ensure uniqueness
       formData.append('userId', localUser.id || localUser.studentId || localUser.user);
       formData.append('name', form.name);
-      formData.append('email', form.email);
+      // Email is no longer editable - removed from form submission
       formData.append('studentId', form.studentId);
       formData.append('phone', form.phone);
       
@@ -192,12 +192,11 @@ export default function EditProfile() {
             </div>
 
             {/* Form Fields */}
-            {['name', 'email', 'studentId', 'phone'].map((field) => (
+            {['name', 'studentId', 'phone'].map((field) => (
               <div key={field}>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   {field === 'studentId' ? 'Student ID' : 
-                   field === 'phone' ? 'Contact Number' :
-                   field === 'email' ? 'Email Address' : 'Full Name'}
+                   field === 'phone' ? 'Contact Number' : 'Full Name'}
                 </label>
                 <input
                   name={field}
@@ -211,6 +210,22 @@ export default function EditProfile() {
                 />
               </div>
             ))}
+
+            {/* Email field - Read only */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Email Address
+              </label>
+              <input
+                type="email"
+                value={form.email}
+                disabled
+                className="mt-1 block w-full border border-gray-200 rounded-lg p-3 bg-gray-50 text-gray-600 cursor-not-allowed"
+              />
+              <p className="text-xs text-gray-500 mt-2">
+                To change your email, go to your profile and use the "Change Email" option.
+              </p>
+            </div>
 
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-4 mt-6 sm:mt-8">

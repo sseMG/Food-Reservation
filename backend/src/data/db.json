@@ -31,30 +31,31 @@
       "role": "student",
       "grade": "",
       "section": "",
-      "balance": 1669,
+      "balance": 1514,
       "studentId": "202231211",
       "phone": "09688523253",
       "status": "approved",
       "approvalNotes": "Congratulations!",
       "createdAt": "2025-11-27T04:54:38.338Z",
-      "updatedAt": "2025-12-01T04:52:39.642Z",
+      "updatedAt": "2025-12-01T05:41:35.870Z",
       "profilePictureUrl": "/uploads/profile-usr_migylvcy-1764495171737_989580.jpg"
     },
     {
       "id": "usr_mih0aoeu",
-      "name": "Sean THOUGHTs",
-      "email": "syantut0617@gmail.com",
+      "name": "Sean SHADOW",
+      "email": "shadowstormseanx3g@gmail.com",
       "passwordHash": "$2a$10$MkOsDMPyIyPlbV/QYWgDXOBbzKjZvFROTR1KQ9o0f.dn3ytfeCFkG",
       "role": "student",
       "grade": "",
       "section": "",
-      "balance": 0,
+      "balance": 814,
       "studentId": "202080183",
-      "phone": "09690336526",
+      "phone": "09690336529",
       "status": "approved",
       "approvalNotes": "",
       "createdAt": "2025-11-27T05:41:55.350Z",
-      "updatedAt": "2025-11-27T05:43:32.705Z"
+      "updatedAt": "2025-12-02T07:47:00.203Z",
+      "emailChange": null
     },
     {
       "id": "usr_mihcp1j1",
@@ -70,11 +71,15 @@
       "status": "approved",
       "approvalNotes": "",
       "createdAt": "2025-11-27T11:29:00.925Z",
-      "updatedAt": "2025-12-01T04:23:28.944Z",
+      "updatedAt": "2025-12-02T01:42:56.047Z",
       "isArchived": false,
       "archivedAt": null,
       "isActive": true,
-      "profilePictureUrl": "/uploads/profile-usr_mihcp1j1-1764563008940_611166.png"
+      "profilePictureUrl": "/uploads/profile-usr_mihcp1j1-1764563008940_611166.png",
+      "passwordReset": {
+        "token": "nc4z04qnfwkt53s45ix0g",
+        "expiresAt": "2025-12-02T02:42:56.043Z"
+      }
     },
     {
       "id": "usr_miippayf",
@@ -166,39 +171,39 @@
       "name": "Popcorn",
       "category": "Snacks",
       "price": 40,
-      "stock": 47,
+      "stock": 46,
       "img": "/uploads/popcorn-1764043429967_318815.jpg",
       "isActive": true,
       "visible": true,
       "deleted": false,
       "createdAt": "2025-11-25T04:03:49.971Z",
-      "updatedAt": "2025-12-01T04:15:04.649Z"
+      "updatedAt": "2025-12-01T05:41:35.888Z"
     },
     {
       "id": "ITM_1764044048789",
       "name": "Chocolate Cake Slice",
       "category": "Desserts",
       "price": 80,
-      "stock": 0,
+      "stock": 7,
       "img": "/uploads/chocolate-cake-slice-1764044048785_538685.jpg",
       "isActive": true,
-      "visible": false,
+      "visible": true,
       "deleted": false,
       "createdAt": "2025-11-25T04:14:08.789Z",
-      "updatedAt": "2025-12-01T04:20:58.841Z"
+      "updatedAt": "2025-12-01T05:41:35.879Z"
     },
     {
       "id": "ITM_1764044595710",
       "name": "Cappuccino heart coffee",
       "category": "Warm Drink",
       "price": 150,
-      "stock": 6,
+      "stock": 5,
       "img": "/uploads/cappuccino-heart-coffee-1764044595705_619897.jpg",
       "isActive": true,
       "visible": true,
       "deleted": false,
       "createdAt": "2025-11-25T04:23:15.710Z",
-      "updatedAt": "2025-12-01T04:15:04.657Z"
+      "updatedAt": "2025-12-02T07:47:00.224Z"
     },
     {
       "id": "ITM_1764044849234",
@@ -244,13 +249,13 @@
       "name": "Beer",
       "category": "Alak",
       "price": 35,
-      "stock": 63,
+      "stock": 62,
       "img": "/uploads/beer-1764327621962_79955.jpg",
       "isActive": true,
       "visible": true,
       "deleted": false,
       "createdAt": "2025-11-28T11:00:21.968Z",
-      "updatedAt": "2025-11-28T11:06:57.303Z"
+      "updatedAt": "2025-12-01T05:41:35.896Z"
     },
     {
       "id": "ITM_1764330342264",
@@ -277,6 +282,19 @@
       "deleted": false,
       "createdAt": "2025-12-01T04:33:40.378Z",
       "updatedAt": "2025-12-01T04:52:39.652Z"
+    },
+    {
+      "id": "ITM_1764661540161",
+      "name": "Banana (One piece)",
+      "category": "Biology Foods",
+      "price": 18,
+      "stock": 22,
+      "img": "/uploads/banana-one-piece-1764661540144_34751.jpg",
+      "isActive": true,
+      "visible": true,
+      "deleted": false,
+      "createdAt": "2025-12-02T07:45:40.162Z",
+      "updatedAt": "2025-12-02T07:47:00.212Z"
     }
   ],
   "reservations": [
@@ -624,6 +642,74 @@
       "stockDeducted": true,
       "createdAt": "2025-12-01T04:52:39.669Z",
       "updatedAt": "2025-12-01T04:53:09.874Z"
+    },
+    {
+      "id": "RES_mimq1o2igr",
+      "userId": "usr_migylvcy",
+      "student": "Anmol David Das",
+      "grade": "G11",
+      "section": "Franky",
+      "when": "lunch",
+      "note": "",
+      "items": [
+        {
+          "id": "ITM_1764044048789",
+          "name": "Chocolate Cake Slice",
+          "price": 80,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764043429971",
+          "name": "Popcorn",
+          "price": 40,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764327621968",
+          "name": "Beer",
+          "price": 35,
+          "qty": 1
+        }
+      ],
+      "total": 155,
+      "status": "Approved",
+      "transactionId": "txn_mimq1o2l",
+      "charged": true,
+      "chargedAt": "2025-12-01T05:41:35.898Z",
+      "stockDeducted": true,
+      "createdAt": "2025-12-01T05:41:35.908Z",
+      "updatedAt": "2025-12-01T05:42:45.917Z"
+    },
+    {
+      "id": "RES_mio9ysjm64",
+      "userId": "usr_mih0aoeu",
+      "student": "Sean SHADOW",
+      "grade": "G7",
+      "section": "Genesis",
+      "when": "recess",
+      "note": "",
+      "items": [
+        {
+          "id": "ITM_1764661540161",
+          "name": "Banana (One piece)",
+          "price": 18,
+          "qty": 2
+        },
+        {
+          "id": "ITM_1764044595710",
+          "name": "Cappuccino heart coffee",
+          "price": 150,
+          "qty": 1
+        }
+      ],
+      "total": 186,
+      "status": "Ready",
+      "transactionId": "txn_mio9ysjp",
+      "charged": true,
+      "chargedAt": "2025-12-02T07:47:00.226Z",
+      "stockDeducted": true,
+      "createdAt": "2025-12-02T07:47:00.236Z",
+      "updatedAt": "2025-12-02T07:48:16.262Z"
     }
   ],
   "topups": [
@@ -716,6 +802,24 @@
       "updatedAt": "2025-12-01T03:53:15.549Z",
       "credited": true,
       "creditedAt": "2025-12-01T03:53:15.519Z"
+    },
+    {
+      "id": "top_mio9ttq8",
+      "userId": "usr_mih0aoeu",
+      "student": "Sean SHADOW",
+      "studentId": "202080183",
+      "contact": "09690336529",
+      "email": "shadowstormseanx3g@gmail.com",
+      "provider": "gcash",
+      "amount": 1000,
+      "reference": "21324324235234",
+      "status": "Approved",
+      "proofUrl": "/uploads/topup-usr_mih0aoeu-1764661388471_41033.jpg",
+      "submittedAt": "2025-12-02T07:43:08.463Z",
+      "createdAt": "2025-12-02T07:43:08.480Z",
+      "updatedAt": "2025-12-02T07:43:22.864Z",
+      "credited": true,
+      "creditedAt": "2025-12-02T07:43:22.819Z"
     }
   ],
   "transactions": [
@@ -888,9 +992,292 @@
       "direction": "debit",
       "status": "Success",
       "createdAt": "2025-12-01T04:52:39.664Z"
+    },
+    {
+      "id": "txn_mimq1o2l",
+      "userId": "usr_migylvcy",
+      "title": "Reservation Hold",
+      "ref": "RES_mimq1o2igr",
+      "amount": 155,
+      "direction": "debit",
+      "status": "Success",
+      "createdAt": "2025-12-01T05:41:35.901Z"
+    },
+    {
+      "id": "txn_mio9u4tm",
+      "userId": "usr_mih0aoeu",
+      "type": "TopUp",
+      "amount": 1000,
+      "reference": "21324324235234",
+      "topupId": "top_mio9ttq8",
+      "status": "Success",
+      "createdAt": "2025-12-02T07:43:22.858Z"
+    },
+    {
+      "id": "txn_mio9ysjp",
+      "userId": "usr_mih0aoeu",
+      "title": "Reservation Hold",
+      "ref": "RES_mio9ysjm64",
+      "amount": 186,
+      "direction": "debit",
+      "status": "Success",
+      "createdAt": "2025-12-02T07:47:00.229Z"
     }
   ],
   "notifications": [
+    {
+      "id": "notif_mioa0f7s",
+      "for": "usr_mih0aoeu",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_mio9ysjm64 Ready",
+      "body": "Your reservation RES_mio9ysjm64 is now Ready.",
+      "data": {
+        "reservationId": "RES_mio9ysjm64",
+        "status": "Ready"
+      },
+      "read": true,
+      "createdAt": "2025-12-02T07:48:16.264Z"
+    },
+    {
+      "id": "notif_mioa0dn1",
+      "for": "usr_mih0aoeu",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_mio9ysjm64 Preparing",
+      "body": "Your reservation RES_mio9ysjm64 is now Preparing.",
+      "data": {
+        "reservationId": "RES_mio9ysjm64",
+        "status": "Preparing"
+      },
+      "read": true,
+      "createdAt": "2025-12-02T07:48:14.221Z"
+    },
+    {
+      "id": "notif_mioa0a56",
+      "for": "usr_mih0aoeu",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_mio9ysjm64 Approved",
+      "body": "Your reservation RES_mio9ysjm64 has been approved.",
+      "data": {
+        "reservationId": "RES_mio9ysjm64",
+        "status": "Approved",
+        "items": [
+          {
+            "id": "ITM_1764661540161",
+            "name": "Banana (One piece)",
+            "price": 18,
+            "qty": 2
+          },
+          {
+            "id": "ITM_1764044595710",
+            "name": "Cappuccino heart coffee",
+            "price": 150,
+            "qty": 1
+          }
+        ],
+        "total": 186,
+        "note": "",
+        "slot": "recess",
+        "grade": "G7",
+        "section": "Genesis",
+        "student": "Sean SHADOW",
+        "transactionId": "txn_mio9ysjp"
+      },
+      "read": true,
+      "createdAt": "2025-12-02T07:48:09.690Z"
+    },
+    {
+      "id": "notif_mio9ysjy",
+      "for": "admin",
+      "actor": {
+        "id": "usr_mih0aoeu",
+        "name": "Sean SHADOW",
+        "email": "shadowstormseanx3g@gmail.com"
+      },
+      "type": "reservation:created",
+      "title": "New reservation submitted",
+      "body": "Sean SHADOW submitted a reservation",
+      "data": {
+        "reservationId": "RES_mio9ysjm64",
+        "items": [
+          {
+            "id": "ITM_1764661540161",
+            "name": "Banana (One piece)",
+            "price": 18,
+            "qty": 2
+          },
+          {
+            "id": "ITM_1764044595710",
+            "name": "Cappuccino heart coffee",
+            "price": 150,
+            "qty": 1
+          }
+        ],
+        "total": 186,
+        "note": "",
+        "slot": "recess",
+        "grade": "G7",
+        "section": "Genesis",
+        "student": "Sean SHADOW"
+      },
+      "read": true,
+      "createdAt": "2025-12-02T07:47:00.236Z"
+    },
+    {
+      "id": "notif_mio9u4tu",
+      "for": "usr_mih0aoeu",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "topup:status",
+      "title": "Top-up Approved",
+      "body": "Your top-up request for ₱1,000.00 was approved",
+      "data": {
+        "topupId": "top_mio9ttq8",
+        "status": "Approved",
+        "amount": 1000,
+        "rejectionReason": null
+      },
+      "read": true,
+      "createdAt": "2025-12-02T07:43:22.866Z"
+    },
+    {
+      "id": "notif_mio9ttqn",
+      "for": "admin",
+      "actor": {
+        "id": "usr_mih0aoeu",
+        "name": "Sean SHADOW",
+        "email": "shadowstormseanx3g@gmail.com",
+        "profilePictureUrl": null
+      },
+      "type": "topup:created",
+      "title": "New Top-up Request",
+      "body": "Sean SHADOW submitted a top-up request for ₱1,000.00",
+      "data": {
+        "topupId": "top_mio9ttq8",
+        "amount": 1000,
+        "provider": "gcash",
+        "studentId": "202080183",
+        "reference": "21324324235234",
+        "student": {
+          "name": "Sean SHADOW",
+          "contact": "09690336529",
+          "email": "shadowstormseanx3g@gmail.com"
+        }
+      },
+      "read": true,
+      "createdAt": "2025-12-02T07:43:08.463Z"
+    },
+    {
+      "id": "notif_mimq363q",
+      "for": "usr_migylvcy",
+      "actor": {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@school.test",
+        "profilePictureUrl": null
+      },
+      "type": "reservation:status",
+      "title": "Reservation RES_mimq1o2igr Approved",
+      "body": "Your reservation RES_mimq1o2igr has been approved.",
+      "data": {
+        "reservationId": "RES_mimq1o2igr",
+        "status": "Approved",
+        "items": [
+          {
+            "id": "ITM_1764044048789",
+            "name": "Chocolate Cake Slice",
+            "price": 80,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764043429971",
+            "name": "Popcorn",
+            "price": 40,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764327621968",
+            "name": "Beer",
+            "price": 35,
+            "qty": 1
+          }
+        ],
+        "total": 155,
+        "note": "",
+        "slot": "lunch",
+        "grade": "G11",
+        "section": "Franky",
+        "student": "Anmol David Das",
+        "transactionId": "txn_mimq1o2l"
+      },
+      "read": true,
+      "createdAt": "2025-12-01T05:42:45.926Z"
+    },
+    {
+      "id": "notif_mimq1o2u",
+      "for": "admin",
+      "actor": {
+        "id": "usr_migylvcy",
+        "name": "Anmol David Das",
+        "email": "spadymold@gmail.com",
+        "profilePictureUrl": "/uploads/profile-usr_migylvcy-1764495171737_989580.jpg"
+      },
+      "type": "reservation:created",
+      "title": "New reservation submitted",
+      "body": "Anmol David Das submitted a reservation",
+      "data": {
+        "reservationId": "RES_mimq1o2igr",
+        "items": [
+          {
+            "id": "ITM_1764044048789",
+            "name": "Chocolate Cake Slice",
+            "price": 80,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764043429971",
+            "name": "Popcorn",
+            "price": 40,
+            "qty": 1
+          },
+          {
+            "id": "ITM_1764327621968",
+            "name": "Beer",
+            "price": 35,
+            "qty": 1
+          }
+        ],
+        "total": 155,
+        "note": "",
+        "slot": "lunch",
+        "grade": "G11",
+        "section": "Franky",
+        "student": "Anmol David Das"
+      },
+      "read": true,
+      "createdAt": "2025-12-01T05:41:35.908Z"
+    },
     {
       "id": "notif_mimobdrv",
       "for": "usr_migylvcy",
@@ -2904,7 +3291,7 @@
       "userId": "usr_migylvcy",
       "items": [],
       "createdAt": "2025-11-27T05:10:47.368Z",
-      "updatedAt": "2025-12-01T04:52:41.077Z"
+      "updatedAt": "2025-12-01T05:41:37.203Z"
     },
     {
       "id": "cart_mihd657a",
@@ -2939,7 +3326,7 @@
       "userId": "usr_mih0aoeu",
       "items": [],
       "createdAt": "2025-12-01T04:13:06.006Z",
-      "updatedAt": "2025-12-01T04:13:06.006Z"
+      "updatedAt": "2025-12-02T07:47:01.472Z"
     },
     {
       "id": "cart_mimo9liv",
@@ -2947,6 +3334,13 @@
       "items": [],
       "createdAt": "2025-12-01T04:51:46.615Z",
       "updatedAt": "2025-12-01T04:51:46.615Z"
+    },
+    {
+      "id": "cart_mio9mqjg",
+      "userId": "usr_mihkoaib",
+      "items": [],
+      "createdAt": "2025-12-02T07:37:37.756Z",
+      "updatedAt": "2025-12-02T07:37:37.756Z"
     }
   ],
   "food_categories": [
@@ -2981,6 +3375,10 @@
     {
       "name": "Alak",
       "iconID": 20
+    },
+    {
+      "name": "Biology Foods",
+      "iconID": 8
     }
   ]
 }
