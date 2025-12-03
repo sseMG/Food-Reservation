@@ -23,6 +23,25 @@ const upload = multer({
  */
 router.get("/", C.list);
 
+/**
+ * @swagger
+ * /menu/{id}:
+ *   get:
+ *     summary: Get a single menu item by ID
+ *     tags: [Menu]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Menu item ID
+ *     responses:
+ *       200:
+ *         description: Menu item
+ */
+router.get("/:id", C.get);
+
 // ensure update route accepts single image field named "image"
 router.put("/:id", requireAuth, requireAdmin, upload.single("image"), C.update);
 

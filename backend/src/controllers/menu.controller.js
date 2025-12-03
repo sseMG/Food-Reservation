@@ -15,6 +15,24 @@ exports.list = async (req, res) => {
   }
 };
 
+exports.get = async (req, res) => {
+  try {
+    const menuRepo = RepositoryFactory.getMenuRepository();
+    const id = req.params.id;
+
+    // Return item regardless of soft-delete state (repo returns DB entry)
+    const item = await menuRepo.findById(id);
+    if (!item) {
+      return res.status(404).json({ error: "Menu item not found" });
+    }
+
+    return res.json({ status: 200, data: item });
+  } catch (err) {
+    console.error("[MENU] get error:", err);
+    return res.status(500).json({ error: "Failed to get menu item" });
+  }
+};
+
 exports.create = async (req, res) => {
   try {
     const menuRepo = RepositoryFactory.getMenuRepository();
