@@ -616,7 +616,6 @@ export default function Shop({ publicView = false }) {
                 onChange={(e) => setSort(e.target.value)}
                 className="border border-gray-200 rounded-lg px-2 sm:px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               >
-                <option value="featured">Featured</option>
                 <option value="name-asc">Name (A–Z)</option>
                 <option value="name-desc">Name (Z–A)</option>
                 <option value="price-asc">Price (Low to High)</option>
