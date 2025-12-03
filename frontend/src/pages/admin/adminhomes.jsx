@@ -388,24 +388,21 @@ export default function AdminHome() {
     if (!window.confirm("Save changes to this product?")) return;
     setSavingEdit(true);
     try {
-      await api.put(`/menu/${editingItem.id}`, {
-        name: editingFields.name,
-        price: Number(editingFields.price) || 0,
-        stock: Number(editingFields.stock) || 0,
-        category: editingFields.category,
-      });
+      // Build FormData with metadata fields
+      const fd = new FormData();
+      fd.append("name", editingFields.name);
+      fd.append("price", Number(editingFields.price) || 0);
+      fd.append("stock", Number(editingFields.stock) || 0);
+      fd.append("category", editingFields.category);
 
+      // Append image if a new one was selected (optional)
       if (editingImageFile) {
-        try {
-          const fd = new FormData();
-          fd.append("image", editingImageFile);
-          await api.post(`/menu/${editingItem.id}/image`, fd, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-        } catch (e) {
-          console.warn("Image upload failed (non-blocking).", e);
-        }
+        fd.append("image", editingImageFile);
       }
+
+      // Single request with both metadata and image
+      // Note: Do NOT set Content-Type header; let the browser set it with proper boundary
+      await api.put(`/menu/${editingItem.id}`, fd);
 
       setCurrentProducts((prev) =>
         prev.map((p) =>
