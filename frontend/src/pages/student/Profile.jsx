@@ -266,18 +266,13 @@ export default function Profile() {
               to="/transactions"
               className="px-3 py-2 rounded-lg border border-gray-200 text-xs sm:text-sm hover:bg-gray-50 transition"
             >
-              View Orders
+              View Orders History
             </Link>
             <Link
               to="/transactions"
               className="px-3 py-2 rounded-lg border border-gray-200 text-xs sm:text-sm hover:bg-gray-50 transition"
             >
-              Purchase History
-            </Link>
-            <Link
-              to="/profile/change-email"
-              className="px-3 py-2 rounded-lg border border-gray-200 text-xs sm:text-sm hover:bg-gray-50 transition"
-            >
+            
               Change Email
             </Link>
             <Link

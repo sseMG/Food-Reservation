@@ -407,9 +407,7 @@ export default function TxHistory() {
                 <option value="claimed">Claimed</option>
                 <option value="pending">Pending</option>
                 <option value="success">Success</option>
-                <option value="failed">Failed</option>
                 <option value="rejected">Rejected</option>
-                <option value="refunded">Refunded</option>
               </select>
             </div>
 
