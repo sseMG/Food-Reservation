@@ -59,7 +59,6 @@ export default function AdminHome() {
   }, [navigate]);
 
   const [directories] = useState([
-    { name: "Dashboard", to: ADMIN_ROUTES.home, icon: <TrendingUp /> },
     { name: "Shop", to: ADMIN_ROUTES.shop, icon: <ShoppingBag /> },
     { name: "Top-Up Verify", to: ADMIN_ROUTES.topup, icon: <Wallet /> },
     { name: "Orders", to: ADMIN_ROUTES.orders, icon: <Clock /> },
@@ -67,6 +66,13 @@ export default function AdminHome() {
     { name: "Reports", to: ADMIN_ROUTES.reports, icon: <TrendingUp /> },
     { name: "Users", to: ADMIN_ROUTES.users, icon: <Users /> },
   ]);
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good Morning";
+    if (hour < 18) return "Good Afternoon";
+    return "Good Evening";
+  };
 
   const [todaySales] = useState([
     {
@@ -442,7 +448,7 @@ export default function AdminHome() {
         {/* Header */}
         <header className="space-y-2">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-            Good afternoon, Admin
+            {getGreeting()}, Admin
           </h1>
           <p className="text-sm sm:text-base text-gray-600">
             Here&apos;s what&apos;s happening with your canteen today.
