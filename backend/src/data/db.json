@@ -37,8 +37,12 @@
       "status": "approved",
       "approvalNotes": "Congratulations!",
       "createdAt": "2025-11-27T04:54:38.338Z",
-      "updatedAt": "2025-12-01T05:41:35.870Z",
-      "profilePictureUrl": "/uploads/profile-usr_migylvcy-1764495171737_989580.jpg"
+      "updatedAt": "2025-12-03T02:52:44.501Z",
+      "profilePictureUrl": "/uploads/profile-usr_migylvcy-1764495171737_989580.jpg",
+      "passwordReset": {
+        "token": "8eu4yhzwkhdm3gdq7baz2q",
+        "expiresAt": "2025-12-03T03:52:44.498Z"
+      }
     },
     {
       "id": "usr_mih0aoeu",

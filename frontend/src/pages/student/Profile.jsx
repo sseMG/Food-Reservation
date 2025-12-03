@@ -269,10 +269,9 @@ export default function Profile() {
               View Orders History
             </Link>
             <Link
-              to="/transactions"
+              to="/profile/change-email"
               className="px-3 py-2 rounded-lg border border-gray-200 text-xs sm:text-sm hover:bg-gray-50 transition"
             >
-            
               Change Email
             </Link>
             <Link
