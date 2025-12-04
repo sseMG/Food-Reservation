@@ -833,8 +833,8 @@ export default function AdminHome() {
             className="absolute inset-0 bg-black/30"
             onClick={closeEditModal}
           />
-          <div className="relative w-full sm:max-w-2xl bg-white rounded-t-2xl sm:rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="flex items-center justify-between mb-4">
+          <div className="relative w-full sm:max-w-2xl bg-white rounded-t-2xl sm:rounded-2xl shadow-lg border border-gray-100 max-h-[85vh] sm:max-h-none overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between p-6 sticky top-0 bg-white z-10 border-b">
               <h3 className="text-lg font-semibold text-jckl-navy">Edit Item</h3>
               <button
                 onClick={closeEditModal}
@@ -847,7 +847,8 @@ export default function AdminHome() {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
+            <div className="overflow-y-auto flex-1 p-6">
+              <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
               {/* Left form */}
               <div className="sm:col-span-3 space-y-3">
                 <div>
@@ -961,10 +962,11 @@ export default function AdminHome() {
                   )}
                 </div>
               </div>
+              </div>
             </div>
 
             {/* Modal actions */}
-            <div className="mt-5 flex flex-col sm:flex-row gap-2 justify-end">
+            <div className="mt-5 flex flex-col sm:flex-row gap-2 justify-end p-6 border-t bg-white pb-24 sm:pb-6">
               <button
                 onClick={closeEditModal}
                 className="px-4 py-2 rounded-lg border border-jckl-gold text-jckl-navy hover:bg-jckl-cream text-sm"

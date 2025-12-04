@@ -704,75 +704,91 @@ export default function AdminReports() {
     }
   };
 
-  // Update the exportToCsv function to handle different data types
+  // Update the exportToCsv function to handle different data types with proper formatting
   const exportToCsv = (data, type = 'products') => {
+    const escapeCSV = (cell) => {
+      const str = String(cell || '');
+      // Escape quotes by doubling them
+      return `"${str.replace(/"/g, '""')}"`;
+    };
+
     let csvContent = '';
     const filename = `${type}_${periodLabel.replace(/\s/g, '_')}.csv`;
 
     switch (type) {
       case 'top_items':
         csvContent = [
-          ['Item', 'Category', 'Quantity', 'Revenue'],
+          ['Item', 'Category', 'Quantity Sold', 'Revenue (PHP)'],
           ...data.map(item => [
             item.name,
             item.category || 'Uncategorized',
-            item.qty,
-            peso.format(item.revenue)
+            item.qty || 0,
+            Number(item.revenue || 0).toFixed(2)
           ])
-        ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+        ].map(row => row.map(escapeCSV).join(',')).join('\n');
         break;
 
       case 'products':
         csvContent = [
-          ['Item', 'Category', 'Quantity', 'Revenue'],
+          ['Product', 'Category', 'Quantity Sold', 'Revenue (PHP)'],
           ...data.map(item => [
             item.name,
             item.category || 'Uncategorized',
-            item.qty,
-            item.revenue
+            item.qty || 0,
+            Number(item.revenue || 0).toFixed(2)
           ])
-        ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+        ].map(row => row.map(escapeCSV).join(',')).join('\n');
         break;
 
       case 'reservations':
         csvContent = [
-          ['Status', 'Count'],
-          ...Object.entries(data).map(([status, count]) => [status, count])
-        ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+          ['Reservation Status', 'Count'],
+          ...Object.entries(data).map(([status, count]) => [
+            status,
+            count
+          ])
+        ].map(row => row.map(escapeCSV).join(',')).join('\n');
         break;
 
       case 'topups':
         csvContent = [
           ['Metric', 'Value'],
           ['Approved Count', data.approvedCount],
-          ['Approved Amount', data.approvedAmt],
+          ['Approved Amount (PHP)', Number(data.approvedAmt || 0).toFixed(2)],
           ['Pending', data.pending],
           ['Rejected', data.rejected]
-        ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+        ].map(row => row.map(escapeCSV).join(',')).join('\n');
         break;
 
       case 'categories':
         csvContent = [
-          ['Category', 'Revenue'],
-          ...data.map(row => [row.category, row.amount])
-        ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+          ['Category', 'Revenue (PHP)'],
+          ...data.map(row => [
+            row.category,
+            Number(row.amount || 0).toFixed(2)
+          ])
+        ].map(row => row.map(escapeCSV).join(',')).join('\n');
         break;
 
       case 'charts':
-        if (data && data.chartData) { // Check if chartData exists in passed data
+        if (data && data.chartData) {
           csvContent = [
-            ['Label', 'Quantity', 'Revenue'],
+            ['Product', 'Quantity Sold', 'Revenue (PHP)'],
             ...data.chartData.labels.map((label, idx) => [
               label,
-              data.chartData.datasets[0].data[idx],
-              data.chartData.datasets[1].data[idx]
+              data.chartData.datasets[0].data[idx] || 0,
+              Number(data.chartData.datasets[1].data[idx] || 0).toFixed(2)
             ])
-          ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+          ].map(row => row.map(escapeCSV).join(',')).join('\n');
         }
+        break;
+      
+      default:
+        // Default case for any unknown type
         break;
     }
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;BOM' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = filename;
@@ -780,35 +796,39 @@ export default function AdminReports() {
     URL.revokeObjectURL(link.href);
   };
 
-  // Update the exportCombinedStats function to include KPIs
+  // Update the exportCombinedStats function to include KPIs with proper formatting
   const exportCombinedStats = (resStats, topupStats, categoryStats, dashboard) => {
-    const formatPeso = (value) => `PHP ${Number(value).toFixed(2)}`;
+    const escapeCSV = (cell) => {
+      const str = String(cell || '');
+      return `"${str.replace(/"/g, '""')}"`;
+    };
 
     const csvContent = [
       ['KEY PERFORMANCE INDICATORS'],
-      ['Metric', 'Value'],
-      ['Revenue (this period)', formatPeso((dashboard.totalSales || 0) || resStats.revenue || 0)],
-      ['Orders (this period)', resStats.orders],
-      ['Pending reservations', resStats.pendingReservations],
-      ['Pending top-ups', topupStats?.pending ?? 0],
-      [''], // empty row as separator
-      ['RESERVATION STATUS'],
+      [],
+      ['Metric', 'Value (PHP)'],
+      ['Revenue (this period)', Number((dashboard.totalSales || 0) || resStats.revenue || 0).toFixed(2)],
+      ['Total Orders (this period)', resStats.orders],
+      ['Pending Reservations', resStats.pendingReservations],
+      ['Pending Top-ups', topupStats?.pending ?? 0],
+      [],
+      ['RESERVATION STATUS BREAKDOWN'],
       ['Status', 'Count'],
-      ...Object.entries(resStats.counts),
-      [''],
-      ['TOP-UPS'],
+      ...Object.entries(resStats.counts).map(([status, count]) => [status, count]),
+      [],
+      ['TOP-UPS ANALYSIS'],
       ['Metric', 'Value'],
-      ['Approved Count', topupStats.approvedCount],
-      ['Approved Amount', formatPeso(topupStats.approvedAmt)],
-      ['Pending', topupStats.pending],
-      ['Rejected', topupStats.rejected],
-      [''],
+      ['Approved Wallets', topupStats.approvedCount],
+      ['Total Approved Amount (PHP)', Number(topupStats.approvedAmt || 0).toFixed(2)],
+      ['Pending Approvals', topupStats.pending],
+      ['Rejected Top-ups', topupStats.rejected],
+      [],
       ['REVENUE BY CATEGORY'],
-      ['Category', 'Revenue'],
-      ...categoryStats.map(row => [row.category, formatPeso(row.amount)])
-    ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+      ['Category', 'Revenue (PHP)'],
+      ...categoryStats.map(row => [row.category, Number(row.amount || 0).toFixed(2)])
+    ].map(row => row.map(escapeCSV).join(',')).join('\n');
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;BOM' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = `combined_stats_${periodLabel.replace(/\s/g, '_')}.csv`;
@@ -816,64 +836,69 @@ export default function AdminReports() {
     URL.revokeObjectURL(link.href);
   };
 
-  // Update the exportFullReport function to include KPIs
+  // Update the exportFullReport function to include KPIs with proper formatting
   const exportFullReport = (allData) => {
     const { resStats, topupStats, filteredResTopItems, sortedProducts, productsBar, dashboard } = allData;
-    const formatPeso = (value) => `PHP ${Number(value).toFixed(2)}`;
+    
+    const escapeCSV = (cell) => {
+      const str = String(cell || '');
+      return `"${str.replace(/"/g, '""')}"`;
+    };
     
     const csvContent = [
       ['FULL REPORT - ' + periodLabel],
-      [''],
+      ['Report Generated', new Date().toLocaleString()],
+      [],
       ['KEY PERFORMANCE INDICATORS'],
-      ['Metric', 'Value'],
-      ['Revenue (this period)', formatPeso((dashboard.totalSales || 0) || resStats.revenue || 0)],
-      ['Orders (this period)', resStats.orders],
-      ['Pending reservations', resStats.pendingReservations],
-      ['Pending top-ups', topupStats?.pending ?? 0],
-      [''],
-      ['RESERVATION STATUS'],
+      ['Metric', 'Value (PHP)'],
+      ['Total Revenue (this period)', Number((dashboard.totalSales || 0) || resStats.revenue || 0).toFixed(2)],
+      ['Total Orders (this period)', resStats.orders],
+      ['Pending Reservations', resStats.pendingReservations],
+      ['Pending Top-ups', topupStats?.pending ?? 0],
+      [],
+      ['RESERVATION STATUS BREAKDOWN'],
       ['Status', 'Count'],
-      ...Object.entries(resStats.counts),
-      [''],
-      ['TOP-UPS'],
+      ...Object.entries(resStats.counts).map(([status, count]) => [status, count]),
+      [],
+      ['TOP-UPS ANALYSIS'],
       ['Metric', 'Value'],
-      ['Approved Count', topupStats.approvedCount],
-      ['Approved Amount', formatPeso(topupStats.approvedAmt)],
-      ['Pending', topupStats.pending],
-      ['Rejected', topupStats.rejected],
-      [''],
+      ['Approved Wallets', topupStats.approvedCount],
+      ['Total Approved Amount (PHP)', Number(topupStats.approvedAmt || 0).toFixed(2)],
+      ['Pending Approvals', topupStats.pending],
+      ['Rejected Top-ups', topupStats.rejected],
+      [],
       ['REVENUE BY CATEGORY'],
-      ['Category', 'Revenue'],
-      ...resStats.categoryRows.map(row => [row.category, formatPeso(row.amount)]),
-      [''],
-      ['TOP ITEMS'],
-      ['Item', 'Category', 'Quantity', 'Revenue'],
+      ['Category', 'Revenue (PHP)'],
+      ...resStats.categoryRows.map(row => [row.category, Number(row.amount || 0).toFixed(2)]),
+      [],
+      ['TOP SELLING ITEMS'],
+      ['Item', 'Category', 'Quantity Sold', 'Revenue (PHP)'],
       ...filteredResTopItems.map(item => [
         item.name,
         item.category || 'Uncategorized',
-        item.qty,
-        formatPeso(item.revenue)
+        item.qty || 0,
+        Number(item.revenue || 0).toFixed(2)
       ]),
-      [''],
+      [],
       ['TOP PRODUCTS BY REVENUE'],
-      ['Item', 'Category', 'Quantity', 'Revenue'],
+      ['Product', 'Category', 'Quantity Sold', 'Revenue (PHP)'],
       ...sortedProducts.byRevenue.map(item => [
         item.name,
         item.category || 'Uncategorized',
-        item.qty,
-        formatPeso(item.revenue)
+        item.qty || 0,
+        Number(item.revenue || 0).toFixed(2)
       ]),
-      [''],
-      ['CHART DATA'],
-      ['Label', 'Quantity', 'Revenue'],
+      [],
+      ['CHART DATA - PRODUCT PERFORMANCE'],
+      ['Product', 'Quantity Sold', 'Revenue (PHP)'],
       ...productsBar.labels.map((label, idx) => [
         label,
-        productsBar.datasets[0].data[idx],
-        formatPeso(productsBar.datasets[1].data[idx])
+        productsBar.datasets[0].data[idx] || 0,
+        Number(productsBar.datasets[1].data[idx] || 0).toFixed(2)
       ])
-    ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+    ].map(row => row.map(escapeCSV).join(',')).join('\n');
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;BOM' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = `full_report_${periodLabel.replace(/\s/g, '_')}.csv`;
