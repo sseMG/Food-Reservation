@@ -30,7 +30,7 @@ const Avatar = ({ user, size = "md" }) => {
           e.target.onerror = null;
           e.target.style.display = "none";
           const fallback = document.createElement("div");
-          fallback.className = `${sizeClasses[size]} rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center font-semibold text-blue-600`;
+          fallback.className = `${sizeClasses[size]} rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center font-semibold text-jckl-navy`;
           fallback.textContent = fallbackInitial;
           if (e.target.parentElement) {
             e.target.parentElement.appendChild(fallback);
@@ -41,7 +41,7 @@ const Avatar = ({ user, size = "md" }) => {
   }
 
   return (
-    <div className={`${sizeClasses[size]} rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center font-semibold text-blue-600`}>
+    <div className={`${sizeClasses[size]} rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center font-semibold text-jckl-navy`}>
       {fallbackInitial}
     </div>
   );
@@ -214,11 +214,11 @@ export default function AdminUsers() {
 
   const SortIcon = ({ field }) => {
     if (sortField !== field) {
-      return <ArrowUpDown className="w-4 h-4 text-gray-400" />;
+      return <ArrowUpDown className="w-4 h-4 text-jckl-slate" />;
     }
     return sortOrder === "asc" 
-      ? <ArrowUp className="w-4 h-4 text-blue-600" />
-      : <ArrowDown className="w-4 h-4 text-blue-600" />;
+      ? <ArrowUp className="w-4 h-4 text-jckl-navy" />
+      : <ArrowDown className="w-4 h-4 text-jckl-navy" />;
   };
 
   useEffect(() => { load(); }, []);
@@ -477,7 +477,7 @@ export default function AdminUsers() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 md:pb-8">
+    <div className="min-h-screen bg-white pb-20 md:pb-8">
       <Navbar />
       <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8 space-y-4 sm:space-y-6">
         {/* Header */}
@@ -488,8 +488,8 @@ export default function AdminUsers() {
                 <Users className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-xl sm:text-3xl font-bold text-gray-900">User Management</h1>
-                <p className="text-xs sm:text-sm text-gray-500">
+                <h1 className="text-xl sm:text-3xl font-bold text-jckl-navy">User Management</h1>
+                <p className="text-xs sm:text-sm text-jckl-slate">
                   {filteredUsers.length} of {users.length} account{users.length !== 1 ? 's' : ''}
                 </p>
               </div>
@@ -526,13 +526,13 @@ export default function AdminUsers() {
           {/* Search and Filter */}
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-jckl-slate pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search by ID, name, email, phone..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="w-full pl-10 pr-4 py-2.5 border border-jckl-gold rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold focus:border-transparent transition"
               />
             </div>
             
@@ -541,7 +541,7 @@ export default function AdminUsers() {
               className={`px-4 py-2.5 rounded-xl font-medium text-sm transition-all flex items-center justify-center gap-2 ${
                 filterPendingOnly
                   ? "bg-amber-600 text-white shadow-lg shadow-amber-200"
-                  : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                  : "bg-white border border-jckl-gold text-jckl-slate hover:bg-white"
               }`}
             >
               <AlertCircle className="w-4 h-4" />
@@ -553,8 +553,8 @@ export default function AdminUsers() {
               onClick={() => setFilterZeroBalance(!filterZeroBalance)}
               className={`px-4 py-2.5 rounded-xl font-medium text-sm transition-all flex items-center justify-center gap-2 ${
                 filterZeroBalance
-                  ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
-                  : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                  ? "bg-jckl-navy text-white shadow-lg shadow-blue-200"
+                  : "bg-white border border-jckl-gold text-jckl-slate hover:bg-white"
               }`}
             >
               <Filter className="w-4 h-4" />
@@ -567,14 +567,14 @@ export default function AdminUsers() {
 
 
         {/* Approved/Rejected Users Section */}
-        <div className="hidden lg:block bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="hidden lg:block bg-white rounded-2xl shadow-sm border border-jckl-gold overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead className="bg-gradient-to-r from-gray-50 to-white">
-                <tr className="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <tr className="text-left text-xs font-semibold text-jckl-slate uppercase tracking-wider">
                   <th className="px-6 py-4">Profile</th>
                   <th 
-                    className="px-6 py-4 cursor-pointer hover:bg-gray-100 select-none transition"
+                    className="px-6 py-4 cursor-pointer hover:bg-jckl-cream select-none transition"
                     onClick={() => handleSort("studentId")}
                   >
                     <div className="flex items-center gap-2">
@@ -583,7 +583,7 @@ export default function AdminUsers() {
                     </div>
                   </th>
                   <th 
-                    className="px-6 py-4 cursor-pointer hover:bg-gray-100 select-none transition"
+                    className="px-6 py-4 cursor-pointer hover:bg-jckl-cream select-none transition"
                     onClick={() => handleSort("name")}
                   >
                     <div className="flex items-center gap-2">
@@ -592,7 +592,7 @@ export default function AdminUsers() {
                     </div>
                   </th>
                   <th 
-                    className="px-6 py-4 cursor-pointer hover:bg-gray-100 select-none transition"
+                    className="px-6 py-4 cursor-pointer hover:bg-jckl-cream select-none transition"
                     onClick={() => handleSort("email")}
                   >
                     <div className="flex items-center gap-2">
@@ -601,7 +601,7 @@ export default function AdminUsers() {
                     </div>
                   </th>
                   <th 
-                    className="px-6 py-4 cursor-pointer hover:bg-gray-100 select-none transition"
+                    className="px-6 py-4 cursor-pointer hover:bg-jckl-cream select-none transition"
                     onClick={() => handleSort("phone")}
                   >
                     <div className="flex items-center gap-2">
@@ -610,7 +610,7 @@ export default function AdminUsers() {
                     </div>
                   </th>
                   <th 
-                    className="px-6 py-4 cursor-pointer hover:bg-gray-100 select-none transition"
+                    className="px-6 py-4 cursor-pointer hover:bg-jckl-cream select-none transition"
                     onClick={() => handleSort("balance")}
                   >
                     <div className="flex items-center gap-2">
@@ -623,7 +623,7 @@ export default function AdminUsers() {
                   <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-jckl-gold">
                 {loading ? (
                   Array.from({ length: 6 }).map((_, i) => (
                     <tr key={i} className="animate-pulse">
@@ -642,27 +642,27 @@ export default function AdminUsers() {
                   <tr>
                     <td colSpan="9" className="px-6 py-12 text-center">
                       <UserCircle2 className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                      <p className="text-sm font-medium text-gray-900">No users found</p>
-                      <p className="text-xs text-gray-500 mt-1">Try adjusting your search or filters</p>
+                      <p className="text-sm font-medium text-jckl-navy">No users found</p>
+                      <p className="text-xs text-jckl-slate mt-1">Try adjusting your search or filters</p>
                     </td>
                   </tr>
                 ) : (
                   filteredUsers.map((u) => (
-                    <tr key={u.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={u.id} className="hover:bg-white transition-colors">
                       <td className="px-6 py-4">
                         <Avatar user={u} size="md" />
                       </td>
                       <td className="px-6 py-4">
-                        <span className="font-mono text-sm font-medium text-gray-700">{u.studentId}</span>
+                        <span className="font-mono text-sm font-medium text-jckl-slate">{u.studentId}</span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="font-medium text-gray-900">{u.name}</span>
+                        <span className="font-medium text-jckl-navy">{u.name}</span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-gray-600 text-sm">{u.email}</span>
+                        <span className="text-jckl-slate text-sm">{u.email}</span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-gray-600">{u.phone || "—"}</span>
+                        <span className="text-jckl-slate">{u.phone || "—"}</span>
                       </td>
                       <td className="px-6 py-4">
                         <button
@@ -718,7 +718,7 @@ export default function AdminUsers() {
                           <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${
                             u.status === 'approved'
                               ? 'bg-green-100 text-green-700'
-                              : 'bg-gray-100 text-gray-700'
+                              : 'bg-jckl-cream text-jckl-slate'
                           }`}>
                             {u.status && u.status !== 'approved' ? u.status.charAt(0).toUpperCase() + u.status.slice(1) : 'Approved'}
                           </span>
@@ -737,7 +737,7 @@ export default function AdminUsers() {
                         <div className="flex items-center justify-end gap-2">
                           <button 
                             onClick={() => handleEdit(u)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 transition"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-jckl-navy text-white rounded-lg text-xs font-medium hover:bg-jckl-navy transition"
                           >
                             <Pencil className="w-3.5 h-3.5" />
                             Edit
@@ -749,7 +749,7 @@ export default function AdminUsers() {
                             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
                               canDelete(u)
                                 ? "bg-red-600 text-white hover:bg-red-700"
-                                : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                : "bg-jckl-cream text-jckl-slate cursor-not-allowed"
                             }`}
                             title={
                               String(u.role || '').toLowerCase() === 'admin' || u.isAdmin
@@ -785,7 +785,7 @@ export default function AdminUsers() {
         <div className="lg:hidden space-y-3">
           {loading ? (
             Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 animate-pulse">
+              <div key={i} className="bg-white rounded-2xl p-4 shadow-sm border border-jckl-gold animate-pulse">
                 <div className="flex items-start gap-3 mb-3">
                   <div className="w-12 h-12 bg-gray-200 rounded-full" />
                   <div className="flex-1 space-y-2">
@@ -800,20 +800,20 @@ export default function AdminUsers() {
               </div>
             ))
           ) : filteredUsers.length === 0 ? (
-            <div className="bg-white rounded-2xl p-8 text-center shadow-sm border border-gray-200">
+            <div className="bg-white rounded-2xl p-8 text-center shadow-sm border border-jckl-gold">
               <UserCircle2 className="w-16 h-16 text-gray-300 mx-auto mb-3" />
-              <p className="text-base font-medium text-gray-900">No users found</p>
-              <p className="text-sm text-gray-500 mt-1">Try adjusting your search or filters</p>
+              <p className="text-base font-medium text-jckl-navy">No users found</p>
+              <p className="text-sm text-jckl-slate mt-1">Try adjusting your search or filters</p>
             </div>
           ) : (
             filteredUsers.map((u) => (
-              <div key={u.id} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+              <div key={u.id} className="bg-white rounded-2xl p-4 shadow-sm border border-jckl-gold hover:shadow-md transition-shadow">
                 {/* Header */}
                 <div className="flex items-start gap-3 mb-3">
                   <Avatar user={u} size="lg" />
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 truncate">{u.name}</h3>
-                    <p className="text-xs font-mono text-gray-500">ID: {u.studentId}</p>
+                    <h3 className="font-semibold text-jckl-navy truncate">{u.name}</h3>
+                    <p className="text-xs font-mono text-jckl-slate">ID: {u.studentId}</p>
                     <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium mt-1 ${
                       String(u.role || '').toLowerCase() === 'admin'
                         ? 'bg-purple-100 text-purple-700'
@@ -836,12 +836,12 @@ export default function AdminUsers() {
                 {/* Details */}
                 <div className="space-y-2 text-sm mb-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-500">Email</span>
-                    <span className="text-gray-900 text-right truncate ml-2 max-w-[200px]">{u.email}</span>
+                    <span className="text-jckl-slate">Email</span>
+                    <span className="text-jckl-navy text-right truncate ml-2 max-w-[200px]">{u.email}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-500">Phone</span>
-                    <span className="text-gray-900">{u.phone || "—"}</span>
+                    <span className="text-jckl-slate">Phone</span>
+                    <span className="text-jckl-navy">{u.phone || "—"}</span>
                   </div>
                 </div>
 
@@ -849,7 +849,7 @@ export default function AdminUsers() {
                 <div className="flex gap-2 pt-3 border-t border-gray-100">
                   <button 
                     onClick={() => handleEdit(u)}
-                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 transition active:scale-95"
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-jckl-navy text-white rounded-xl text-sm font-medium hover:bg-jckl-navy transition active:scale-95"
                   >
                     <Pencil className="w-4 h-4" />
                     Edit
@@ -861,7 +861,7 @@ export default function AdminUsers() {
                     className={`flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition active:scale-95 ${
                       canDelete(u)
                         ? "bg-red-600 text-white hover:bg-red-700"
-                        : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-jckl-cream text-jckl-slate cursor-not-allowed"
                     }`}
                   >
                     {deletingId === u.id ? (
@@ -887,17 +887,17 @@ export default function AdminUsers() {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
             <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-hidden flex flex-col">
               {/* Sticky Header */}
-              <div className="sticky top-0 bg-white border-b border-gray-200 p-4 sm:p-6 rounded-t-2xl z-10 flex-shrink-0">
+              <div className="sticky top-0 bg-white border-b border-jckl-gold p-4 sm:p-6 rounded-t-2xl z-10 flex-shrink-0">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="text-lg sm:text-xl font-bold text-gray-900">Edit User Profile</h3>
-                    <p className="text-xs sm:text-sm text-gray-500 mt-1">Update user information</p>
+                    <h3 className="text-lg sm:text-xl font-bold text-jckl-navy">Edit User Profile</h3>
+                    <p className="text-xs sm:text-sm text-jckl-slate mt-1">Update user information</p>
                   </div>
                   <button 
                     onClick={() => setEditUser(null)}
-                    className="p-2 hover:bg-gray-100 rounded-full transition flex-shrink-0"
+                    className="p-2 hover:bg-jckl-cream rounded-full transition flex-shrink-0"
                   >
-                    <X className="w-5 h-5 text-gray-600" />
+                    <X className="w-5 h-5 text-jckl-slate" />
                   </button>
                 </div>
               </div>
@@ -905,8 +905,8 @@ export default function AdminUsers() {
               {/* Scrollable Content */}
               <div className="overflow-y-auto flex-1">
                 {/* Fixed Profile Picture Section */}
-                <div className="sticky top-0 bg-white p-4 sm:p-6 border-b border-gray-200 flex-shrink-0">
-                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                <div className="sticky top-0 bg-white p-4 sm:p-6 border-b border-jckl-gold flex-shrink-0">
+                  <div className="flex items-center gap-4 p-4 bg-white rounded-xl">
                     <div className="relative flex-shrink-0">
                       {!removePhoto && (editUser.profilePictureUrl || photoFile) ? (
                         <img 
@@ -915,11 +915,11 @@ export default function AdminUsers() {
                           className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 border-white shadow-lg"
                         />
                       ) : (
-                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-2xl font-bold text-blue-600 flex-shrink-0">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-2xl font-bold text-jckl-navy flex-shrink-0">
                           {editUser.name?.charAt(0)?.toUpperCase() || 'U'}
                         </div>
                       )}
-                      <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
+                      <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-jckl-navy rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
                         <Camera className="w-4 h-4 text-white" />
                       </div>
                     </div>
@@ -934,7 +934,7 @@ export default function AdminUsers() {
                       <div className="flex flex-col sm:flex-row gap-2">
                         <label 
                           htmlFor="photo-upload"
-                          className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium cursor-pointer hover:bg-blue-700 transition"
+                          className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-jckl-navy text-white rounded-lg text-sm font-medium cursor-pointer hover:bg-jckl-navy transition"
                         >
                           <Upload className="w-4 h-4" />
                           <span className="hidden sm:inline">Upload</span>
@@ -963,7 +963,7 @@ export default function AdminUsers() {
                 <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
                   {/* Name */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-jckl-slate mb-2">
                       Full Name *
                     </label>
                     <input
@@ -971,14 +971,14 @@ export default function AdminUsers() {
                       required
                       value={editForm.name}
                       onChange={e => setEditForm({...editForm, name: e.target.value})}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                      className="w-full px-4 py-3 border border-jckl-gold rounded-xl focus:outline-none focus:ring-2 focus:ring-jckl-gold focus:border-transparent transition"
                       placeholder="Enter full name"
                     />
                   </div>
 
                   {/* Student ID */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-jckl-slate mb-2">
                       Student ID *
                     </label>
                     <input
@@ -986,38 +986,38 @@ export default function AdminUsers() {
                       required
                       value={editForm.studentId}
                       onChange={e => setEditForm({...editForm, studentId: e.target.value})}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition font-mono"
+                      className="w-full px-4 py-3 border border-jckl-gold rounded-xl focus:outline-none focus:ring-2 focus:ring-jckl-gold focus:border-transparent transition font-mono"
                       placeholder="e.g., 2024-001234"
                     />
                   </div>
 
                   {/* Phone */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-jckl-slate mb-2">
                       Contact Number
                     </label>
                     <input
                       type="tel"
                       value={editForm.phone}
                       onChange={e => setEditForm({...editForm, phone: e.target.value})}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                      className="w-full px-4 py-3 border border-jckl-gold rounded-xl focus:outline-none focus:ring-2 focus:ring-jckl-gold focus:border-transparent transition"
                       placeholder="09•• ••• ••••"
                     />
                   </div>
 
                   {/* Admin Note */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-jckl-slate mb-2">
                       Optional Note to User
                     </label>
                     <textarea
                       value={editForm.note}
                       onChange={e => setEditForm({...editForm, note: e.target.value})}
                       placeholder="Write a message to the user about this update (optional)"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
+                      className="w-full px-4 py-3 border border-jckl-gold rounded-xl focus:outline-none focus:ring-2 focus:ring-jckl-gold focus:border-transparent transition resize-none"
                       rows={3}
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-jckl-slate mt-1">
                       The user will be notified of changes and see this message
                     </p>
                   </div>
@@ -1026,12 +1026,12 @@ export default function AdminUsers() {
                   <div className="h-4" />
 
                   {/* Action Buttons */}
-                  <div className="flex flex-col sm:flex-row gap-2 pt-4 border-t border-gray-200">
+                  <div className="flex flex-col sm:flex-row gap-2 pt-4 border-t border-jckl-gold">
                     <button
                       type="button"
                       onClick={() => setEditUser(null)}
                       disabled={submitting}
-                      className="flex-1 px-4 py-3 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                      className="flex-1 px-4 py-3 text-sm font-semibold text-jckl-slate bg-white border border-jckl-gold rounded-xl hover:bg-white transition disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       Cancel
                     </button>
@@ -1067,44 +1067,44 @@ export default function AdminUsers() {
 
               <div className="p-6 space-y-4">
                 <div>
-                  <p className="text-sm text-gray-600">Student Name</p>
-                  <p className="text-lg font-semibold text-gray-900">{selectedPendingUser.name}</p>
+                  <p className="text-sm text-jckl-slate">Student Name</p>
+                  <p className="text-lg font-semibold text-jckl-navy">{selectedPendingUser.name}</p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl">
+                <div className="grid grid-cols-2 gap-4 bg-white p-4 rounded-xl">
                   <div>
-                    <p className="text-xs text-gray-500 uppercase tracking-wide">Email</p>
-                    <p className="text-sm font-medium text-gray-900 truncate">{selectedPendingUser.email}</p>
+                    <p className="text-xs text-jckl-slate uppercase tracking-wide">Email</p>
+                    <p className="text-sm font-medium text-jckl-navy truncate">{selectedPendingUser.email}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500 uppercase tracking-wide">Student ID</p>
-                    <p className="text-sm font-mono font-medium text-gray-900">{selectedPendingUser.studentId}</p>
+                    <p className="text-xs text-jckl-slate uppercase tracking-wide">Student ID</p>
+                    <p className="text-sm font-mono font-medium text-jckl-navy">{selectedPendingUser.studentId}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500 uppercase tracking-wide">Phone</p>
-                    <p className="text-sm font-medium text-gray-900">{selectedPendingUser.phone}</p>
+                    <p className="text-xs text-jckl-slate uppercase tracking-wide">Phone</p>
+                    <p className="text-sm font-medium text-jckl-navy">{selectedPendingUser.phone}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500 uppercase tracking-wide">Registered</p>
-                    <p className="text-sm font-medium text-gray-900">{new Date(selectedPendingUser.createdAt || Date.now()).toLocaleDateString()}</p>
+                    <p className="text-xs text-jckl-slate uppercase tracking-wide">Registered</p>
+                    <p className="text-sm font-medium text-jckl-navy">{new Date(selectedPendingUser.createdAt || Date.now()).toLocaleDateString()}</p>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-jckl-slate mb-2">
                     Approval Notes (Optional)
                   </label>
                   <textarea
                     value={approvalForm.approvalNotes}
                     onChange={e => setApprovalForm({...approvalForm, approvalNotes: e.target.value})}
                     placeholder="Add any notes about this approval..."
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition resize-none"
+                    className="w-full px-4 py-3 border border-jckl-gold rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition resize-none"
                     rows={3}
                   />
                 </div>
               </div>
 
-              <div className="bg-gray-50 p-6 rounded-b-2xl flex gap-3">
+              <div className="bg-white p-6 rounded-b-2xl flex gap-3">
                 <button
                   type="button"
                   onClick={() => {
@@ -1112,7 +1112,7 @@ export default function AdminUsers() {
                     setApprovalForm({ approvalNotes: '' });
                   }}
                   disabled={approvingId === selectedPendingUser?.id}
-                  className="flex-1 px-4 py-3 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="flex-1 px-4 py-3 text-sm font-semibold text-jckl-slate bg-white border border-jckl-gold rounded-xl hover:bg-white transition disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>
@@ -1150,8 +1150,8 @@ export default function AdminUsers() {
 
               <div className="p-6 space-y-4">
                 <div>
-                  <p className="text-sm text-gray-600">Student Name</p>
-                  <p className="text-lg font-semibold text-gray-900">{selectedRejectUser.name}</p>
+                  <p className="text-sm text-jckl-slate">Student Name</p>
+                  <p className="text-lg font-semibold text-jckl-navy">{selectedRejectUser.name}</p>
                 </div>
 
                 <div className="bg-red-50 p-4 rounded-xl">
@@ -1162,20 +1162,20 @@ export default function AdminUsers() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-jckl-slate mb-2">
                     Rejection Reason (Optional)
                   </label>
                   <textarea
                     value={rejectionForm.rejectionReason}
                     onChange={e => setRejectionForm({...rejectionForm, rejectionReason: e.target.value})}
                     placeholder="Provide a reason for rejecting this registration..."
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition resize-none"
+                    className="w-full px-4 py-3 border border-jckl-gold rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition resize-none"
                     rows={3}
                   />
                 </div>
               </div>
 
-              <div className="bg-gray-50 p-6 rounded-b-2xl flex gap-3">
+              <div className="bg-white p-6 rounded-b-2xl flex gap-3">
                 <button
                   type="button"
                   onClick={() => {
@@ -1183,7 +1183,7 @@ export default function AdminUsers() {
                     setRejectionForm({ rejectionReason: '' });
                   }}
                   disabled={rejectingIdInline === selectedRejectUser?.id}
-                  className="flex-1 px-4 py-3 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="flex-1 px-4 py-3 text-sm font-semibold text-jckl-slate bg-white border border-jckl-gold rounded-xl hover:bg-white transition disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>
@@ -1242,20 +1242,20 @@ export default function AdminUsers() {
 
                     {/* Email (Read-only) */}
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <label className="block text-sm font-semibold text-jckl-slate mb-2">
                         Email
                       </label>
                       <input
                         type="email"
                         value={balanceLoginEmail}
                         disabled
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 text-sm"
+                        className="w-full px-4 py-2 border border-jckl-gold rounded-lg bg-white text-jckl-slate text-sm"
                       />
                     </div>
 
                     {/* Password */}
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <label className="block text-sm font-semibold text-jckl-slate mb-2">
                         User Password
                       </label>
                       <input
@@ -1266,10 +1266,10 @@ export default function AdminUsers() {
                           setBalanceLoginError('');
                         }}
                         placeholder="Enter user's password to authorize"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition text-sm"
+                        className="w-full px-4 py-3 border border-jckl-gold rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition text-sm"
                         onKeyPress={(e) => e.key === 'Enter' && handleBalanceLogin()}
                       />
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-jckl-slate mt-1">
                         This verifies the user's identity before allowing balance modification
                       </p>
                     </div>
@@ -1280,7 +1280,7 @@ export default function AdminUsers() {
                         type="button"
                         onClick={closeBalanceModal}
                         disabled={balanceLoginLoading}
-                        className="flex-1 px-4 py-3 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="flex-1 px-4 py-3 text-sm font-semibold text-jckl-slate bg-white border border-jckl-gold rounded-lg hover:bg-white transition disabled:opacity-60 disabled:cursor-not-allowed"
                       >
                         Cancel
                       </button>
@@ -1313,11 +1313,11 @@ export default function AdminUsers() {
 
                     {/* New Balance Input */}
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <label className="block text-sm font-semibold text-jckl-slate mb-2">
                         New Balance Amount
                       </label>
                       <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-semibold">₱</span>
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-jckl-slate font-semibold">₱</span>
                         <input
                           type="number"
                           value={newBalance}
@@ -1326,10 +1326,10 @@ export default function AdminUsers() {
                           min="0"
                           max="999999999.99"
                           step="0.01"
-                          className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition text-sm"
+                          className="w-full pl-8 pr-4 py-3 border border-jckl-gold rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition text-sm"
                         />
                       </div>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-jckl-slate mt-1">
                         Set the new balance amount for this user
                       </p>
                     </div>
@@ -1347,7 +1347,7 @@ export default function AdminUsers() {
                         type="button"
                         onClick={closeBalanceModal}
                         disabled={balanceUpdateLoading}
-                        className="flex-1 px-4 py-3 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="flex-1 px-4 py-3 text-sm font-semibold text-jckl-slate bg-white border border-jckl-gold rounded-lg hover:bg-white transition disabled:opacity-60 disabled:cursor-not-allowed"
                       >
                         Cancel
                       </button>

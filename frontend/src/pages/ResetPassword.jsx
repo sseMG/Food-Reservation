@@ -21,16 +21,16 @@ export default function ResetPassword() {
 
   if (!token || !email) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <header className="w-full bg-white shadow-sm border-b border-gray-200">
+      <div className="min-h-screen bg-white">
+        <header className="w-full bg-white shadow-sm border-b-2 border-jckl-gold">
           <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-            <div className="font-bold text-gray-900 text-lg">
+            <div className="font-bold text-jckl-navy text-lg">
               Jesus Christ King of Kings and Lord of Lords Academy Inc.
             </div>
             <nav>
               <Link
                 to="/login"
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="px-4 py-2 bg-jckl-navy text-white rounded-lg hover:bg-jckl-light-navy"
               >
                 Log In
               </Link>
@@ -39,16 +39,16 @@ export default function ResetPassword() {
         </header>
 
         <div className="py-12 px-4">
-          <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg border border-red-200">
+          <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg border-t-4 border-jckl-gold">
             <h1 className="text-2xl font-bold text-red-600 mb-2">
               Invalid Link
             </h1>
-            <p className="text-gray-600 mb-6">
+            <p className="text-jckl-slate mb-6">
               This password reset link is invalid or expired.
             </p>
             <Link
               to="/forgot-password"
-              className="block w-full text-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="block w-full text-center px-4 py-2 bg-jckl-navy text-white rounded-lg hover:bg-jckl-light-navy"
             >
               Request New Link
             </Link>
@@ -96,16 +96,16 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="w-full bg-white shadow-sm border-b border-gray-200">
+    <div className="min-h-screen bg-white">
+      <header className="w-full bg-white shadow-sm border-b-2 border-jckl-gold">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="font-bold text-gray-900 text-lg">
+          <div className="font-bold text-jckl-navy text-lg">
             Jesus Christ King of Kings and Lord of Lords Academy Inc.
           </div>
           <nav>
             <Link
               to="/login"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="px-4 py-2 bg-jckl-navy text-white rounded-lg hover:bg-jckl-light-navy"
             >
               Log In
             </Link>
@@ -114,10 +114,10 @@ export default function ResetPassword() {
       </header>
 
       <div className="py-12 px-4">
-        <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg border border-gray-200">
+        <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg border-t-4 border-jckl-gold">
           <div className="mb-6">
-            <h1 className="text-2xl font-bold mb-2">Reset Password</h1>
-            <p className="text-sm text-gray-600">
+            <h1 className="text-2xl font-bold text-jckl-navy mb-2">Reset Password</h1>
+            <p className="text-sm text-jckl-slate">
               Enter your new password below.
             </p>
           </div>
@@ -153,7 +153,7 @@ export default function ResetPassword() {
                 <button
                   type="button"
                   onClick={() => setShowNewPassword(!showNewPassword)}
-                  className="absolute right-3 top-10 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute right-3 top-10 text-jckl-slate hover:text-jckl-navy transition-colors"
                   tabIndex="-1"
                 >
                   {showNewPassword ? (
@@ -180,7 +180,7 @@ export default function ResetPassword() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-10 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute right-3 top-10 text-jckl-slate hover:text-jckl-navy transition-colors"
                   tabIndex="-1"
                 >
                   {showConfirmPassword ? (
@@ -200,10 +200,10 @@ export default function ResetPassword() {
                 {isLoading ? "Resetting..." : "Reset Password"}
               </Button>
 
-              <div className="text-center text-sm text-gray-600">
+              <div className="text-center text-sm text-jckl-slate">
                 <Link
                   to="/login"
-                  className="text-blue-600 hover:text-blue-700 font-medium"
+                  className="text-jckl-navy hover:text-jckl-light-navy font-medium"
                 >
                   Back to Login
                 </Link>

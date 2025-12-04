@@ -441,16 +441,16 @@ export default function AdminHome() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">
+    <div className="min-h-screen bg-white pb-20 md:pb-0">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8 space-y-6 sm:space-y-8">
         {/* Header */}
         <header className="space-y-2">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+          <h1 className="text-2xl sm:text-3xl font-bold text-jckl-navy">
             {getGreeting()}, Admin
           </h1>
-          <p className="text-sm sm:text-base text-gray-600">
+          <p className="text-sm sm:text-base text-jckl-slate">
             Here&apos;s what&apos;s happening with your canteen today.
           </p>
         </header>
@@ -828,118 +828,159 @@ export default function AdminHome() {
 
       {/* Edit Item Modal */}
       {editingItem && editingFields && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center pt-4 sm:pt-16 px-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
           <div
-            className="fixed inset-0 bg-black/40"
+            className="absolute inset-0 bg-black/30"
             onClick={closeEditModal}
           />
-          <div className="relative max-w-4xl w-full bg-white rounded-lg shadow-lg overflow-hidden z-10 my-4">
-            <div className="flex items-center justify-between px-4 py-3 border-b">
-              <h3 className="text-lg font-semibold">Edit Product</h3>
+          <div className="relative w-full sm:max-w-2xl bg-white rounded-t-2xl sm:rounded-2xl shadow-lg border border-gray-100 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-jckl-navy">Edit Item</h3>
               <button
                 onClick={closeEditModal}
-                className="text-gray-500 hover:text-gray-700 p-2 rounded"
-                aria-label="Close edit modal"
+                className="p-2 rounded-lg hover:bg-jckl-cream"
+                aria-label="Close"
               >
-                ✕
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
 
-            <div className="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="md:col-span-1 flex flex-col items-center gap-3">
-                <div className="w-40 h-40 bg-gray-100 rounded overflow-hidden flex items-center justify-center">
-                  {editingImagePreview ? (
-                    <img src={editingImagePreview} alt="Preview" className="object-cover w-full h-full" />
-                  ) : (
-                    <div className="text-xs text-gray-400">No image</div>
-                  )}
-                </div>
-
-                <div className="w-full flex flex-col gap-2">
-                  <label className="text-xs font-medium text-gray-700">Replace image</label>
+            <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
+              {/* Left form */}
+              <div className="sm:col-span-3 space-y-3">
+                <div>
+                  <label className="block text-sm font-medium text-jckl-slate mb-1">Name</label>
                   <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => onReplaceImage(e.target.files?.[0])}
-                    className="text-xs"
+                    value={editingFields.name}
+                    onChange={(e) => onEditFieldChange("name", e.target.value)}
+                    className="w-full border border-jckl-gold rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
                   />
-                  {editingImagePreview && (
-                    <button
-                      type="button"
-                      onClick={removeImage}
-                      className="text-xs text-red-600 mt-1"
-                    >
-                      Remove image
-                    </button>
-                  )}
                 </div>
-              </div>
 
-              <div className="md:col-span-2">
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-medium text-gray-700">Name</label>
+                    <label className="block text-sm font-medium text-jckl-slate mb-1">Category</label>
+                    <select
+                      value={editingFields.category}
+                      onChange={(e) => onEditFieldChange("category", e.target.value)}
+                      className="w-full border border-jckl-gold rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
+                    >
+                      {categories.map((c) => (
+                        <option key={c}>{c}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-jckl-slate mb-1">Stock</label>
                     <input
-                      value={editingFields.name}
-                      onChange={(e) => onEditFieldChange("name", e.target.value)}
-                      className="mt-1 block w-full border border-gray-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+                      value={editingFields.stock}
+                      onChange={(e) => onEditFieldChange("stock", e.target.value.replace(/[^\d]/g, ""))}
+                      inputMode="numeric"
+                      className="w-full border border-jckl-gold rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
                     />
                   </div>
+                </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700">Price</label>
-                      <input
-                        type="number"
-                        value={editingFields.price}
-                        onChange={(e) => onEditFieldChange("price", e.target.value)}
-                        className="mt-1 block w-full border border-gray-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700">Stock</label>
-                      <input
-                        type="number"
-                        value={editingFields.stock}
-                        onChange={(e) => onEditFieldChange("stock", e.target.value)}
-                        className="mt-1 block w-full border border-gray-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700">Category</label>
-                      <select
-                        value={editingFields.category}
-                        onChange={(e) => onEditFieldChange("category", e.target.value)}
-                        className="mt-1 block w-full border border-gray-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-                      >
-                        {categories.map((c) => (
-                          <option key={c}>{c}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-end gap-2 pt-2">
-                    <button
-                      type="button"
-                      onClick={closeEditModal}
-                      className="px-4 py-2 rounded bg-white border text-sm"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      onClick={saveEdit}
-                      disabled={savingEdit}
-                      className="px-4 py-2 rounded bg-blue-600 text-white text-sm disabled:opacity-60"
-                    >
-                      {savingEdit ? "Saving…" : "Save changes"}
-                    </button>
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-jckl-slate mb-1">Price (PHP)</label>
+                  <input
+                    value={editingFields.price}
+                    onChange={(e) => onEditFieldChange("price", e.target.value.replace(/[^\d.]/g, ""))}
+                    inputMode="decimal"
+                    className="w-full border border-jckl-gold rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
+                  />
+                  <p className="text-xs text-jckl-slate mt-1">
+                    Preview: {editingFields.price ? peso.format(Number(editingFields.price)) : "—"}
+                  </p>
                 </div>
               </div>
+
+              {/* Image picker */}
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-jckl-slate mb-1">Image</label>
+                <div className="border border-dashed border-jckl-gold rounded-xl p-4 min-h-[190px] flex flex-col items-center justify-center text-center">
+                  {editingImagePreview ? (
+                    <>
+                      <img
+                        src={editingImagePreview}
+                        alt="preview"
+                        className="w-40 h-40 object-contain rounded"
+                      />
+                      <div className="mt-3 flex gap-2">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            const input = document.createElement("input");
+                            input.type = "file";
+                            input.accept = "image/*";
+                            input.onchange = (evt) => onReplaceImage(evt.target.files?.[0]);
+                            input.click();
+                          }}
+                          className="inline-flex items-center gap-2 bg-gray-900 text-white px-3 py-2 rounded-lg hover:bg-black text-sm"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                          </svg>
+                          Replace
+                        </button>
+                        <button
+                          type="button"
+                          onClick={removeImage}
+                          className="inline-flex items-center gap-2 bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 text-sm"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          Remove
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-9 h-9 text-jckl-slate mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <p className="text-sm text-jckl-slate">No image selected.</p>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          const input = document.createElement("input");
+                          input.type = "file";
+                          input.accept = "image/*";
+                          input.onchange = (evt) => onReplaceImage(evt.target.files?.[0]);
+                          input.click();
+                        }}
+                        className="mt-3 inline-flex items-center gap-2 bg-jckl-navy text-white px-3 py-2 rounded-lg hover:bg-jckl-navy text-sm"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                        Upload (≤ 2MB)
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Modal actions */}
+            <div className="mt-5 flex flex-col sm:flex-row gap-2 justify-end">
+              <button
+                onClick={closeEditModal}
+                className="px-4 py-2 rounded-lg border border-jckl-gold text-jckl-navy hover:bg-jckl-cream text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveEdit}
+                disabled={savingEdit}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-jckl-navy text-white hover:bg-jckl-navy text-sm disabled:opacity-60"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                {savingEdit ? "Saving…" : "Save Changes"}
+              </button>
             </div>
           </div>
         </div>

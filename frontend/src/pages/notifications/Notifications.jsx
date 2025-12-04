@@ -174,16 +174,16 @@ export default function Notifications() {
   return (
     <div className="min-h-screen bg-gray-50 pb-4">
       {/* Header */}
-      <div className="bg-white border-b sticky top-0 z-10">
+      <div className="bg-white border-b border-jckl-gold sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-3 sm:py-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 flex-1 min-w-0">
-              <Link to="/dashboard" className="p-2 -ml-2 hover:bg-gray-100 rounded-lg md:hidden">
-                <ChevronLeft className="w-5 h-5" />
+              <Link to="/dashboard" className="p-2 -ml-2 hover:bg-jckl-cream rounded-lg md:hidden">
+                <ChevronLeft className="w-5 h-5 text-jckl-navy" />
               </Link>
               <div className="flex-1 min-w-0">
-                <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 truncate">Notifications</h1>
-                <p className="text-xs sm:text-sm text-gray-500">
+                <h1 className="text-xl sm:text-2xl font-semibold text-jckl-navy truncate">Notifications</h1>
+                <p className="text-xs sm:text-sm text-jckl-slate">
                   {unreadCount > 0 ? `${unreadCount} unread` : 'All caught up!'}
                 </p>
               </div>
@@ -193,20 +193,20 @@ export default function Notifications() {
               {/* Mobile: Bulk action toggle */}
               <button 
                 onClick={() => setShowBulkActions(!showBulkActions)}
-                className="md:hidden p-2 rounded-lg hover:bg-gray-100"
+                className="md:hidden p-2 rounded-lg hover:bg-jckl-cream"
               >
                 <MoreVertical className="w-5 h-5" />
               </button>
 
               {/* Desktop: Back link */}
-              <Link to="/dashboard" className="hidden md:inline-flex text-sm text-blue-600 hover:underline">
+              <Link to="/dashboard" className="hidden md:inline-flex text-sm text-jckl-navy hover:underline font-medium">
                 Back to Dashboard
               </Link>
               
               <button 
                 onClick={load} 
                 disabled={loading}
-                className="inline-flex items-center gap-2 px-3 py-2 border rounded-lg text-sm hover:bg-gray-50 disabled:opacity-60"
+                className="inline-flex items-center gap-2 px-3 py-2 border border-jckl-gold rounded-lg text-sm text-jckl-navy hover:bg-jckl-cream disabled:opacity-60 font-medium"
               >
                 <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                 <span className="hidden sm:inline">Refresh</span>
@@ -216,15 +216,15 @@ export default function Notifications() {
 
           {/* Mobile Bulk Actions Dropdown */}
           {showBulkActions && (
-            <div className="mt-3 pt-3 border-t md:hidden space-y-2">
+            <div className="mt-3 pt-3 border-t border-jckl-gold md:hidden space-y-2">
               <div className="flex items-center gap-2">
                 <input 
                   type="checkbox" 
-                  className="h-4 w-4 rounded border-gray-300"
+                  className="h-4 w-4 rounded border-jckl-gold accent-jckl-navy"
                   checked={selected.size === paginatedNotifications.length && paginatedNotifications.length > 0} 
                   onChange={toggleAll} 
                 />
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-jckl-slate">
                   {selected.size > 0 ? `${selected.size} selected` : 'Select all'}
                 </span>
               </div>
@@ -232,13 +232,13 @@ export default function Notifications() {
                 <div className="flex gap-2">
                   <button 
                     onClick={markSelectedRead} 
-                    className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium"
+                    className="flex-1 px-3 py-2 bg-jckl-navy text-white rounded-lg text-sm font-medium hover:bg-jckl-light-navy"
                   >
                     Mark as read
                   </button>
                   <button 
                     onClick={deleteSelected} 
-                    className="flex-1 px-3 py-2 bg-red-600 text-white rounded-lg text-sm font-medium"
+                    className="flex-1 px-3 py-2 bg-jckl-accent text-white rounded-lg text-sm font-medium hover:opacity-90"
                   >
                     Delete
                   </button>
@@ -251,18 +251,18 @@ export default function Notifications() {
 
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6">
         {/* Desktop Bulk Actions */}
-        <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 mb-4">
+        <div className="hidden md:block bg-white rounded-xl shadow-sm border border-jckl-gold mb-4">
           <div className="p-3 sm:p-4 flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <input 
                 type="checkbox" 
-                className="h-4 w-4 rounded border-gray-300"
+                className="h-4 w-4 rounded border-jckl-gold accent-jckl-navy"
                 checked={selected.size === paginatedNotifications.length && paginatedNotifications.length > 0} 
                 onChange={toggleAll} 
               />
               <button 
                 onClick={markSelectedRead} 
-                className="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-3 py-2 bg-jckl-navy text-white rounded-lg text-sm font-medium hover:bg-jckl-light-navy disabled:opacity-50"
                 disabled={selected.size === 0}
               >
                 <Check className="w-4 h-4" />
@@ -270,14 +270,14 @@ export default function Notifications() {
               </button>
               <button 
                 onClick={deleteSelected} 
-                className="inline-flex items-center gap-2 px-3 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-3 py-2 bg-jckl-accent text-white rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50"
                 disabled={selected.size === 0}
               >
                 <Trash2 className="w-4 h-4" />
                 Delete
               </button>
             </div>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-jckl-slate">
               {notifications.length} notification{notifications.length !== 1 ? 's' : ''}
             </div>
           </div>
@@ -285,16 +285,16 @@ export default function Notifications() {
 
         {/* Notifications List */}
         {loading ? (
-          <div className="bg-white rounded-xl border border-gray-100 p-8 sm:p-10 text-center">
-            <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-gray-400" />
-            <p className="text-sm text-gray-500">Loading notifications…</p>
+          <div className="bg-white rounded-xl border border-jckl-gold p-8 sm:p-10 text-center">
+            <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-jckl-navy" />
+            <p className="text-sm text-jckl-slate">Loading notifications…</p>
           </div>
         ) : notifications.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-100 p-8 sm:p-10 text-center">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Check className="w-8 h-8 text-gray-400" />
+          <div className="bg-white rounded-xl border border-jckl-gold p-8 sm:p-10 text-center">
+            <div className="w-16 h-16 bg-jckl-cream rounded-full flex items-center justify-center mx-auto mb-3">
+              <Check className="w-8 h-8 text-jckl-navy" />
             </div>
-            <p className="text-sm text-gray-500">No notifications yet.</p>
+            <p className="text-sm text-jckl-slate">No notifications yet.</p>
           </div>
         ) : (
           <>
@@ -304,7 +304,7 @@ export default function Notifications() {
                 <div
                   key={n.id}
                   className={`bg-white rounded-xl shadow-sm border overflow-hidden ${
-                    n.read ? 'border-gray-100' : 'border-blue-200 bg-blue-50/30'
+                    n.read ? 'border-jckl-gold' : 'border-jckl-purple bg-jckl-cream/30'
                   }`}
                 >
                   <div className="p-3" onClick={() => openPreview(n)}>
@@ -317,7 +317,7 @@ export default function Notifications() {
                           e.stopPropagation();
                           toggle(n.id);
                         }}
-                        className="mt-1 h-4 w-4 rounded border-gray-300 flex-shrink-0"
+                        className="mt-1 h-4 w-4 rounded border-jckl-gold accent-jckl-navy flex-shrink-0"
                         onClick={(e) => e.stopPropagation()}
                       />
 
@@ -330,14 +330,14 @@ export default function Notifications() {
                             <img
                               src={display.profilePictureUrl}
                               alt=""
-                              className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
+                              className="w-10 h-10 rounded-full object-cover border-2 border-jckl-gold shadow-sm"
                               onError={(e) => {
                                 e.target.onerror = null;
                                 e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(display.name || 'CA')}&background=random`;
                               }}
                             />
                           ) : (
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-sm font-medium text-blue-600 border-2 border-white shadow-sm">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-jckl-navy to-jckl-purple flex items-center justify-center text-sm font-medium text-white border-2 border-jckl-gold shadow-sm">
                               {(display.name || "C").charAt(0)}
                             </div>
                           );
@@ -347,20 +347,20 @@ export default function Notifications() {
                       {/* Content */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2 mb-1">
-                          <p className="text-sm font-medium text-gray-900 truncate">
+                          <p className="text-sm font-medium text-jckl-navy truncate">
                             {(n.actor && n.actor.name) || "Canteen Admin"}
                           </p>
-                          <span className="text-[10px] text-gray-500 whitespace-nowrap flex-shrink-0">
+                          <span className="text-[10px] text-jckl-slate whitespace-nowrap flex-shrink-0">
                             <Clock className="w-3 h-3 inline mr-0.5" />
                             {new Date(n.createdAt).toLocaleDateString()}
                           </span>
                         </div>
                         
-                        <h4 className="text-sm font-medium text-gray-900 line-clamp-1 mb-1">
+                        <h4 className="text-sm font-medium text-jckl-navy line-clamp-1 mb-1">
                           {n.title}
                         </h4>
                         
-                        <p className="text-xs text-gray-600 line-clamp-2 mb-2">
+                        <p className="text-xs text-jckl-slate line-clamp-2 mb-2">
                           {n.body}
                         </p>
 
@@ -368,13 +368,13 @@ export default function Notifications() {
                         {n.data && (
                           <div className="flex items-center gap-2 flex-wrap">
                             {n.data.amount && !n.data.items && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-jckl-gold/20 text-jckl-navy rounded text-xs font-medium border border-jckl-gold">
                                 <DollarSign className="w-3 h-3" />
                                 {peso.format(n.data.amount)}
                               </span>
                             )}
                             {n.data.items && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-medium">
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-jckl-purple/20 text-jckl-purple rounded text-xs font-medium border border-jckl-purple">
                                 <Package className="w-3 h-3" />
                                 {n.data.items.length} items
                               </span>
@@ -396,7 +396,7 @@ export default function Notifications() {
                     <div className="px-3 pb-3">
                       <button
                         onClick={(e) => markSingleRead(n.id, e)}
-                        className="w-full py-2 text-xs text-blue-600 hover:text-blue-700 font-medium"
+                        className="w-full py-2 text-xs text-jckl-navy hover:text-jckl-light-navy font-medium hover:bg-jckl-cream rounded"
                       >
                         Mark as read
                       </button>
@@ -407,26 +407,26 @@ export default function Notifications() {
             </div>
 
             {/* Desktop: Table View */}
-            <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="hidden md:block bg-white rounded-xl shadow-sm border border-jckl-gold overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="min-w-full">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-jckl-cream">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-12"></th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">From</th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Subject</th>
-                      <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
-                      <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-navy uppercase tracking-wider w-12"></th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-navy uppercase tracking-wider">From</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-navy uppercase tracking-wider">Subject</th>
+                      <th className="px-6 py-3 text-right text-xs font-semibold text-jckl-navy uppercase tracking-wider">Date</th>
+                      <th className="px-6 py-3 text-right text-xs font-semibold text-jckl-navy uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
 
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-jckl-gold">
                     {paginatedNotifications.map((n) => (
-                      <tr key={n.id} className={`${n.read ? "" : "bg-blue-50"} hover:bg-gray-50`}>
+                      <tr key={n.id} className={`${n.read ? "" : "bg-jckl-cream/50"} hover:bg-jckl-cream/30`}>
                         <td className="px-6 py-4">
                           <input 
                             type="checkbox" 
-                            className="h-4 w-4 rounded border-gray-300"
+                            className="h-4 w-4 rounded border-jckl-gold accent-jckl-navy"
                             checked={selected.has(n.id)} 
                             onChange={() => toggle(n.id)} 
                           />
@@ -440,42 +440,42 @@ export default function Notifications() {
                                 <img
                                   src={display.profilePictureUrl}
                                   alt=""
-                                  className="w-8 h-8 rounded-full object-cover border border-gray-200"
+                                  className="w-8 h-8 rounded-full object-cover border border-jckl-gold"
                                   onError={(e) => {
                                     e.target.onerror = null;
                                     e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(display.name || 'CA')}&background=random`;
                                   }}
                                 />
                               ) : (
-                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-xs font-medium text-blue-600">
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-jckl-navy to-jckl-purple flex items-center justify-center text-xs font-medium text-white">
                                   {(display.name || "C").charAt(0)}
                                 </div>
                               );
                             })()}
-                            <span className="text-sm font-medium text-gray-900">
+                            <span className="text-sm font-medium text-jckl-navy">
                               {(n.actor && n.actor.name) || "Canteen Admin"}
                             </span>
                           </div>
                         </td>
                         <td className="px-6 py-4 cursor-pointer" onClick={() => openPreview(n)}>
-                          <div className="text-sm font-medium text-gray-900">{n.title}</div>
-                          <div className="text-xs text-gray-500 line-clamp-1">{n.body}</div>
+                          <div className="text-sm font-medium text-jckl-navy">{n.title}</div>
+                          <div className="text-xs text-jckl-slate line-clamp-1">{n.body}</div>
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <div className="text-xs text-gray-500">{new Date(n.createdAt).toLocaleDateString()}</div>
-                          <div className="text-[10px] text-gray-400">{new Date(n.createdAt).toLocaleTimeString()}</div>
+                          <div className="text-xs text-jckl-slate">{new Date(n.createdAt).toLocaleDateString()}</div>
+                          <div className="text-[10px] text-jckl-slate/60">{new Date(n.createdAt).toLocaleTimeString()}</div>
                         </td>
                         <td className="px-6 py-4 text-right">
                           <div className="inline-flex gap-2">
                             <button 
                               onClick={() => openPreview(n)} 
-                              className="px-3 py-1.5 text-xs border rounded-lg hover:bg-gray-50"
+                              className="px-3 py-1.5 text-xs border border-jckl-gold text-jckl-navy rounded-lg hover:bg-jckl-cream font-medium"
                             >
                               Open
                             </button>
                             <button 
                               onClick={() => deleteSingle(n.id)} 
-                              className="px-3 py-1.5 text-xs border border-red-200 text-red-600 rounded-lg hover:bg-red-50"
+                              className="px-3 py-1.5 text-xs border border-jckl-accent text-jckl-accent rounded-lg hover:bg-jckl-cream font-medium"
                             >
                               Delete
                             </button>
@@ -494,17 +494,17 @@ export default function Notifications() {
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
-                  className="inline-flex items-center gap-2 px-4 py-2 border rounded-lg text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-2 px-4 py-2 border border-jckl-gold text-jckl-navy rounded-lg text-sm font-medium hover:bg-jckl-cream disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   Previous
                 </button>
 
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">
-                    Page <span className="font-semibold">{currentPage}</span> of <span className="font-semibold">{totalPages}</span>
+                  <span className="text-sm text-jckl-slate">
+                    Page <span className="font-semibold text-jckl-navy">{currentPage}</span> of <span className="font-semibold text-jckl-navy">{totalPages}</span>
                   </span>
-                  <div className="text-xs text-gray-500 hidden sm:inline">
+                  <div className="text-xs text-jckl-slate hidden sm:inline">
                     ({startIndex + 1}–{Math.min(endIndex, notifications.length)} of {notifications.length})
                   </div>
                 </div>
@@ -512,7 +512,7 @@ export default function Notifications() {
                 <button
                   onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage === totalPages}
-                  className="inline-flex items-center gap-2 px-4 py-2 border rounded-lg text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-2 px-4 py-2 border border-jckl-gold text-jckl-navy rounded-lg text-sm font-medium hover:bg-jckl-cream disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Next
                   <ChevronRight className="w-4 h-4" />
@@ -528,7 +528,7 @@ export default function Notifications() {
         <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center bg-black/40 p-0 sm:p-4">
           <div className="w-full sm:max-w-3xl bg-white sm:rounded-lg shadow-lg overflow-hidden max-h-screen sm:max-h-[90vh] flex flex-col">
             {/* Header */}
-            <div className="flex items-start gap-3 sm:gap-4 p-4 sm:p-5 border-b flex-shrink-0">
+            <div className="flex items-start gap-3 sm:gap-4 p-4 sm:p-5 border-b border-jckl-gold flex-shrink-0">
               <div className="flex-shrink-0">
                 {(() => {
                   const adminFallback = { name: "Canteen Admin", profilePictureUrl: "/jckl-192.png" };
@@ -537,14 +537,14 @@ export default function Notifications() {
                     <img
                       src={display.profilePictureUrl}
                       alt=""
-                      className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover border-2 border-white shadow-sm"
+                      className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover border-2 border-jckl-gold shadow-sm"
                       onError={(e) => { 
                         e.target.onerror = null; 
                         e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(display.name || 'CA')}&background=random`; 
                       }}
                     />
                   ) : (
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-lg font-medium text-blue-600">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-jckl-navy to-jckl-purple flex items-center justify-center text-lg font-medium text-white">
                       {(display.name || "C").charAt(0)}
                     </div>
                   );
@@ -552,9 +552,9 @@ export default function Notifications() {
               </div>
 
               <div className="flex-1 min-w-0">
-                <div className="text-xs text-gray-500">From {(preview.actor && preview.actor.name) || "Canteen Admin"}</div>
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 line-clamp-2">{preview.title}</h3>
-                <div className="flex items-center gap-1 text-xs text-gray-400 mt-1">
+                <div className="text-xs text-jckl-slate">From {(preview.actor && preview.actor.name) || "Canteen Admin"}</div>
+                <h3 className="text-lg sm:text-xl font-semibold text-jckl-navy line-clamp-2">{preview.title}</h3>
+                <div className="flex items-center gap-1 text-xs text-jckl-slate/60 mt-1">
                   <Calendar className="w-3 h-3" />
                   {new Date(preview.createdAt).toLocaleString()}
                 </div>
@@ -562,7 +562,7 @@ export default function Notifications() {
 
               <button 
                 onClick={() => setPreview(null)} 
-                className="p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 flex-shrink-0"
+                className="p-2 rounded-full text-jckl-slate hover:text-jckl-navy hover:bg-jckl-cream flex-shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -570,17 +570,17 @@ export default function Notifications() {
 
             {/* Body - Scrollable */}
             <div className="p-4 sm:p-6 overflow-y-auto flex-1">
-              <p className="text-sm text-gray-700 mb-4 whitespace-pre-wrap">{preview.body}</p>
+              <p className="text-sm text-jckl-navy mb-4 whitespace-pre-wrap">{preview.body}</p>
 
               {preview.data && (
-                <div className="bg-gray-50 border rounded-lg p-4 sm:p-5 space-y-4">
+                <div className="bg-jckl-cream border border-jckl-gold rounded-lg p-4 sm:p-5 space-y-4">
                   {/* Reservation Details */}
                   {preview.data.reservationId && (
                     <div className="space-y-3">
                       <div className="flex items-center gap-2 text-sm">
-                        <Package className="w-4 h-4 text-gray-500" />
-                        <span className="text-gray-500">Reservation ID:</span>
-                        <span className="font-medium text-gray-900">{preview.data.reservationId}</span>
+                        <Package className="w-4 h-4 text-jckl-navy" />
+                        <span className="text-jckl-slate">Reservation ID:</span>
+                        <span className="font-medium text-jckl-navy">{preview.data.reservationId}</span>
                       </div>
 
                       {/* Items */}
@@ -589,26 +589,26 @@ export default function Notifications() {
                         const items = resData?.items || preview.data.items;
                         return Array.isArray(items) && items.length > 0 ? (
                           <div className="space-y-2">
-                            <div className="text-xs font-medium text-gray-500 uppercase">Order Items</div>
-                            <div className="rounded-md border bg-white overflow-hidden divide-y">
+                            <div className="text-xs font-medium text-jckl-navy uppercase">Order Items</div>
+                            <div className="rounded-md border border-jckl-gold bg-white overflow-hidden divide-y divide-jckl-gold">
                               {items.map((it, i) => (
                                 <div key={i} className="flex items-center justify-between px-3 sm:px-4 py-3 text-sm">
                                   <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
-                                      <span className="font-semibold text-gray-900">{it.qty || 1}×</span>
-                                      <span className="text-gray-700 truncate">{it.name}</span>
+                                      <span className="font-semibold text-jckl-navy">{it.qty || 1}×</span>
+                                      <span className="text-jckl-slate truncate">{it.name}</span>
                                     </div>
-                                    <div className="text-xs text-gray-500 mt-0.5">@ {peso.format(it.price || 0)}</div>
+                                    <div className="text-xs text-jckl-slate mt-0.5">@ {peso.format(it.price || 0)}</div>
                                   </div>
                                   <div className="text-right flex-shrink-0 ml-3">
-                                    <div className="font-medium text-gray-900">{peso.format((it.price || 0) * (it.qty || 1))}</div>
+                                    <div className="font-medium text-jckl-navy">{peso.format((it.price || 0) * (it.qty || 1))}</div>
                                   </div>
                                 </div>
                               ))}
 
-                              <div className="px-3 sm:px-4 py-3 bg-gray-50 flex justify-between items-center">
-                                <span className="font-semibold text-gray-900">Total</span>
-                                <span className="text-lg font-bold text-blue-600">
+                              <div className="px-3 sm:px-4 py-3 bg-jckl-gold/10 flex justify-between items-center">
+                                <span className="font-semibold text-jckl-navy">Total</span>
+                                <span className="text-lg font-bold text-jckl-navy">
                                   {peso.format((resData?.total) || (preview.data.total) || 0)}
                                 </span>
                               </div>
@@ -619,28 +619,28 @@ export default function Notifications() {
 
                       {/* Student Details */}
                       {(preview.data.grade || preview.data.section || preview.data.student) && (
-                        <div className="pt-3 border-t">
-                          <div className="flex items-center gap-2 text-xs font-medium text-gray-500 uppercase mb-2">
+                        <div className="pt-3 border-t border-jckl-gold">
+                          <div className="flex items-center gap-2 text-xs font-medium text-jckl-navy uppercase mb-2">
                             <User className="w-4 h-4" />
                             Student Details
                           </div>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                             {preview.data.student && (
                               <div className="flex items-center gap-2">
-                                <span className="text-gray-500">Name:</span>
-                                <span className="font-medium text-gray-900">{preview.data.student}</span>
+                                <span className="text-jckl-slate">Name:</span>
+                                <span className="font-medium text-jckl-navy">{preview.data.student}</span>
                               </div>
                             )}
                             {preview.data.grade && (
                               <div className="flex items-center gap-2">
-                                <span className="text-gray-500">Grade:</span>
-                                <span className="font-medium text-gray-900">{preview.data.grade}</span>
+                                <span className="text-jckl-slate">Grade:</span>
+                                <span className="font-medium text-jckl-navy">{preview.data.grade}</span>
                               </div>
                             )}
                             {preview.data.section && (
                               <div className="flex items-center gap-2">
-                                <span className="text-gray-500">Section:</span>
-                                <span className="font-medium text-gray-900">{preview.data.section}</span>
+                                <span className="text-jckl-slate">Section:</span>
+                                <span className="font-medium text-jckl-navy">{preview.data.section}</span>
                               </div>
                             )}
                           </div>
@@ -648,23 +648,23 @@ export default function Notifications() {
                       )}
 
                       {preview.data.note && (
-                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                          <div className="text-xs font-medium text-yellow-900 mb-1">Note</div>
-                          <p className="text-sm text-yellow-800">{preview.data.note}</p>
+                        <div className="bg-jckl-gold/10 border border-jckl-gold rounded-lg p-3">
+                          <div className="text-xs font-medium text-jckl-navy mb-1">Note</div>
+                          <p className="text-sm text-jckl-slate">{preview.data.note}</p>
                         </div>
                       )}
 
                       {preview.data.slot && (
-                        <div className="flex items-center gap-2 text-sm pt-3 border-t">
-                          <Clock className="w-4 h-4 text-gray-500" />
-                          <span className="text-gray-500">Pickup:</span>
-                          <span className="font-medium text-gray-900">{preview.data.slot}</span>
+                        <div className="flex items-center gap-2 text-sm pt-3 border-t border-jckl-gold">
+                          <Clock className="w-4 h-4 text-jckl-navy" />
+                          <span className="text-jckl-slate">Pickup:</span>
+                          <span className="font-medium text-jckl-navy">{preview.data.slot}</span>
                         </div>
                       )}
 
                       {preview.data.status && (
-                        <div className="pt-3 border-t">
-                          <div className="text-xs font-medium text-gray-500 uppercase mb-2">Status</div>
+                        <div className="pt-3 border-t border-jckl-gold">
+                          <div className="text-xs font-medium text-jckl-navy uppercase mb-2">Status</div>
                           <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium border ${getStatusColorClass(preview.data.status)}`}>
                             {getStatusIcon(preview.data.status)}
                             {preview.data.status}
@@ -679,26 +679,26 @@ export default function Notifications() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between text-sm">
                         <div className="flex items-center gap-2">
-                          <DollarSign className="w-4 h-4 text-gray-500" />
-                          <span className="text-gray-600">Amount</span>
+                          <DollarSign className="w-4 h-4 text-jckl-navy" />
+                          <span className="text-jckl-slate">Amount</span>
                         </div>
-                        <span className="font-semibold text-gray-900">{peso.format(preview.data.amount)}</span>
+                        <span className="font-semibold text-jckl-navy">{peso.format(preview.data.amount)}</span>
                       </div>
                       {preview.data.provider && (
                         <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-600">Method</span>
-                          <span className="font-medium capitalize text-gray-900">{preview.data.provider}</span>
+                          <span className="text-jckl-slate">Method</span>
+                          <span className="font-medium capitalize text-jckl-navy">{preview.data.provider}</span>
                         </div>
                       )}
                       {(preview.data.reference || preview.data.txId) && (
                         <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-600">Reference</span>
-                          <span className="font-mono text-xs font-medium text-gray-900">{preview.data.reference || preview.data.txId}</span>
+                          <span className="text-jckl-slate">Reference</span>
+                          <span className="font-mono text-xs font-medium text-jckl-navy">{preview.data.reference || preview.data.txId}</span>
                         </div>
                       )}
                       {preview.data.status && (
-                        <div className="flex items-center justify-between text-sm pt-2 border-t">
-                          <span className="text-gray-600">Status</span>
+                        <div className="flex items-center justify-between text-sm pt-2 border-t border-jckl-gold">
+                          <span className="text-jckl-slate">Status</span>
                           <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium border ${getStatusColorClass(preview.data.status)}`}>
                             {getStatusIcon(preview.data.status)}
                             {preview.data.status}
@@ -706,12 +706,12 @@ export default function Notifications() {
                         </div>
                       )}
                       {preview.data.status?.toLowerCase() === 'rejected' && preview.data.rejectionReason && (
-                        <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                        <div className="bg-jckl-accent/10 border border-jckl-accent rounded-lg p-3">
                           <div className="flex items-start gap-2">
-                            <XCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+                            <XCircle className="w-4 h-4 text-jckl-accent flex-shrink-0 mt-0.5" />
                             <div>
-                              <div className="text-xs font-medium text-red-900 mb-1">Rejection Reason</div>
-                              <p className="text-sm text-red-700">{preview.data.rejectionReason}</p>
+                              <div className="text-xs font-medium text-jckl-accent mb-1">Rejection Reason</div>
+                              <p className="text-sm text-jckl-accent/80">{preview.data.rejectionReason}</p>
                             </div>
                           </div>
                         </div>
@@ -723,16 +723,16 @@ export default function Notifications() {
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 flex-shrink-0 bg-gray-50">
+            <div className="p-4 border-t border-jckl-gold flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 flex-shrink-0 bg-jckl-cream">
               <button 
                 onClick={() => setPreview(null)} 
-                className="w-full sm:w-auto px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 order-2 sm:order-1"
+                className="w-full sm:w-auto px-4 py-2 bg-white border border-jckl-gold text-jckl-navy rounded-lg text-sm font-medium hover:bg-jckl-cream order-2 sm:order-1"
               >
                 Close
               </button>
               <button 
                 onClick={() => deleteSingle(preview.id)} 
-                className="w-full sm:w-auto px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 order-1 sm:order-2"
+                className="w-full sm:w-auto px-4 py-2 bg-jckl-accent text-white rounded-lg text-sm font-medium hover:opacity-90 order-1 sm:order-2"
               >
                 Delete Notification
               </button>

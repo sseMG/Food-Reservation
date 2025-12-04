@@ -265,19 +265,19 @@ export default function AdminEditItems() {
 
   /* ---------------- UI ---------------- */
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-3 sm:py-8 space-y-3 sm:space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Edit Items</h1>
-            <p className="text-gray-600">Update prices, stocks, and details. Delete items you no longer sell.</p>
+            <h1 className="text-3xl font-bold text-jckl-navy">Edit Items</h1>
+            <p className="text-jckl-slate">Update prices, stocks, and details. Delete items you no longer sell.</p>
           </div>
           <button
             onClick={load}
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border bg-white hover:bg-gray-50"
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border bg-white hover:bg-white"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
             Refresh
@@ -288,19 +288,19 @@ export default function AdminEditItems() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
           <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
             <div className="relative flex-1">
-              <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-jckl-slate absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Search by name or category…"
-                className="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-9 pr-3 py-2 rounded-lg border border-jckl-gold focus:outline-none focus:ring-2 focus:ring-jckl-gold"
               />
             </div>
             <div>
               <select
                 value={cat}
                 onChange={(e) => setCat(e.target.value)}
-                className="px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-3 py-2 rounded-lg border border-jckl-gold focus:outline-none focus:ring-2 focus:ring-jckl-gold"
               >
                 <option>All</option>
                 {mergedCategories.map((c) => (
@@ -308,7 +308,7 @@ export default function AdminEditItems() {
                 ))}
               </select>
             </div>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-jckl-slate">
               {filtered.length} of {items.length} items
             </div>
           </div>
@@ -324,26 +324,26 @@ export default function AdminEditItems() {
         {/* Table */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-x-auto">
           <table className="min-w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-white">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Item</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Category</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Price</th>
-                <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Stock</th>
-                <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-jckl-slate uppercase tracking-wider">Item</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-jckl-slate uppercase tracking-wider">Category</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-jckl-slate uppercase tracking-wider">Price</th>
+                <th className="px-4 py-3 text-center text-xs font-semibold text-jckl-slate uppercase tracking-wider">Stock</th>
+                <th className="px-4 py-3 text-center text-xs font-semibold text-jckl-slate uppercase tracking-wider">Status</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-jckl-slate uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
+                  <td colSpan={6} className="px-4 py-8 text-center text-jckl-slate">
                     Loading…
                   </td>
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
+                  <td colSpan={6} className="px-4 py-8 text-center text-jckl-slate">
                     No items found.
                   </td>
                 </tr>
@@ -351,10 +351,10 @@ export default function AdminEditItems() {
                 filtered.map((it) => {
                   const imgSrc = bust(it.img, it.id);
                   return (
-                    <tr key={it.id} className="hover:bg-gray-50">
+                    <tr key={it.id} className="hover:bg-white">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gray-100 rounded overflow-hidden flex items-center justify-center">
+                          <div className="w-10 h-10 bg-jckl-cream rounded overflow-hidden flex items-center justify-center">
                             {imgSrc ? (
                               <img
                                 key={imgSrc} // force remount when src changes
@@ -364,16 +364,16 @@ export default function AdminEditItems() {
                                 onError={(e) => { e.currentTarget.style.display = "none"; }}
                               />
                             ) : (
-                              <ImageIcon className="w-5 h-5 text-gray-400" />
+                              <ImageIcon className="w-5 h-5 text-jckl-slate" />
                             )}
                           </div>
                           <div>
-                            <div className="text-sm font-medium text-gray-900">{it.name}</div>
-                            <div className="text-xs text-gray-500">ID: {it.id}</div>
+                            <div className="text-sm font-medium text-jckl-navy">{it.name}</div>
+                            <div className="text-xs text-jckl-slate">ID: {it.id}</div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-700 flex items-center gap-2">
+                      <td className="px-4 py-3 text-sm text-jckl-slate flex items-center gap-2">
                         {(() => {
                           const cat = categoriesMap[it.category];
                           const iconID = cat && typeof cat.iconID === 'number' ? cat.iconID : 0;
@@ -385,10 +385,10 @@ export default function AdminEditItems() {
                           );
                         })()}
                       </td>
-                      <td className="px-4 py-3 text-right text-sm font-semibold text-gray-900">
+                      <td className="px-4 py-3 text-right text-sm font-semibold text-jckl-navy">
                         {peso.format(Number(it.price || 0))}
                       </td>
-                      <td className="px-4 py-3 text-center text-sm text-gray-700">{Number(it.stock || 0)}</td>
+                      <td className="px-4 py-3 text-center text-sm text-jckl-slate">{Number(it.stock || 0)}</td>
                       <td className="px-4 py-3 text-center">
                         <span
                           className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
@@ -443,10 +443,10 @@ export default function AdminEditItems() {
             />
             <div className="relative w-full sm:max-w-2xl bg-white rounded-t-2xl sm:rounded-2xl shadow-lg border border-gray-100 p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Edit Item</h3>
+                <h3 className="text-lg font-semibold text-jckl-navy">Edit Item</h3>
                 <button
                   onClick={closeEdit}
-                  className="p-2 rounded-lg hover:bg-gray-100"
+                  className="p-2 rounded-lg hover:bg-jckl-cream"
                   aria-label="Close"
                 >
                   <X className="w-5 h-5" />
@@ -463,21 +463,21 @@ export default function AdminEditItems() {
                 {/* Left form */}
                 <div className="sm:col-span-3 space-y-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                    <label className="block text-sm font-medium text-jckl-slate mb-1">Name</label>
                     <input
                       value={editing.name}
                       onChange={(e) => setEditField("name", e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-jckl-gold rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
                     />
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                      <label className="block text-sm font-medium text-jckl-slate mb-1">Category</label>
                       <select
                         value={editing.category}
                         onChange={(e) => setEditField("category", e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-jckl-gold rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
                       >
                         {mergedCategories.map((c) => (
                           <option key={c}>{c}</option>
@@ -485,25 +485,25 @@ export default function AdminEditItems() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Stock</label>
+                      <label className="block text-sm font-medium text-jckl-slate mb-1">Stock</label>
                       <input
                         value={editing.stock}
                         onChange={(e) => setEditField("stock", e.target.value.replace(/[^\d]/g, ""))}
                         inputMode="numeric"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-jckl-gold rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Price (PHP)</label>
+                    <label className="block text-sm font-medium text-jckl-slate mb-1">Price (PHP)</label>
                     <input
                       value={editing.price}
                       onChange={(e) => setEditField("price", e.target.value.replace(/[^\d.]/g, ""))}
                       inputMode="decimal"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-jckl-gold rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-jckl-slate mt-1">
                       Preview: {editing.price ? peso.format(Number(editing.price)) : "—"}
                     </p>
                   </div>
@@ -511,8 +511,8 @@ export default function AdminEditItems() {
 
                 {/* Image picker */}
                 <div className="sm:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Image</label>
-                  <div className="border border-dashed border-gray-300 rounded-xl p-4 min-h-[190px] flex flex-col items-center justify-center text-center">
+                  <label className="block text-sm font-medium text-jckl-slate mb-1">Image</label>
+                  <div className="border border-dashed border-jckl-gold rounded-xl p-4 min-h-[190px] flex flex-col items-center justify-center text-center">
                     {imgPreview || editing.img ? (
                       <>
                         <img
@@ -543,12 +543,12 @@ export default function AdminEditItems() {
                       </>
                     ) : (
                       <>
-                        <ImageIcon className="w-9 h-9 text-gray-400 mb-2" />
-                        <p className="text-sm text-gray-600">No image selected.</p>
+                        <ImageIcon className="w-9 h-9 text-jckl-slate mb-2" />
+                        <p className="text-sm text-jckl-slate">No image selected.</p>
                         <button
                           type="button"
                           onClick={() => fileRef.current?.click()}
-                          className="mt-3 inline-flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 text-sm"
+                          className="mt-3 inline-flex items-center gap-2 bg-jckl-navy text-white px-3 py-2 rounded-lg hover:bg-jckl-navy text-sm"
                         >
                           <Upload className="w-4 h-4" />
                           Upload (≤ 2MB)
@@ -570,14 +570,14 @@ export default function AdminEditItems() {
               <div className="mt-5 flex flex-col sm:flex-row gap-2 justify-end">
                 <button
                   onClick={closeEdit}
-                  className="px-4 py-2 rounded-lg border hover:bg-gray-50 text-sm"
+                  className="px-4 py-2 rounded-lg border hover:bg-white text-sm"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={saveEdit}
                   disabled={saving}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-sm disabled:opacity-60"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-jckl-navy text-white hover:bg-jckl-navy text-sm disabled:opacity-60"
                 >
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                   Save Changes
@@ -596,3 +596,4 @@ export default function AdminEditItems() {
     </div>
   );
 }
+

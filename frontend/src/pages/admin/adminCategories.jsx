@@ -218,7 +218,7 @@ export default function AdminCategories() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">
+    <div className="min-h-screen bg-white pb-20 md:pb-0">
       <Navbar />
 
       <main className="max-w-4xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8 space-y-6">
@@ -226,10 +226,10 @@ export default function AdminCategories() {
         <section className="space-y-3">
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+              <h1 className="text-2xl sm:text-3xl font-bold text-jckl-navy">
                 Category Management
               </h1>
-              <p className="text-sm sm:text-base text-gray-600 mt-1">
+              <p className="text-sm sm:text-base text-jckl-slate mt-1">
                 Manage product categories and their icons
               </p>
             </div>
@@ -237,7 +237,7 @@ export default function AdminCategories() {
             <button
               onClick={load}
               disabled={loading}
-              className="hidden md:inline-flex items-center gap-2 border px-3 py-2 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-60"
+              className="hidden md:inline-flex items-center gap-2 border px-3 py-2 rounded-lg text-sm hover:bg-white disabled:opacity-60"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
               Refresh
@@ -247,14 +247,14 @@ export default function AdminCategories() {
           {/* Stats */}
           <div className="grid grid-cols-2 sm:grid-cols-2 gap-3">
             <div className="bg-white rounded-lg p-3 border border-gray-100">
-              <div className="text-xs text-gray-500">Total Categories</div>
-              <div className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">
+              <div className="text-xs text-jckl-slate">Total Categories</div>
+              <div className="text-xl sm:text-2xl font-bold text-jckl-navy mt-1">
                 {categories.length}
               </div>
             </div>
             <div className="bg-white rounded-lg p-3 border border-gray-100">
-              <div className="text-xs text-gray-500">Default Categories</div>
-              <div className="text-xl sm:text-2xl font-bold text-blue-600 mt-1">
+              <div className="text-xs text-jckl-slate">Default Categories</div>
+              <div className="text-xl sm:text-2xl font-bold text-jckl-navy mt-1">
                 {defaultCats.length}
               </div>
             </div>
@@ -264,8 +264,8 @@ export default function AdminCategories() {
         {/* Default Categories Section */}
         <section className="space-y-4">
           <div className="flex items-center gap-2">
-            <Lock className="w-5 h-5 text-gray-400" />
-            <h2 className="text-lg font-semibold text-gray-900">
+            <Lock className="w-5 h-5 text-jckl-slate" />
+            <h2 className="text-lg font-semibold text-jckl-navy">
               Default Categories
             </h2>
             <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">
@@ -275,12 +275,12 @@ export default function AdminCategories() {
 
           <div className="space-y-2">
             {loading ? (
-              <div className="bg-white rounded-lg border border-gray-100 p-6 text-center text-sm text-gray-500">
+              <div className="bg-white rounded-lg border border-gray-100 p-6 text-center text-sm text-jckl-slate">
                 <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2" />
                 Loading categories…
               </div>
             ) : defaultCats.length === 0 ? (
-              <div className="bg-white rounded-lg border border-gray-100 p-6 text-center text-sm text-gray-500">
+              <div className="bg-white rounded-lg border border-gray-100 p-6 text-center text-sm text-jckl-slate">
                 No default categories found.
               </div>
               ) : (
@@ -308,7 +308,7 @@ export default function AdminCategories() {
                           ))}
                         </div>
                       ) : (
-                          <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-lg">
+                          <div className="w-10 h-10 rounded-lg bg-jckl-cream flex items-center justify-center text-lg">
                             <CategoryIcon name={cat.name} iconID={cat.iconID} />
                           </div>
                       )}
@@ -320,14 +320,14 @@ export default function AdminCategories() {
                             value={editName}
                             onChange={(e) => setEditName(e.target.value)}
                             disabled
-                            className="w-full px-3 py-1 border border-gray-300 rounded-lg text-sm font-medium bg-gray-50 cursor-not-allowed"
+                            className="w-full px-3 py-1 border border-jckl-gold rounded-lg text-sm font-medium bg-white cursor-not-allowed"
                           />
                         ) : (
-                          <h3 className="font-medium text-gray-900 truncate">
+                          <h3 className="font-medium text-jckl-navy truncate">
                             {cat.name}
                           </h3>
                         )}
-                        <div className="text-xs text-gray-500 mt-0.5">
+                        <div className="text-xs text-jckl-slate mt-0.5">
                           {itemCount} item{itemCount !== 1 ? "s" : ""}
                         </div>
                       </div>
@@ -347,7 +347,7 @@ export default function AdminCategories() {
                           <button
                             onClick={cancelEdit}
                             disabled={busyId === cat.name}
-                            className="p-2 rounded-lg text-gray-400 hover:bg-gray-100 disabled:opacity-60 transition-colors"
+                            className="p-2 rounded-lg text-jckl-slate hover:bg-jckl-cream disabled:opacity-60 transition-colors"
                             title="Cancel"
                           >
                             <X className="w-4 h-4" />
@@ -358,12 +358,12 @@ export default function AdminCategories() {
                           <button
                             onClick={() => startEdit(cat)}
                             disabled={busyId === cat.name}
-                            className="p-2 rounded-lg text-blue-600 hover:bg-blue-50 disabled:opacity-60 transition-colors"
+                            className="p-2 rounded-lg text-jckl-navy hover:bg-blue-50 disabled:opacity-60 transition-colors"
                             title="Edit icon only"
                           >
                             <Edit className="w-4 h-4" />
                           </button>
-                          <div className="w-8 h-8 flex items-center justify-center text-gray-400 cursor-not-allowed">
+                          <div className="w-8 h-8 flex items-center justify-center text-jckl-slate cursor-not-allowed">
                             <Lock className="w-4 h-4" />
                           </div>
                         </>
@@ -379,7 +379,7 @@ export default function AdminCategories() {
         {/* Custom Categories Section */}
         {customCats.length > 0 && (
           <section className="space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-jckl-navy">
               Custom Categories
             </h2>
 
@@ -409,7 +409,7 @@ export default function AdminCategories() {
                           ))}
                         </div>
                       ) : (
-                        <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-lg">
+                        <div className="w-10 h-10 rounded-lg bg-jckl-cream flex items-center justify-center text-lg">
                           <CategoryIcon name={cat.name} iconID={cat.iconID} />
                         </div>
                       )}
@@ -420,14 +420,14 @@ export default function AdminCategories() {
                             type="text"
                             value={editName}
                             onChange={(e) => setEditName(e.target.value)}
-                            className="w-full px-3 py-1 border border-gray-300 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-1 border border-jckl-gold rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-jckl-gold"
                           />
                         ) : (
-                          <h3 className="font-medium text-gray-900 truncate">
+                          <h3 className="font-medium text-jckl-navy truncate">
                             {cat.name}
                           </h3>
                         )}
-                        <div className="text-xs text-gray-500 mt-0.5">
+                        <div className="text-xs text-jckl-slate mt-0.5">
                           {itemCount} item{itemCount !== 1 ? "s" : ""}
                         </div>
                       </div>
@@ -447,7 +447,7 @@ export default function AdminCategories() {
                           <button
                             onClick={cancelEdit}
                             disabled={busyId === cat.name}
-                            className="p-2 rounded-lg text-gray-400 hover:bg-gray-100 disabled:opacity-60 transition-colors"
+                            className="p-2 rounded-lg text-jckl-slate hover:bg-jckl-cream disabled:opacity-60 transition-colors"
                             title="Cancel"
                           >
                             <X className="w-4 h-4" />
@@ -458,7 +458,7 @@ export default function AdminCategories() {
                           <button
                             onClick={() => startEdit(cat)}
                             disabled={busyId === cat.name}
-                            className="p-2 rounded-lg text-blue-600 hover:bg-blue-50 disabled:opacity-60 transition-colors"
+                            className="p-2 rounded-lg text-jckl-navy hover:bg-blue-50 disabled:opacity-60 transition-colors"
                             title="Edit"
                           >
                             <Edit className="w-4 h-4" />
@@ -469,7 +469,7 @@ export default function AdminCategories() {
                             className={`p-2 rounded-lg transition-colors ${
                               canDelete
                                 ? "text-red-600 hover:bg-red-50 disabled:opacity-60"
-                                : "text-gray-400 cursor-not-allowed"
+                                : "text-jckl-slate cursor-not-allowed"
                             }`}
                             title={
                               canDelete
@@ -491,13 +491,13 @@ export default function AdminCategories() {
 
         {/* Add New Category Section */}
         <section className="space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900">Add Category</h2>
+          <h2 className="text-lg font-semibold text-jckl-navy">Add Category</h2>
 
           {showAddForm ? (
             <div className="bg-white rounded-lg border border-gray-100 p-4 space-y-4">
               <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-jckl-slate mb-1">
                     Icon
                   </label>
                   <div className="w-full grid grid-cols-6 gap-1">
@@ -512,13 +512,13 @@ export default function AdminCategories() {
                       </button>
                     ))}
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-jckl-slate mt-1">
                     Choose an icon for this category (by selecting from the palette)
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-jckl-slate mb-1">
                     Category Name
                   </label>
                   <input
@@ -526,7 +526,7 @@ export default function AdminCategories() {
                     value={newCatName}
                     onChange={(e) => setNewCatName(e.target.value)}
                     placeholder="e.g., Desserts"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-jckl-gold rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
                   />
                 </div>
               </div>
@@ -535,7 +535,7 @@ export default function AdminCategories() {
                 <button
                   onClick={addCategory}
                   disabled={busyId === "new" || !newCatName.trim()}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-60 transition-colors"
+                  className="flex-1 px-4 py-2 bg-jckl-navy text-white rounded-lg text-sm font-medium hover:bg-jckl-navy disabled:opacity-60 transition-colors"
                 >
                   {busyId === "new" ? "Adding..." : "Add Category"}
                 </button>
@@ -546,7 +546,7 @@ export default function AdminCategories() {
                     setNewCatIconIndex(0);
                   }}
                   disabled={busyId === "new"}
-                  className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 disabled:opacity-60 transition-colors"
+                  className="flex-1 px-4 py-2 bg-jckl-cream text-jckl-slate rounded-lg text-sm font-medium hover:bg-gray-200 disabled:opacity-60 transition-colors"
                 >
                   Cancel
                 </button>
@@ -555,7 +555,7 @@ export default function AdminCategories() {
           ) : (
             <button
               onClick={() => setShowAddForm(true)}
-              className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg text-sm font-medium text-gray-600 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"
+              className="w-full px-4 py-3 border-2 border-dashed border-jckl-gold rounded-lg text-sm font-medium text-jckl-slate hover:border-blue-400 hover:text-jckl-navy hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"
             >
               <PlusCircle className="w-4 h-4" />
               Add New Category
@@ -574,10 +574,10 @@ export default function AdminCategories() {
                   <AlertTriangle className="w-6 h-6 text-red-600" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-lg font-semibold text-jckl-navy">
                     Delete Category?
                   </h3>
-                  <p className="text-sm text-gray-600 mt-1">{deleteConfirm}</p>
+                  <p className="text-sm text-jckl-slate mt-1">{deleteConfirm}</p>
                 </div>
               </div>
 
@@ -589,11 +589,11 @@ export default function AdminCategories() {
               </div>
             </div>
 
-            <div className="px-6 py-4 bg-gray-50 border-t flex gap-3">
+            <div className="px-6 py-4 bg-white border-t flex gap-3">
               <button
                 onClick={() => setDeleteConfirm(null)}
                 disabled={busyId === deleteConfirm}
-                className="flex-1 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 disabled:opacity-60"
+                className="flex-1 px-4 py-2 bg-white border border-jckl-gold rounded-lg text-sm font-medium hover:bg-white disabled:opacity-60"
               >
                 Cancel
               </button>

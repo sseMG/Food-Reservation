@@ -45,10 +45,10 @@ const Pill = ({ status }) => {
       Pending: "bg-amber-100 text-amber-700",
       Preparing: "bg-blue-100 text-blue-700",
       Ready: "bg-green-100 text-green-700",
-      Claimed: "bg-gray-100 text-gray-700",
+      Claimed: "bg-jckl-cream text-jckl-slate",
       Rejected: "bg-rose-100 text-rose-700",
-      Unknown: "bg-gray-100 text-gray-600",
-    }[status] || "bg-gray-100 text-gray-700";
+      Unknown: "bg-jckl-cream text-jckl-slate",
+    }[status] || "bg-jckl-cream text-jckl-slate";
   return (
     <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${tone}`}>
       {status}
@@ -551,20 +551,20 @@ export default function AdminOrders() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">
+    <div className="min-h-screen bg-white pb-20 md:pb-0">
       <Navbar />
       <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8 space-y-4 sm:space-y-6">
         {/* MOBILE HEADER */}
         <div className="md:hidden space-y-3">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 flex-1 min-w-0">
-              <UtensilsCrossed className="w-5 h-5 text-blue-600 flex-shrink-0" />
-              <h1 className="text-xl font-bold text-gray-900 truncate">Orders Queue</h1>
+              <UtensilsCrossed className="w-5 h-5 text-jckl-navy flex-shrink-0" />
+              <h1 className="text-xl font-bold text-jckl-navy truncate">Orders Queue</h1>
             </div>
             <button
               onClick={() => fetchOrders()}
               disabled={loading}
-              className="inline-flex items-center gap-1 px-3 py-2 border border-gray-300 rounded-lg text-xs hover:bg-gray-50 disabled:opacity-60 flex-shrink-0"
+              className="inline-flex items-center gap-1 px-3 py-2 border border-jckl-gold rounded-lg text-xs hover:bg-white disabled:opacity-60 flex-shrink-0"
             >
               <svg className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -573,7 +573,7 @@ export default function AdminOrders() {
           </div>
 
           {lastUpdated && (
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-jckl-slate">
               Updated {lastUpdated.toLocaleTimeString()}
             </div>
           )}
@@ -585,13 +585,13 @@ export default function AdminOrders() {
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder='Try: St. Rose, Anm or name:john, section:rose'
-                className="w-full border border-gray-300 rounded-lg pl-9 pr-20 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-jckl-gold rounded-lg pl-9 pr-20 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
               />
-              <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-jckl-slate absolute left-3 top-1/2 -translate-y-1/2" />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
                 <button
                   onClick={() => setShowSearchHelp(!showSearchHelp)}
-                  className="text-gray-400 hover:text-gray-600 p-1"
+                  className="text-jckl-slate hover:text-jckl-slate p-1"
                   title="Search help"
                 >
                   <Info className="w-4 h-4" />
@@ -599,7 +599,7 @@ export default function AdminOrders() {
                 {q && (
                   <button
                     onClick={() => setQ("")}
-                    className="text-gray-400 hover:text-gray-600 p-1"
+                    className="text-jckl-slate hover:text-jckl-slate p-1"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -660,7 +660,7 @@ export default function AdminOrders() {
                 ))}
                 <button
                   onClick={() => setQ("")}
-                  className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs hover:bg-gray-200"
+                  className="inline-flex items-center gap-1 px-2 py-1 bg-jckl-cream text-jckl-slate rounded-full text-xs hover:bg-gray-200"
                 >
                   Clear all
                 </button>
@@ -671,7 +671,7 @@ export default function AdminOrders() {
           {/* Mobile Filters Toggle */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-white hover:bg-gray-50"
+            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-jckl-gold rounded-lg text-sm bg-white hover:bg-white"
           >
             <SlidersHorizontal className="w-4 h-4" />
             {showFilters ? "Hide Sort Options" : "Show Sort Options"}
@@ -679,8 +679,8 @@ export default function AdminOrders() {
 
           {/* Mobile Sort Dropdown (Collapsible) */}
           {showFilters && (
-            <div className="p-4 bg-white border border-gray-200 rounded-lg space-y-2">
-              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide">Sort By</label>
+            <div className="p-4 bg-white border border-jckl-gold rounded-lg space-y-2">
+              <label className="block text-xs font-semibold text-jckl-slate uppercase tracking-wide">Sort By</label>
               <select
                 value={`${sortField}|${sortOrder}`}
                 onChange={(e) => {
@@ -690,7 +690,7 @@ export default function AdminOrders() {
                     setSortOrder(order);
                   }
                 }}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-jckl-gold rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
               >
                 <option value="pickup|asc">Pickup Time (Early → Late)</option>
                 <option value="pickup|desc">Pickup Time (Late → Early)</option>
@@ -711,10 +711,10 @@ export default function AdminOrders() {
         <div className="hidden md:block space-y-3">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <UtensilsCrossed className="w-6 h-6 text-blue-600" />
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Orders Queue</h1>
+              <UtensilsCrossed className="w-6 h-6 text-jckl-navy" />
+              <h1 className="text-2xl sm:text-3xl font-bold text-jckl-navy">Orders Queue</h1>
               {lastUpdated && (
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-jckl-slate">
                   Updated {lastUpdated.toLocaleTimeString()}
                 </span>
               )}
@@ -723,7 +723,7 @@ export default function AdminOrders() {
             <button
               onClick={() => fetchOrders()}
               disabled={loading}
-              className="inline-flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-60"
+              className="inline-flex items-center gap-2 px-3 py-2 border border-jckl-gold rounded-lg text-sm hover:bg-white disabled:opacity-60"
             >
               <svg className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -739,13 +739,13 @@ export default function AdminOrders() {
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
                   placeholder='Search: St. Rose, Anm  |  name:john, section:rose  |  grade:10 pickup:lunch'
-                  className="w-full border border-gray-300 rounded-lg pl-9 pr-20 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-jckl-gold rounded-lg pl-9 pr-20 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
                 />
-                <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="w-4 h-4 text-jckl-slate absolute left-3 top-1/2 -translate-y-1/2" />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
                   <button
                     onClick={() => setShowSearchHelp(!showSearchHelp)}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-jckl-slate hover:text-jckl-slate"
                     title="Search help"
                   >
                     <Info className="w-4 h-4" />
@@ -753,7 +753,7 @@ export default function AdminOrders() {
                   {q && (
                     <button
                       onClick={() => setQ("")}
-                      className="text-gray-400 hover:text-gray-600"
+                      className="text-jckl-slate hover:text-jckl-slate"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -836,7 +836,7 @@ export default function AdminOrders() {
                   ))}
                   <button
                     onClick={() => setQ("")}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-jckl-cream text-jckl-slate rounded-full text-sm hover:bg-gray-200 transition-colors"
                   >
                     Clear all
                   </button>
@@ -853,7 +853,7 @@ export default function AdminOrders() {
                   setSortOrder(order);
                 }
               }}
-              className="border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-shrink-0"
+              className="border border-jckl-gold rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold flex-shrink-0"
             >
               <option value="pickup|asc">Pickup Time (Early → Late)</option>
               <option value="pickup|desc">Pickup Time (Late → Early)</option>
@@ -888,10 +888,10 @@ export default function AdminOrders() {
                 className={`flex-shrink-0 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium border transition ${
                   active
                     ? "bg-gray-900 text-white border-gray-900"
-                    : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
+                    : "bg-white text-jckl-slate border-jckl-gold hover:bg-white"
                 }`}
               >
-                {t} <span className={`ml-1.5 ${active ? 'text-gray-300' : 'text-gray-500'}`}>({count})</span>
+                {t} <span className={`ml-1.5 ${active ? 'text-gray-300' : 'text-jckl-slate'}`}>({count})</span>
               </button>
             );
           })}
@@ -899,9 +899,9 @@ export default function AdminOrders() {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
-            <div className="text-xs text-gray-500 uppercase tracking-wide">Total Orders</div>
-            <div className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">
+          <div className="bg-white rounded-lg border border-jckl-gold p-3 sm:p-4">
+            <div className="text-xs text-jckl-slate uppercase tracking-wide">Total Orders</div>
+            <div className="text-xl sm:text-2xl font-bold text-jckl-navy mt-1">
               {orders.filter(o => {
                 const s = normalizeStatus(o.status);
                 return s !== "Pending" && s !== "Rejected";
@@ -930,7 +930,7 @@ export default function AdminOrders() {
 
         {/* Results count */}
         {!loading && (
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-jckl-slate">
             Showing <span className="font-semibold">{filtered.length}</span> of{" "}
             <span className="font-semibold">
               {orders.filter(o => {
@@ -978,63 +978,63 @@ export default function AdminOrders() {
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-xs sm:text-sm text-gray-500 truncate font-mono">#{o.id}</span>
+                        <span className="text-xs sm:text-sm text-jckl-slate truncate font-mono">#{o.id}</span>
                         <Pill status={normalizeStatus(o.status)} />
                       </div>
-                      <div className="mt-1 text-sm sm:text-base text-gray-900 font-medium break-words">
+                      <div className="mt-1 text-sm sm:text-base text-jckl-navy font-medium break-words">
                         {studentName}
                         {studentId && (
                           <>
                             <br className="sm:hidden" />
-                            <span className="ml-0 sm:ml-3 text-xs sm:text-sm font-mono text-gray-500 block sm:inline mt-0.5 sm:mt-0">{studentId}</span>
+                            <span className="ml-0 sm:ml-3 text-xs sm:text-sm font-mono text-jckl-slate block sm:inline mt-0.5 sm:mt-0">{studentId}</span>
                           </>
                         )}
                       </div>
-                      <div className="text-xs sm:text-sm text-gray-600 mt-1">
+                      <div className="text-xs sm:text-sm text-jckl-slate mt-1">
                         <span className="font-medium">Grade:</span> {o.grade}-{o.section}
                       </div>
-                      <div className="text-xs sm:text-sm text-gray-600 mt-1">
+                      <div className="text-xs sm:text-sm text-jckl-slate mt-1">
                         <span className="inline-flex items-center gap-1">
                           <span className="font-medium">Pickup:</span>
-                          <span className="px-2 py-0.5 bg-gray-100 rounded text-xs font-medium">
+                          <span className="px-2 py-0.5 bg-jckl-cream rounded text-xs font-medium">
                             {when || "—"}
                           </span>
                         </span>
                       </div>
                       {normalizeStatus(o.status) === "Claimed" && claimedAt && (
-                        <div className="text-xs text-gray-500 mt-1">
+                        <div className="text-xs text-jckl-slate mt-1">
                           <span className="font-medium">Claimed:</span> {fmtDateTime(claimedAt)}
                         </div>
                       )}
                       {!!o.note && (
-                        <div className="text-xs sm:text-sm text-gray-500 mt-2 italic break-words bg-amber-50 border border-amber-200 rounded p-2">
+                        <div className="text-xs sm:text-sm text-jckl-slate mt-2 italic break-words bg-amber-50 border border-amber-200 rounded p-2">
                           <span className="font-medium not-italic text-amber-800">📝 Note:</span> {o.note}
                         </div>
                       )}
                     </div>
 
                     <div className="text-left sm:text-right shrink-0">
-                      <div className="text-xs sm:text-sm text-gray-500">Total</div>
-                      <div className="text-base sm:text-lg font-semibold text-gray-900">{peso.format(orderTotal(o))}</div>
+                      <div className="text-xs sm:text-sm text-jckl-slate">Total</div>
+                      <div className="text-base sm:text-lg font-semibold text-jckl-navy">{peso.format(orderTotal(o))}</div>
                     </div>
                   </div>
 
                   {/* Items - Mobile optimized */}
                   <div className="mt-3 border-t pt-3">
-                    <div className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">Items Ordered</div>
+                    <div className="text-xs font-semibold text-jckl-slate uppercase tracking-wide mb-2">Items Ordered</div>
                     {(o.items || []).length > 0 ? (
                       <div className="space-y-1.5">
                         {(o.items || []).map((it, idx) => (
-                          <div key={`${o.id}-item-${idx}-${it.name || 'unknown'}`} className="flex items-start justify-between text-xs sm:text-sm py-1 hover:bg-gray-50 px-2 -mx-2 rounded">
-                            <div className="text-gray-700 flex-1 pr-2 break-words">{it.name}</div>
-                            <div className="text-gray-600 font-medium flex-shrink-0">
-                              <span className="text-gray-500">×</span>{it.qty ?? it.quantity ?? 0}
+                          <div key={`${o.id}-item-${idx}-${it.name || 'unknown'}`} className="flex items-start justify-between text-xs sm:text-sm py-1 hover:bg-white px-2 -mx-2 rounded">
+                            <div className="text-jckl-slate flex-1 pr-2 break-words">{it.name}</div>
+                            <div className="text-jckl-slate font-medium flex-shrink-0">
+                              <span className="text-jckl-slate">×</span>{it.qty ?? it.quantity ?? 0}
                             </div>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <div className="text-xs text-gray-500 italic">No items in this order</div>
+                      <div className="text-xs text-jckl-slate italic">No items in this order</div>
                     )}
                   </div>
 
@@ -1044,7 +1044,7 @@ export default function AdminOrders() {
                       <button
                         onClick={() => transition(o.id, "Preparing")}
                         disabled={busyId === o.id}
-                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:py-2 rounded-lg text-xs sm:text-sm bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60 font-medium transition-colors"
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:py-2 rounded-lg text-xs sm:text-sm bg-jckl-navy text-white hover:bg-jckl-navy disabled:opacity-60 font-medium transition-colors"
                       >
                         {busyId === o.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Timer className="w-4 h-4" />}
                         Move to Preparing
@@ -1077,11 +1077,11 @@ export default function AdminOrders() {
 
             {filtered.length === 0 && (
               <div className="bg-white rounded-xl border border-gray-100 p-8 sm:p-10 text-center">
-                <div className="text-gray-400 mb-3">
+                <div className="text-jckl-slate mb-3">
                   <Search className="w-12 h-12 mx-auto" />
                 </div>
-                <div className="text-base font-medium text-gray-900 mb-1">No orders found</div>
-                <div className="text-sm text-gray-500">
+                <div className="text-base font-medium text-jckl-navy mb-1">No orders found</div>
+                <div className="text-sm text-jckl-slate">
                   {activeFilters.length > 0 || parsedQuery.plainTerms.length > 0
                     ? "Try adjusting your search filters"
                     : "No orders match the current filter"}
@@ -1089,7 +1089,7 @@ export default function AdminOrders() {
                 {(activeFilters.length > 0 || parsedQuery.plainTerms.length > 0) && (
                   <button
                     onClick={() => setQ("")}
-                    className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors"
+                    className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-jckl-navy text-white rounded-lg text-sm hover:bg-jckl-navy transition-colors"
                   >
                     <X className="w-4 h-4" />
                     Clear Search

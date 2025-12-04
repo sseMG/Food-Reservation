@@ -199,14 +199,14 @@ export default function Profile() {
   }, [user?.studentId]); // Reload when user changes
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
+    <div className="min-h-screen bg-white pb-16 md:pb-0">
       <Navbar />
       <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Profile</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-jckl-navy">My Profile</h1>
           <Link
             to="/profile/edit"
-            className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg bg-blue-600 text-white text-xs sm:text-sm font-medium hover:bg-blue-700 transition"
+            className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg bg-jckl-navy text-white text-xs sm:text-sm font-medium hover:bg-jckl-light-navy transition"
           >
             <Pencil className="w-4 h-4" />
             <span className="hidden sm:inline">Edit Profile</span>
@@ -214,12 +214,12 @@ export default function Profile() {
         </div>
 
         {/* Card */}
-        <section className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
+        <section className="bg-white rounded-lg sm:rounded-xl shadow-sm border-t-4 border-jckl-gold p-4 sm:p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
             {/* Avatar + meta */}
             <div className="flex md:block items-center md:items-start gap-4 md:gap-0">
               <div className="relative">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-2xl sm:text-3xl font-bold overflow-hidden">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-jckl-cream text-jckl-navy flex items-center justify-center text-2xl sm:text-3xl font-bold overflow-hidden">
                   {profilePicture ? (
                     <img 
                       src={profilePicture}
@@ -238,24 +238,24 @@ export default function Profile() {
             {/* Details */}
             <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div>
-                <p className="text-xs sm:text-sm text-gray-500">Full Name</p>
-                <p className="text-base sm:text-lg font-medium text-gray-900 break-words">{user?.name || "—"}</p>
+                <p className="text-xs sm:text-sm text-jckl-slate">Full Name</p>
+                <p className="text-base sm:text-lg font-medium text-jckl-navy break-words">{user?.name || "—"}</p>
               </div>
 
               <div>
-                <p className="text-xs sm:text-sm text-gray-500">Student ID</p>
-                <p className="text-base sm:text-lg font-mono text-gray-900 break-words">{user?.studentId || "—"}</p>
+                <p className="text-xs sm:text-sm text-jckl-slate">Student ID</p>
+                <p className="text-base sm:text-lg font-mono text-jckl-navy break-words">{user?.studentId || "—"}</p>
               </div>
 
               <div>
-                <p className="text-xs sm:text-sm text-gray-500">Email Address</p>
-                <p className="text-base sm:text-lg font-medium text-gray-900 break-words">
+                <p className="text-xs sm:text-sm text-jckl-slate">Email Address</p>
+                <p className="text-base sm:text-lg font-medium text-jckl-navy break-words">
                   {user?.email && user.email !== "guest@example.com" ? user.email : "—"}
                 </p>
               </div>
               <div>
-                <p className="text-xs sm:text-sm text-gray-500">Phone</p>
-                <p className="text-base sm:text-lg font-mono text-gray-900 break-words">{user?.phone || "—"}</p>
+                <p className="text-xs sm:text-sm text-jckl-slate">Phone</p>
+                <p className="text-base sm:text-lg font-mono text-jckl-navy break-words">{user?.phone || "—"}</p>
               </div>
             </div>
           </div>
@@ -264,19 +264,19 @@ export default function Profile() {
           <div className="mt-4 sm:mt-6 flex flex-wrap gap-2">
             <Link
               to="/transactions"
-              className="px-3 py-2 rounded-lg border border-gray-200 text-xs sm:text-sm hover:bg-gray-50 transition"
+              className="px-3 py-2 rounded-lg border border-jckl-gold text-xs sm:text-sm text-jckl-navy hover:bg-jckl-cream transition font-medium"
             >
               View Orders History
             </Link>
             <Link
               to="/profile/change-email"
-              className="px-3 py-2 rounded-lg border border-gray-200 text-xs sm:text-sm hover:bg-gray-50 transition"
+              className="px-3 py-2 rounded-lg border border-jckl-gold text-xs sm:text-sm text-jckl-navy hover:bg-jckl-cream transition font-medium"
             >
               Change Email
             </Link>
             <Link
               to="/profile/security"
-              className="px-3 py-2 rounded-lg border border-gray-200 text-xs sm:text-sm hover:bg-gray-50 transition"
+              className="px-3 py-2 rounded-lg border border-jckl-gold text-xs sm:text-sm text-jckl-navy hover:bg-jckl-cream transition font-medium"
             >
               Change Password
             </Link>
@@ -285,39 +285,39 @@ export default function Profile() {
 
         {/* Stats section */}
         <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          <div className="rounded-lg sm:rounded-xl p-4 sm:p-5 shadow-sm border border-gray-100 bg-white">
+          <div className="rounded-lg sm:rounded-xl p-4 sm:p-5 shadow-sm border-t-4 border-jckl-gold bg-jckl-cream">
             <div className="flex items-center gap-2 mb-2">
-              <Wallet className="w-4 h-4 text-emerald-600" />
-              <p className="text-xs sm:text-sm text-gray-600">Balance</p>
+              <Wallet className="w-4 h-4 text-jckl-navy" />
+              <p className="text-xs sm:text-sm text-jckl-slate">Balance</p>
             </div>
-            <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
+            <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-jckl-navy">
               {peso.format(user.balance || 0)}
             </p>
           </div>
-          <div className="rounded-lg sm:rounded-xl p-4 sm:p-5 shadow-sm border border-gray-100 bg-white">
+          <div className="rounded-lg sm:rounded-xl p-4 sm:p-5 shadow-sm border-t-4 border-jckl-gold bg-white">
             <div className="flex items-center gap-2 mb-2">
-              <ShoppingBag className="w-4 h-4 text-blue-600" />
-              <p className="text-xs sm:text-sm text-gray-600">Orders</p>
+              <ShoppingBag className="w-4 h-4 text-jckl-navy" />
+              <p className="text-xs sm:text-sm text-jckl-slate">Orders</p>
             </div>
-            <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
+            <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-jckl-navy">
               {stats.ordersCount || 0}
             </p>
           </div>
-          <div className="rounded-lg sm:rounded-xl p-4 sm:p-5 shadow-sm border border-gray-100 bg-white">
+          <div className="rounded-lg sm:rounded-xl p-4 sm:p-5 shadow-sm border-t-4 border-jckl-purple bg-white">
             <div className="flex items-center gap-2 mb-2">
-              <Wallet className="w-4 h-4 text-violet-600" />
-              <p className="text-xs sm:text-sm text-gray-600">Spent</p>
+              <Wallet className="w-4 h-4 text-jckl-purple" />
+              <p className="text-xs sm:text-sm text-jckl-slate">Spent</p>
             </div>
-            <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
+            <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-jckl-navy">
               {peso.format(stats.totalSpent || 0)}
             </p>
           </div>
-          <div className="rounded-lg sm:rounded-xl p-4 sm:p-5 shadow-sm border border-gray-100 bg-white">
+          <div className="rounded-lg sm:rounded-xl p-4 sm:p-5 shadow-sm border-t-4 border-jckl-gold bg-white">
             <div className="flex items-center gap-2 mb-2">
-              <Clock className="w-4 h-4 text-orange-600" />
-              <p className="text-xs sm:text-sm text-gray-600">Ready</p>
+              <Clock className="w-4 h-4 text-jckl-navy" />
+              <p className="text-xs sm:text-sm text-jckl-slate">Ready</p>
             </div>
-            <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
+            <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-jckl-navy">
               {stats.readyCount || 0}
             </p>
           </div>

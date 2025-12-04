@@ -19,7 +19,7 @@ function Pill({ children, tone = "gray" }) {
     green: "bg-green-100 text-green-700",
     red: "bg-red-100 text-red-700",
     yellow: "bg-yellow-100 text-yellow-700",
-    blue: "bg-blue-100 text-blue-700",
+    blue: "bg-jckl-cream text-jckl-navy",
   };
   return <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${tones[tone] || tones.gray}`}>{children}</span>;
 }
@@ -340,15 +340,15 @@ export default function TxHistory() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-28">
+    <div className="min-h-screen bg-white pb-28">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-3 sm:py-8 space-y-3 sm:space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
-            <Link to="/dashboard" className="text-gray-600 hover:underline flex items-center mb-1">← Back to home</Link>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Order History</h1>
+            <Link to="/dashboard" className="text-jckl-navy hover:underline flex items-center mb-1">← Back to home</Link>
+            <h1 className="text-2xl sm:text-3xl font-bold text-jckl-navy">Order History</h1>
             <p className="text-sm text-gray-500 mt-1">Food reservations and purchases only. (Top-ups live on the Top-Up History page.)</p>
           </div>
 
@@ -449,7 +449,7 @@ export default function TxHistory() {
 
             {/* Per page */}
             <div className="lg:col-span-1 flex justify-end">
-              <label className="text-sm text-gray-600 flex items-center gap-2">
+              <label className="text-sm text-jckl-slate flex items-center gap-2">
                 Per page:
                 <select
                   aria-label="Results per page"
@@ -495,7 +495,7 @@ export default function TxHistory() {
                 ))}
 
               {!isLoading && rows.length === 0 && (
-                <div className="p-6 text-sm text-gray-600 text-center">No food orders found.</div>
+                <div className="p-6 text-sm text-jckl-slate text-center">No food orders found.</div>
               )}
 
               {!isLoading && rows.length > 0 && pageRows.map((t) => (
@@ -540,14 +540,14 @@ export default function TxHistory() {
           ) : (
             <div className="overflow-auto">
               <table className="min-w-full">
-                <thead className="bg-gray-50">
+                <thead className="bg-jckl-cream">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Title</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Ref</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Products</th>
-                    <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
-                    <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Amount</th>
-                    <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-navy uppercase tracking-wider">Title</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-navy uppercase tracking-wider">Ref</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-navy uppercase tracking-wider">Products</th>
+                    <th className="px-6 py-3 text-center text-xs font-semibold text-jckl-navy uppercase tracking-wider">Date</th>
+                    <th className="px-6 py-3 text-right text-xs font-semibold text-jckl-navy uppercase tracking-wider">Amount</th>
+                    <th className="px-6 py-3 text-center text-xs font-semibold text-jckl-navy uppercase tracking-wider">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -565,7 +565,7 @@ export default function TxHistory() {
 
                   {!isLoading && rows.length === 0 && (
                     <tr>
-                      <td colSpan={6} className="px-6 py-6 text-center text-sm text-gray-600">
+                      <td colSpan={6} className="px-6 py-6 text-center text-sm text-jckl-slate">
                         No food orders found.
                         <div className="text-xs text-gray-400 mt-1">Tip: make a reservation in the Shop, then check back here.</div>
                       </td>
@@ -573,11 +573,11 @@ export default function TxHistory() {
                   )}
 
                   {!isLoading && rows.length > 0 && pageRows.map((t) => (
-                    <tr key={t.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 text-sm text-gray-900">{t.title}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{t.id}</td>
-                      <td className="px-6 py-4 text-sm text-gray-700"><span className="line-clamp-2 block" title={t.productsTitle}>{t.products || "—"}</span></td>
-                      <td className="px-6 py-4 text-sm text-gray-600 text-center">{fmtDateTime(t.createdAt)}</td>
+                    <tr key={t.id} className="hover:bg-jckl-cream border-b border-jckl-gold">
+                      <td className="px-6 py-4 text-sm text-jckl-navy font-medium">{t.title}</td>
+                      <td className="px-6 py-4 text-sm text-jckl-slate">{t.id}</td>
+                      <td className="px-6 py-4 text-sm text-jckl-slate"><span className="line-clamp-2 block" title={t.productsTitle}>{t.products || "—"}</span></td>
+                      <td className="px-6 py-4 text-sm text-jckl-slate text-center">{fmtDateTime(t.createdAt)}</td>
                       <td className="px-6 py-4 text-sm text-right font-semibold text-rose-700">−{peso.format(t.amount)}</td>
                       <td className="px-6 py-4 text-sm text-center">
                         {(() => {
@@ -600,7 +600,7 @@ export default function TxHistory() {
         {/* Pagination */}
         {!isLoading && !friendlyError && total > 0 && (
           <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-600">Page {pageSafe} of {totalPages} • {total} record{total !== 1 ? "s" : ""}</div>
+            <div className="text-sm text-jckl-slate">Page {pageSafe} of {totalPages} • {total} record{total !== 1 ? "s" : ""}</div>
             <div className="flex items-center gap-2">
               <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={pageSafe <= 1} className="inline-flex items-center gap-1 px-3 py-1.5 border rounded-lg text-sm disabled:opacity-50">
                 <ChevronLeft className="w-4 h-4" /> Prev
@@ -634,18 +634,18 @@ export default function TxHistory() {
 
             <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <div className="text-sm text-gray-600 mb-2">Reference</div>
+                <div className="text-sm text-jckl-slate mb-2">Reference</div>
                 <div className="p-3 border rounded break-words">{selected.id || "—"}</div>
 
-                <div className="text-sm text-gray-600 mt-3 mb-2">Products</div>
+                <div className="text-sm text-jckl-slate mt-3 mb-2">Products</div>
                 <div className="p-3 border rounded break-words text-sm">{selected.products || "—"}</div>
 
-                <div className="text-sm text-gray-600 mt-3 mb-2">Notes</div>
+                <div className="text-sm text-jckl-slate mt-3 mb-2">Notes</div>
                 <div className="p-3 border rounded text-sm">{selected.raw?.note || selected.raw?.notes || "—"}</div>
               </div>
 
               <div>
-                <div className="text-sm text-gray-600 mb-2">Proof</div>
+                <div className="text-sm text-jckl-slate mb-2">Proof</div>
                 {selected.raw?.proofUrl || selected.raw?.image || selected.raw?.proof ? (
                   // try multiple possible proof fields
                   <img

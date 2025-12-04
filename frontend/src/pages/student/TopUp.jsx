@@ -279,12 +279,12 @@ export default function TopUp() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
+    <div className="min-h-screen bg-white pb-16 md:pb-0">
       <Navbar />
             <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-3 sm:py-8 space-y-3 sm:space-y-6">
         {/* Header */}
         <div className="flex items-center gap-2">
-          <Wallet className="w-6 h-6 text-blue-600" />
+          <Wallet className="w-6 h-6 text-jckl-navy" />
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Wallet Top-Up</h1>
         </div>
         <p className="text-gray-600">
@@ -293,7 +293,7 @@ export default function TopUp() {
         </p>
 
         {/* User summary */}
-        <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
+        <div className="bg-jckl-cream rounded-xl border-t-4 border-jckl-gold p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
           <div className="text-sm text-gray-700">
             <div className="font-medium">{user.name || "—"}</div>
             <div className="text-gray-500">{user.email || "—"}</div>
@@ -305,11 +305,11 @@ export default function TopUp() {
         </div>
 
         {/* Provider tabs */}
-        <div className="flex w-full rounded-lg overflow-hidden border border-gray-200">
+        <div className="flex w-full rounded-lg overflow-hidden border border-jckl-gold">
           <button
             onClick={() => setProvider("gcash")}
             className={`flex-1 py-2.5 sm:py-2 text-xs sm:text-sm font-medium transition ${
-              provider === "gcash" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700"
+              provider === "gcash" ? "bg-jckl-navy text-white" : "bg-jckl-cream text-jckl-navy"
             }`}
           >
             GCash
@@ -317,7 +317,7 @@ export default function TopUp() {
           <button
             onClick={() => setProvider("maya")}
             className={`flex-1 py-2.5 sm:py-2 text-xs sm:text-sm font-medium transition ${
-              provider === "maya" ? "bg-green-600 text-white" : "bg-gray-100 text-gray-700"
+              provider === "maya" ? "bg-jckl-navy text-white" : "bg-jckl-cream text-jckl-navy"
             }`}
           >
             Maya
@@ -326,10 +326,10 @@ export default function TopUp() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-8">
           {/* Left: QR + account info */}
-          <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-100 p-3 sm:p-6">
+          <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border-t-4 border-jckl-gold p-3 sm:p-6">
             <h2 className="text-sm sm:text-lg font-semibold mb-2 sm:mb-4">Scan & Pay</h2>
 
-            <div className="border border-dashed border-gray-300 rounded-lg sm:rounded-xl p-3 sm:p-6 flex flex-col items-center justify-center text-center min-h-[220px] sm:min-h-[280px]">
+            <div className="border border-dashed border-jckl-gold rounded-lg sm:rounded-xl p-3 sm:p-6 flex flex-col items-center justify-center text-center min-h-[220px] sm:min-h-[280px]">
               {loading ? (
                 <div className="text-sm text-gray-500">Loading…</div>
               ) : qr[provider] ? (
@@ -371,7 +371,7 @@ export default function TopUp() {
           </div>
 
           {/* Right: submit proof */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
+          <div className="bg-white rounded-xl shadow-sm border-t-4 border-jckl-gold p-4 sm:p-6">
             <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Submit Proof</h2>
 
             <div className="space-y-3 sm:space-y-4">
@@ -382,7 +382,7 @@ export default function TopUp() {
                   value={payerName}
                   onChange={(e) => setPayerName(e.target.value)}
                   placeholder="Your name as shown in GCash/Maya"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 sm:py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-jckl-gold rounded-lg px-3 py-2.5 sm:py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
                 />
                 {!nameOk && <p className="text-xs text-rose-600 mt-1">Enter at least 3 characters.</p>}
               </div>
@@ -395,7 +395,7 @@ export default function TopUp() {
                     value={studentId}
                     readOnly
                     title="Student ID is taken from your account and cannot be changed here"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700"
+                    className="w-full bg-jckl-cream border border-jckl-gold rounded-lg px-3 py-2 text-sm text-jckl-navy"
                   />
                   {!studentId && <p className="text-xs text-rose-600 mt-1">No student ID found on your profile.</p>}
                 </div>
@@ -405,7 +405,7 @@ export default function TopUp() {
                     value={contact}
                     onChange={(e) => setContact(e.target.value)}
                     placeholder="09xxxxxxxxx"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-jckl-gold rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
                   />
                   {!contactOk && <p className="text-xs text-rose-600 mt-1">Provide a valid contact number.</p>}
                 </div>
@@ -448,7 +448,7 @@ export default function TopUp() {
               {/* Proof upload */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Payment Screenshot</label>
-                <div className="border border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center text-center min-h-[220px]">
+                <div className="border border-dashed border-jckl-gold rounded-xl p-6 flex flex-col items-center justify-center text-center min-h-[220px]">
                   {preview ? (
                     <>
                       <img src={preview} alt="proof" className="w-56 h-56 object-contain rounded" />

@@ -3,6 +3,27 @@
 @tailwind utilities;
 
 /* ============================================
+   JCKL Academy Theme - Royal Color Palette
+   ============================================
+   Navy: #1a3a7a (Deep royal navy)
+   Purple: #6b3fa0 (Royal purple)
+   Gold: #fcd34d (Bright gold accents)
+   Cream: #f9f7f1 (Warm off-white)
+*/
+
+:root {
+  --jckl-navy: #1a3a7a;
+  --jckl-purple: #6b3fa0;
+  --jckl-gold: #fcd34d;
+  --jckl-cream: #f9f7f1;
+  --jckl-white: #ffffff;
+  --jckl-slate: #374151;
+  --jckl-accent: #dc2626;
+  --jckl-light-navy: #2d5aae;
+  --jckl-light-purple: #8b5cf6;
+}
+
+/* ============================================
    Accessibility: Focus Styles
    ============================================
    Consistent, visible focus indicators for keyboard navigation.
@@ -12,11 +33,75 @@
 
 @layer utilities {
   .focus-ring {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-jckl-navy;
   }
   
   .focus-ring-white {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white;
+  }
+
+  /* JCKL Theme Utility Classes */
+  .text-jckl-navy {
+    color: var(--jckl-navy);
+  }
+
+  .bg-jckl-navy {
+    background-color: var(--jckl-navy);
+  }
+
+  .text-jckl-purple {
+    color: var(--jckl-purple);
+  }
+
+  .bg-jckl-purple {
+    background-color: var(--jckl-purple);
+  }
+
+  .text-jckl-gold {
+    color: var(--jckl-gold);
+  }
+
+  .bg-jckl-gold {
+    background-color: var(--jckl-gold);
+  }
+
+  .bg-jckl-cream {
+    background-color: var(--jckl-cream);
+  }
+
+  /* Gradient backgrounds with JCKL colors */
+  .bg-gradient-jckl {
+    background: linear-gradient(135deg, var(--jckl-navy) 0%, var(--jckl-light-navy) 50%, var(--jckl-purple) 100%);
+  }
+
+  .bg-gradient-jckl-light {
+    background: linear-gradient(135deg, rgba(26, 58, 122, 0.05) 0%, rgba(107, 63, 160, 0.05) 100%);
+  }
+
+  .bg-gradient-jckl-accent {
+    background: linear-gradient(135deg, var(--jckl-navy) 0%, var(--jckl-purple) 100%);
+  }
+
+  /* Shadow with JCKL accent */
+  .shadow-jckl {
+    box-shadow: 0 10px 30px rgba(26, 58, 122, 0.15);
+  }
+
+  .shadow-jckl-lg {
+    box-shadow: 0 20px 40px rgba(26, 58, 122, 0.2);
+  }
+
+  /* Border colors */
+  .border-jckl-navy {
+    border-color: var(--jckl-navy);
+  }
+
+  .border-jckl-purple {
+    border-color: var(--jckl-purple);
+  }
+
+  .border-jckl-gold {
+    border-color: var(--jckl-gold);
   }
   
   /* Safe area support for iOS notch/home indicator */
@@ -49,6 +134,6 @@
 
 /* Ensure focus-visible has a clear, accessible outline for all elements */
 *:focus-visible {
-  outline: 2px solid #4f46e5;
+  outline: 2px solid var(--jckl-navy);
   outline-offset: 2px;
 }

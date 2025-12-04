@@ -189,7 +189,7 @@ export default function TopUpHistory() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">
+    <div className="min-h-screen bg-white pb-20 md:pb-0">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8 space-y-4 sm:space-y-6">
@@ -205,7 +205,7 @@ export default function TopUpHistory() {
             <button
               onClick={load}
               disabled={loading}
-              className="inline-flex items-center gap-2 border px-3 py-2 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-60"
+              className="inline-flex items-center gap-2 border border-jckl-gold px-3 py-2 rounded-lg text-sm hover:bg-jckl-cream disabled:opacity-60 text-jckl-navy"
               title="Refresh"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -258,7 +258,7 @@ export default function TopUpHistory() {
         </section>
 
         {/* Filters */}
-        <section className="bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100 space-y-3">
+        <section className="bg-white rounded-xl p-3 sm:p-4 shadow-sm border-t-4 border-jckl-gold space-y-3">
           {/* Search bar - always visible */}
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
@@ -269,7 +269,7 @@ export default function TopUpHistory() {
                   setPage(1);
                 }}
                 placeholder="Search ID, reference..."
-                className="w-full border border-gray-300 rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-jckl-gold rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold text-jckl-navy"
               />
               <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
             </div>
@@ -277,7 +277,7 @@ export default function TopUpHistory() {
             {/* Mobile: Filter toggle */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="md:hidden inline-flex items-center gap-2 border border-gray-300 px-3 py-2 rounded-lg text-sm hover:bg-gray-50"
+              className="md:hidden inline-flex items-center gap-2 border border-jckl-gold px-3 py-2 rounded-lg text-sm hover:bg-jckl-cream text-jckl-navy"
             >
               <Filter className="w-4 h-4" />
               {showFilters ? <X className="w-4 h-4" /> : null}
@@ -327,7 +327,7 @@ export default function TopUpHistory() {
                   setProvider("all");
                   setPage(1);
                 }}
-                className="text-blue-600 hover:text-blue-700"
+                className="text-jckl-navy hover:text-jckl-light-navy"
               >
                 Clear filters
               </button>
@@ -352,8 +352,8 @@ export default function TopUpHistory() {
             </button>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
-            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+          <div className="bg-white rounded-xl border-t-4 border-jckl-gold p-8 text-center">
+            <div className="w-12 h-12 bg-jckl-cream rounded-full flex items-center justify-center mx-auto mb-3">
               <DollarSign className="w-6 h-6 text-gray-400" />
             </div>
             <p className="text-sm text-gray-500">
@@ -369,7 +369,7 @@ export default function TopUpHistory() {
               {pageRows.map((r) => (
                 <div
                   key={r.id}
-                  className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+                  className="bg-white rounded-xl shadow-sm border-t-4 border-jckl-gold overflow-hidden"
                 >
                   <div className="p-4 space-y-3">
                     {/* Header */}
@@ -424,7 +424,7 @@ export default function TopUpHistory() {
                     {r.proofUrl && (
                       <button
                         onClick={() => openViewer(r)}
-                        className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100"
+                        className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 bg-jckl-cream text-jckl-navy rounded-lg text-sm font-medium hover:bg-jckl-gold"
                       >
                         <Eye className="w-4 h-4" />
                         View Payment Proof
@@ -436,10 +436,10 @@ export default function TopUpHistory() {
             </div>
 
             {/* Desktop: Table view */}
-            <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="hidden md:block bg-white rounded-xl shadow-sm border-t-4 border-jckl-gold overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="min-w-full">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-jckl-cream">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID</th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Reference</th>
@@ -452,7 +452,7 @@ export default function TopUpHistory() {
                   </thead>
                   <tbody className="divide-y divide-gray-200">
                     {pageRows.map((r) => (
-                      <tr key={r.id} className="hover:bg-gray-50">
+                      <tr key={r.id} className="hover:bg-jckl-cream border-b border-jckl-gold">
                         <td className="px-6 py-4 text-sm font-medium text-gray-900">#{r.id}</td>
                         <td className="px-6 py-4 text-sm text-gray-600">
                           {r.reference ? (
@@ -468,7 +468,7 @@ export default function TopUpHistory() {
                           {r.proofUrl ? (
                             <button
                               onClick={() => openViewer(r)}
-                              className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium"
+                              className="inline-flex items-center gap-1 text-jckl-navy hover:text-jckl-light-navy font-medium"
                               title="View proof"
                             >
                               <Eye className="w-4 h-4" />
@@ -524,7 +524,7 @@ export default function TopUpHistory() {
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 p-0 sm:p-4">
           <div className="w-full sm:max-w-4xl bg-white sm:rounded-xl shadow-2xl overflow-hidden max-h-screen sm:max-h-[90vh] flex flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b bg-gray-50 flex-shrink-0">
+            <div className="flex items-center justify-between p-4 border-b border-jckl-gold bg-jckl-cream flex-shrink-0">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">Payment Proof</h3>
                 {viewer.details && (
@@ -539,7 +539,7 @@ export default function TopUpHistory() {
               </div>
               <button
                 onClick={closeViewer}
-                className="p-2 hover:bg-gray-200 rounded-lg transition"
+                className="p-2 hover:bg-jckl-gold rounded-lg transition text-jckl-navy"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -567,7 +567,7 @@ export default function TopUpHistory() {
 
             {/* Footer with details */}
             {viewer.details && (
-              <div className="p-4 border-t bg-gray-50 flex-shrink-0">
+              <div className="p-4 border-t border-jckl-gold bg-jckl-cream flex-shrink-0">
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
                   <div>
                     <div className="text-gray-500 text-xs mb-1">Status</div>
@@ -586,7 +586,7 @@ export default function TopUpHistory() {
                   <div className="col-span-2 sm:col-span-1">
                     <button
                       onClick={closeViewer}
-                      className="w-full px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800"
+                      className="w-full px-4 py-2 bg-jckl-navy text-white rounded-lg text-sm font-medium hover:bg-jckl-light-navy"
                     >
                       Close
                     </button>

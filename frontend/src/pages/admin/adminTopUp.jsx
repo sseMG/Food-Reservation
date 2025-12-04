@@ -53,7 +53,7 @@ export default function AdminTopUp() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 md:pb-8">
+    <div className="min-h-screen bg-white pb-20 md:pb-8">
       <Navbar />
       <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8 space-y-4 sm:space-y-6">
         {/* Header */}
@@ -63,17 +63,17 @@ export default function AdminTopUp() {
               <Wallet className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-xl sm:text-3xl font-bold text-gray-900">Top-Up Management</h1>
-              <p className="text-xs sm:text-sm text-gray-500">Manage wallet settings and verify transactions</p>
+              <h1 className="text-xl sm:text-3xl font-bold text-jckl-navy">Top-Up Management</h1>
+              <p className="text-xs sm:text-sm text-jckl-slate">Manage wallet settings and verify transactions</p>
             </div>
           </div>
 
           {/* Tab Switcher */}
-          <div className="flex gap-2 p-1 bg-gray-100 rounded-xl">
+          <div className="flex gap-2 p-1 bg-jckl-cream rounded-xl">
             <button
               onClick={() => setTab("verify")}
               className={`flex-1 px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${
-                tab === "verify" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600 hover:text-gray-900"
+                tab === "verify" ? "bg-white text-jckl-navy shadow-sm" : "text-jckl-slate hover:text-jckl-navy"
               }`}
             >
               <Clock className="w-4 h-4 inline-block mr-2" />
@@ -82,7 +82,7 @@ export default function AdminTopUp() {
             <button
               onClick={() => setTab("wallet")}
               className={`flex-1 px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${
-                tab === "wallet" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600 hover:text-gray-900"
+                tab === "wallet" ? "bg-white text-jckl-navy shadow-sm" : "text-jckl-slate hover:text-jckl-navy"
               }`}
             >
               <Wallet className="w-4 h-4 inline-block mr-2" />
@@ -246,16 +246,16 @@ function TopUpManager() {
   const active = meta[provider];
 
   return (
-    <section className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <section className="bg-white rounded-2xl shadow-sm border border-jckl-gold overflow-hidden">
       {/* Provider Toggle */}
-      <div className="p-4 sm:p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+      <div className="p-4 sm:p-6 border-b border-jckl-gold bg-gradient-to-r from-gray-50 to-white">
         <div className="flex gap-2">
           <button
             onClick={() => setProvider("gcash")}
             className={`flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all ${
               provider === "gcash"
-                ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                ? "bg-jckl-navy text-white shadow-lg shadow-blue-200"
+                : "bg-jckl-cream text-jckl-slate hover:bg-gray-200"
             }`}
           >
             GCash
@@ -265,7 +265,7 @@ function TopUpManager() {
             className={`flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all ${
               provider === "maya"
                 ? "bg-green-600 text-white shadow-lg shadow-green-200"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                : "bg-jckl-cream text-jckl-slate hover:bg-gray-200"
             }`}
           >
             Maya
@@ -277,12 +277,12 @@ function TopUpManager() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
           {/* QR Upload Section */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">QR Code</h3>
-            <div className="border-2 border-dashed border-gray-300 rounded-2xl p-6 flex flex-col items-center justify-center text-center min-h-[280px] bg-gray-50">
+            <h3 className="text-sm font-semibold text-jckl-navy uppercase tracking-wide">QR Code</h3>
+            <div className="border-2 border-dashed border-jckl-gold rounded-2xl p-6 flex flex-col items-center justify-center text-center min-h-[280px] bg-white">
               {loading ? (
                 <div className="flex flex-col items-center gap-3">
-                  <Loader2 className="w-8 h-8 text-gray-400 animate-spin" />
-                  <p className="text-sm text-gray-500">Loading...</p>
+                  <Loader2 className="w-8 h-8 text-jckl-slate animate-spin" />
+                  <p className="text-sm text-jckl-slate">Loading...</p>
                 </div>
               ) : qrPreview[provider] ? (
                 <div className="space-y-4 w-full">
@@ -319,18 +319,18 @@ function TopUpManager() {
               ) : (
                 <div className="space-y-4">
                   <div className="w-16 h-16 rounded-2xl bg-gray-200 flex items-center justify-center mx-auto">
-                    <ImageIcon className="w-8 h-8 text-gray-400" />
+                    <ImageIcon className="w-8 h-8 text-jckl-slate" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">
+                    <p className="text-sm text-jckl-slate mb-1">
                       No QR code uploaded for <span className="font-semibold uppercase">{provider}</span>
                     </p>
-                    <p className="text-xs text-gray-500">Upload a QR code image for customers to scan</p>
+                    <p className="text-xs text-jckl-slate">Upload a QR code image for customers to scan</p>
                   </div>
                   <button
                     onClick={onPickFile}
                     disabled={uploading}
-                    className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-xl hover:bg-blue-700 transition text-sm font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="inline-flex items-center justify-center gap-2 bg-jckl-navy text-white px-5 py-3 rounded-xl hover:bg-jckl-navy transition text-sm font-medium disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {uploading ? (
                       <>
@@ -347,7 +347,7 @@ function TopUpManager() {
               <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={onFileChange} />
             </div>
             <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-xl">
-              <AlertCircle className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+              <AlertCircle className="w-4 h-4 text-jckl-navy flex-shrink-0 mt-0.5" />
               <p className="text-xs text-blue-900">
                 Customers will scan this QR code when topping up. Make sure it's clear and accurate.
               </p>
@@ -356,41 +356,41 @@ function TopUpManager() {
 
           {/* Account Details Section */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Account Details</h3>
+            <h3 className="text-sm font-semibold text-jckl-navy uppercase tracking-wide">Account Details</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Account Name</label>
+                <label className="block text-sm font-medium text-jckl-slate mb-2">Account Name</label>
                 <input
                   value={active?.accountName}
                   onChange={(e) =>
                     setMeta((m) => ({ ...m, [provider]: { ...m[provider], accountName: e.target.value } }))
                   }
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  className="w-full border border-jckl-gold rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold focus:border-transparent transition"
                   placeholder={provider === "gcash" ? "e.g., Canteen GCash" : "e.g., Canteen Maya"}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Mobile Number</label>
+                <label className="block text-sm font-medium text-jckl-slate mb-2">Mobile Number</label>
                 <input
                   value={active?.mobile}
                   onChange={(e) => setMeta((m) => ({ ...m, [provider]: { ...m[provider], mobile: e.target.value } }))}
                   type="tel"
                   inputMode="numeric"
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  className="w-full border border-jckl-gold rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold focus:border-transparent transition"
                   placeholder="09•• ••• ••••"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Reference / Notes</label>
+                <label className="block text-sm font-medium text-jckl-slate mb-2">Reference / Notes</label>
                 <textarea
                   rows={3}
                   value={active?.reference}
                   onChange={(e) =>
                     setMeta((m) => ({ ...m, [provider]: { ...m[provider], reference: e.target.value } }))
                   }
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
+                  className="w-full border border-jckl-gold rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold focus:border-transparent transition resize-none"
                   placeholder="Optional: e.g., 'Include student ID in payment note'"
                 />
               </div>
@@ -503,17 +503,17 @@ function VerifyQueue() {
   });
 
   return (
-    <section className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <section className="bg-white rounded-2xl shadow-sm border border-jckl-gold overflow-hidden">
       {/* Header */}
-      <div className="p-4 sm:p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+      <div className="p-4 sm:p-6 border-b border-jckl-gold bg-gradient-to-r from-gray-50 to-white">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center">
               <Clock className="w-5 h-5 text-orange-600" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900">Pending Top-Ups</h2>
-              <p className="text-xs text-gray-500">
+              <h2 className="text-lg font-bold text-jckl-navy">Pending Top-Ups</h2>
+              <p className="text-xs text-jckl-slate">
                 {filtered.length} transaction{filtered.length !== 1 ? "s" : ""} waiting
               </p>
             </div>
@@ -522,7 +522,7 @@ function VerifyQueue() {
           <button
             onClick={fetchRows}
             disabled={loading}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border border-gray-300 hover:bg-gray-50 transition disabled:opacity-60"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border border-jckl-gold hover:bg-white transition disabled:opacity-60"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
             <span className="hidden sm:inline">Refresh</span>
@@ -532,26 +532,26 @@ function VerifyQueue() {
         {/* Filters */}
         <div className="mt-4 flex flex-col sm:flex-row gap-2">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-jckl-slate" />
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search ID, name, reference..."
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              className="w-full pl-10 pr-4 py-2.5 border border-jckl-gold rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold focus:border-transparent transition"
             />
           </div>
           <div className="relative sm:w-48">
-            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-jckl-slate pointer-events-none" />
             <select
               value={provider}
               onChange={(e) => setProvider(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition appearance-none bg-white"
+              className="w-full pl-10 pr-4 py-2.5 border border-jckl-gold rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold focus:border-transparent transition appearance-none bg-white"
             >
               <option value="all">All providers</option>
               <option value="gcash">GCash</option>
               <option value="maya">Maya</option>
             </select>
-            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-jckl-slate pointer-events-none" />
           </div>
         </div>
       </div>
@@ -568,46 +568,46 @@ function VerifyQueue() {
 
       {/* Desktop Table View */}
       <div className="hidden lg:block overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+        <table className="min-w-full divide-y divide-jckl-gold">
+          <thead className="bg-white">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-slate uppercase tracking-wider">ID</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-slate uppercase tracking-wider">
                 Customer
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Reference</th>
-              <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Provider</th>
-              <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Amount</th>
-              <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Proof</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Submitted</th>
-              <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-slate uppercase tracking-wider">Reference</th>
+              <th className="px-6 py-3 text-center text-xs font-semibold text-jckl-slate uppercase tracking-wider">Provider</th>
+              <th className="px-6 py-3 text-right text-xs font-semibold text-jckl-slate uppercase tracking-wider">Amount</th>
+              <th className="px-6 py-3 text-center text-xs font-semibold text-jckl-slate uppercase tracking-wider">Proof</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-slate uppercase tracking-wider">Submitted</th>
+              <th className="px-6 py-3 text-right text-xs font-semibold text-jckl-slate uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white divide-y divide-jckl-gold">
             {loading && (
               <tr>
                 <td colSpan={8} className="px-6 py-12 text-center">
-                  <Loader2 className="w-6 h-6 text-gray-400 animate-spin mx-auto mb-2" />
-                  <p className="text-sm text-gray-500">Loading transactions...</p>
+                  <Loader2 className="w-6 h-6 text-jckl-slate animate-spin mx-auto mb-2" />
+                  <p className="text-sm text-jckl-slate">Loading transactions...</p>
                 </td>
               </tr>
             )}
 
             {!loading &&
               filtered.map((r) => (
-                <tr key={r.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={r.id} className="hover:bg-white transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-mono font-medium text-gray-900">#{r.id}</div>
+                    <div className="text-sm font-mono font-medium text-jckl-navy">#{r.id}</div>
                   </td>
 
                   <td className="px-6 py-4">
-                    <div className="text-sm font-medium text-gray-900">{r.payerName || r.student || "—"}</div>
-                    <div className="text-xs text-gray-500">{r.studentId ? `ID: ${r.studentId}` : "—"}</div>
-                    {r.contact && <div className="text-xs text-gray-400">{r.contact}</div>}
+                    <div className="text-sm font-medium text-jckl-navy">{r.payerName || r.student || "—"}</div>
+                    <div className="text-xs text-jckl-slate">{r.studentId ? `ID: ${r.studentId}` : "—"}</div>
+                    {r.contact && <div className="text-xs text-jckl-slate">{r.contact}</div>}
                   </td>
 
                   <td className="px-6 py-4">
-                    <div className="text-sm text-gray-700 font-mono">{r.reference || "—"}</div>
+                    <div className="text-sm text-jckl-slate font-mono">{r.reference || "—"}</div>
                   </td>
 
                   <td className="px-6 py-4 text-center">
@@ -625,24 +625,24 @@ function VerifyQueue() {
                           <img
                             src={r.proofUrl}
                             alt="payment proof"
-                            className="w-16 h-16 object-cover rounded-lg border-2 border-gray-200 cursor-zoom-in hover:border-blue-400 transition"
+                            className="w-16 h-16 object-cover rounded-lg border-2 border-jckl-gold cursor-zoom-in hover:border-blue-400 transition"
                             onClick={() => setLightbox({ open: true, src: r.proofUrl, alt: `Proof ${r.id}` })}
                           />
                           <button
                             onClick={() => setLightbox({ open: true, src: r.proofUrl, alt: `Proof ${r.id}` })}
-                            className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                            className="text-xs text-jckl-navy hover:text-blue-700 font-medium"
                           >
                             View
                           </button>
                         </div>
                       ) : (
-                        <span className="text-xs text-gray-400">No proof</span>
+                        <span className="text-xs text-jckl-slate">No proof</span>
                       )}
                     </div>
                   </td>
 
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-600">{fmtDT(r.submittedAt || r.createdAt)}</div>
+                    <div className="text-sm text-jckl-slate">{fmtDT(r.submittedAt || r.createdAt)}</div>
                   </td>
 
                   <td className="px-6 py-4 text-right">
@@ -670,8 +670,8 @@ function VerifyQueue() {
               <tr>
                 <td colSpan={8} className="px-6 py-12 text-center">
                   <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
-                  <p className="text-sm font-medium text-gray-900">All caught up!</p>
-                  <p className="text-xs text-gray-500 mt-1">No pending top-ups at the moment.</p>
+                  <p className="text-sm font-medium text-jckl-navy">All caught up!</p>
+                  <p className="text-xs text-jckl-slate mt-1">No pending top-ups at the moment.</p>
                 </td>
               </tr>
             )}
@@ -683,20 +683,20 @@ function VerifyQueue() {
       <div className="lg:hidden p-4 space-y-3">
         {loading && (
           <div className="text-center py-8">
-            <Loader2 className="w-8 h-8 text-gray-400 animate-spin mx-auto mb-2" />
-            <p className="text-sm text-gray-500">Loading transactions...</p>
+            <Loader2 className="w-8 h-8 text-jckl-slate animate-spin mx-auto mb-2" />
+            <p className="text-sm text-jckl-slate">Loading transactions...</p>
           </div>
         )}
 
         {!loading &&
           filtered.map((r) => (
-            <div key={r.id} className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+            <div key={r.id} className="bg-white border border-jckl-gold rounded-xl p-4 shadow-sm">
               <div className="flex items-start gap-3">
                 <div className="flex-1">
                   <div className="flex items-center justify-between gap-2">
                     <div>
-                      <div className="text-sm font-mono font-medium text-gray-900">#{r.id}</div>
-                      <div className="text-xs text-gray-500">{fmtDT(r.submittedAt || r.createdAt)}</div>
+                      <div className="text-sm font-mono font-medium text-jckl-navy">#{r.id}</div>
+                      <div className="text-xs text-jckl-slate">{fmtDT(r.submittedAt || r.createdAt)}</div>
                     </div>
                     <div className="text-right">
                       <div className="text-sm font-bold text-emerald-600">{peso.format(Number(r.amount || 0))}</div>
@@ -706,9 +706,9 @@ function VerifyQueue() {
                     </div>
                   </div>
 
-                  <div className="mt-3 text-sm text-gray-700">
+                  <div className="mt-3 text-sm text-jckl-slate">
                     <div className="font-medium">{r.payerName || r.student || "—"}</div>
-                    <div className="text-xs text-gray-500">{r.reference || "—"}</div>
+                    <div className="text-xs text-jckl-slate">{r.reference || "—"}</div>
                   </div>
                 </div>
               </div>
@@ -719,18 +719,18 @@ function VerifyQueue() {
                     <img
                       src={r.proofUrl}
                       alt="proof"
-                      className="w-16 h-16 object-cover rounded-lg border-2 border-gray-200 cursor-pointer"
+                      className="w-16 h-16 object-cover rounded-lg border-2 border-jckl-gold cursor-pointer"
                       onClick={() => setLightbox({ open: true, src: r.proofUrl, alt: `Proof ${r.id}` })}
                     />
                     <button
                       onClick={() => setLightbox({ open: true, src: r.proofUrl, alt: `Proof ${r.id}` })}
-                      className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                      className="text-xs text-jckl-navy hover:text-blue-700 font-medium"
                     >
                       View proof
                     </button>
                   </>
                 ) : (
-                  <span className="text-xs text-gray-400">No proof</span>
+                  <span className="text-xs text-jckl-slate">No proof</span>
                 )}
 
                 <div className="ml-auto flex items-center gap-2">
@@ -756,8 +756,8 @@ function VerifyQueue() {
         {!loading && filtered.length === 0 && (
           <div className="text-center py-8">
             <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
-            <p className="text-sm font-medium text-gray-900">All caught up!</p>
-            <p className="text-xs text-gray-500 mt-1">No pending top-ups at the moment.</p>
+            <p className="text-sm font-medium text-jckl-navy">All caught up!</p>
+            <p className="text-xs text-jckl-slate mt-1">No pending top-ups at the moment.</p>
           </div>
         )}
       </div>
@@ -769,16 +769,16 @@ function VerifyQueue() {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
         >
           <div className="max-w-3xl w-full bg-white rounded-xl overflow-hidden">
-            <div className="flex items-center justify-between p-3 border-b border-gray-200">
-              <div className="text-sm font-medium text-gray-900">{lightbox.alt}</div>
+            <div className="flex items-center justify-between p-3 border-b border-jckl-gold">
+              <div className="text-sm font-medium text-jckl-navy">{lightbox.alt}</div>
               <button
                 onClick={() => setLightbox({ open: false, src: "", alt: "" })}
-                className="p-2 rounded-md hover:bg-gray-100"
+                className="p-2 rounded-md hover:bg-jckl-cream"
               >
-                <X className="w-5 h-5 text-gray-600" />
+                <X className="w-5 h-5 text-jckl-slate" />
               </button>
             </div>
-            <div className="p-4 flex items-center justify-center bg-gray-50">
+            <div className="p-4 flex items-center justify-center bg-white">
               <img src={lightbox.src} alt={lightbox.alt} className="max-h-[70vh] w-auto h-auto object-contain" />
             </div>
           </div>
@@ -787,3 +787,4 @@ function VerifyQueue() {
     </section>
   );
 }
+

@@ -274,7 +274,7 @@ export default function Cart() {
 
   if (menuLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-white">
         <Navbar />
         <div className="max-w-7xl mx-auto p-6">Loading cart…</div>
       </div>
@@ -290,7 +290,7 @@ export default function Cart() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
+    <div className="min-h-screen bg-white pb-16 md:pb-0">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-3 sm:py-8">
@@ -312,7 +312,7 @@ export default function Cart() {
             <div className="hidden md:block bg-white rounded-lg p-4 border">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-xs text-gray-600">
+                  <tr className="text-left text-xs text-jckl-slate">
                     <th className="py-2">ITEM</th>
                     <th className="py-2">PRICE</th>
                     <th className="py-2">QTY</th>
@@ -391,8 +391,8 @@ export default function Cart() {
                   <div key={it.id} className="bg-white rounded-lg p-4 border">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
-                        <div className="font-medium text-gray-900">{it.name}</div>
-                        <div className="text-sm text-gray-600 mt-1">{peso.format(Number(it.price) || 0)}</div>
+                        <div className="font-medium text-jckl-navy">{it.name}</div>
+                        <div className="text-sm text-jckl-slate mt-1">{peso.format(Number(it.price) || 0)}</div>
                         <div className="text-xs text-gray-500 mt-1">
                           {it.stock >= 0 && (
                             <span className={it.stock > 0 ? 'text-green-600' : 'text-red-600'}>
@@ -425,7 +425,7 @@ export default function Cart() {
                           <Plus className="w-4 h-4" />
                         </button>
                       </div>
-                      <div className="font-semibold text-gray-900">
+                      <div className="font-semibold text-jckl-navy">
                         {peso.format((Number(it.price) || 0) * (it.qty || 0))}
                       </div>
                     </div>
@@ -438,7 +438,7 @@ export default function Cart() {
           {/* Summary */}
           <aside className="bg-white rounded-lg p-3 sm:p-4 border">
             <div className="flex items-center justify-between mb-3 sm:mb-4">
-              <div className="text-sm text-gray-600">Items</div>
+              <div className="text-sm text-jckl-slate">Items</div>
               <div className="font-medium">{list.reduce((a, b) => a + b.qty, 0)}</div>
             </div>
             <div className="flex items-center justify-between text-base sm:text-lg font-semibold mb-3 sm:mb-4">
@@ -449,21 +449,21 @@ export default function Cart() {
             <div className="space-y-2">
               <button
                 onClick={() => navigate("/shop")}
-                className="w-full border rounded px-4 py-2.5 sm:py-2 text-sm hover:bg-gray-50 transition"
+                className="w-full border rounded px-4 py-2.5 sm:py-2 text-sm hover:bg-jckl-cream transition text-jckl-navy border-jckl-gold"
               >
                 Continue Shopping
               </button>
               <button
                 onClick={openReserve}
                 disabled={!list.length}
-                className="w-full bg-blue-600 text-white rounded px-4 py-2.5 sm:py-2 text-sm hover:bg-blue-700 transition disabled:opacity-60"
+                className="w-full bg-jckl-navy text-white rounded px-4 py-2.5 sm:py-2 text-sm hover:bg-jckl-light-navy transition disabled:opacity-60"
               >
                 Reserve for Pickup
               </button>
               {list.length > 0 && (
                 <button
                   onClick={syncClear}
-                  className="w-full text-sm text-gray-600 hover:underline"
+                  className="w-full text-sm text-jckl-navy hover:underline"
                 >
                   Clear cart
                 </button>
@@ -482,7 +482,7 @@ export default function Cart() {
             <div className="relative inline-block w-full max-w-5xl bg-white rounded-xl shadow-xl border border-gray-100 text-left mx-auto">
               <div className="sticky top-0 z-10 flex items-center justify-between p-4 border-b bg-white">
                 <div className="flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-blue-600" />
+                  <Clock className="w-5 h-5 text-jckl-navy" />
                   <h3 className="font-semibold">Confirm Reservation</h3>
                 </div>
                 <button onClick={closeReserve} className="p-2 rounded-lg hover:bg-gray-100" aria-label="Close">
@@ -550,7 +550,7 @@ export default function Cart() {
                           {SLOTS.map((s) => (
                             <label
                               key={s.id}
-                              className="flex items-center gap-3 p-2 rounded-lg border hover:bg-gray-50 cursor-pointer"
+                              className="flex items-center gap-3 p-2 rounded-lg border border-jckl-gold hover:bg-jckl-cream cursor-pointer"
                             >
                               <input
                                 type="radio"
@@ -584,13 +584,13 @@ export default function Cart() {
 
                     {/* Right side - Split into scrollable items and sticky summary */}
                     <div className="flex flex-col h-full">
-                      <h4 className="font-medium text-gray-900 mb-2">Order Summary</h4>
+                      <h4 className="font-medium text-jckl-navy mb-2">Order Summary</h4>"
                       <div className="border rounded-lg flex-1 flex flex-col"> {/* Added flex flex-col */}
                         <div className="flex-1 overflow-y-auto divide-y"> {/* Removed max-h-[240px] and made it flex-1 */}
                           {list.map((it) => (
                             <div key={it.id} className="p-3 flex items-center justify-between text-sm">
                               <div className="min-w-0">
-                                <div className="font-medium text-gray-900 truncate">{it.name}</div>
+                                <div className="font-medium text-jckl-navy truncate">{it.name}</div>
                                 <div className="text-xs text-gray-500">{peso.format(it.price)}</div>
                               </div>
                               <div className="font-medium">{it.qty} × {peso.format(it.price)}</div>
@@ -608,7 +608,7 @@ export default function Cart() {
                     {/* Totals */}
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Total</span>
+                        <span className="text-sm text-jckl-slate">Total</span>
                         <span className="text-lg font-semibold">{peso.format(total)}</span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
@@ -621,7 +621,7 @@ export default function Cart() {
                         </div>
                       </div>
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">Remaining</span>
+                        <span className="text-jckl-slate">Remaining</span>
                         <span className={`font-semibold ${insufficient ? "text-red-700" : "text-emerald-700"}`}>
                           {loadingWallet ? "…" : peso.format(Math.max(0, (Number(wallet.balance) || 0) - total))}
                         </span>
@@ -638,14 +638,14 @@ export default function Cart() {
                     <div className="flex items-center justify-end gap-3">
                       <button
                         onClick={closeReserve}
-                        className="text-sm px-3 py-2 rounded-lg border hover:bg-gray-50"
+                        className="text-sm px-3 py-2 rounded-lg border border-jckl-gold hover:bg-jckl-cream text-jckl-navy"
                       >
                         Close
                       </button>
                       <button
                         onClick={submitReservation}
                         disabled={submitting || !list.length || insufficient}
-                        className="flex-1 inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition text-sm disabled:opacity-60"
+                        className="flex-1 inline-flex items-center justify-center gap-2 bg-jckl-navy text-white px-4 py-3 rounded-lg hover:bg-jckl-light-navy transition text-sm disabled:opacity-60"
                       >
                         {submitting ? (
                           <span className="inline-flex items-center gap-2">

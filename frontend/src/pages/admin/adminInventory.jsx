@@ -313,7 +313,7 @@ export default function AdminInventory() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">
+    <div className="min-h-screen bg-white pb-20 md:pb-0">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8 space-y-4 sm:space-y-6">
@@ -321,24 +321,24 @@ export default function AdminInventory() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <div className="bg-white rounded-lg border border-gray-100 p-3 sm:p-4">
             <div className="flex items-center gap-2 mb-2">
-              <Package className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
-              <span className="text-xs sm:text-sm text-gray-600">Total Items</span>
+              <Package className="w-4 h-4 sm:w-5 sm:h-5 text-jckl-navy" />
+              <span className="text-xs sm:text-sm text-jckl-slate">Total Items</span>
             </div>
-            <div className="text-xl sm:text-2xl font-bold text-gray-900">{items.length}</div>
+            <div className="text-xl sm:text-2xl font-bold text-jckl-navy">{items.length}</div>
           </div>
           
           <div className="bg-white rounded-lg border border-gray-100 p-3 sm:p-4">
             <div className="flex items-center gap-2 mb-2">
               <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
-              <span className="text-xs sm:text-sm text-gray-600">Total Stock</span>
+              <span className="text-xs sm:text-sm text-jckl-slate">Total Stock</span>
             </div>
-            <div className="text-xl sm:text-2xl font-bold text-gray-900">{totalStock}</div>
+            <div className="text-xl sm:text-2xl font-bold text-jckl-navy">{totalStock}</div>
           </div>
 
           <div className="bg-white rounded-lg border border-gray-100 p-3 sm:p-4">
             <div className="flex items-center gap-2 mb-2">
               <TrendingDown className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
-              <span className="text-xs sm:text-sm text-gray-600">Low Stock</span>
+              <span className="text-xs sm:text-sm text-jckl-slate">Low Stock</span>
             </div>
             <div className="text-xl sm:text-2xl font-bold text-orange-600">{lowStock.length}</div>
           </div>
@@ -346,7 +346,7 @@ export default function AdminInventory() {
           <div className="bg-white rounded-lg border border-gray-100 p-3 sm:p-4">
             <div className="flex items-center gap-2 mb-2">
               <XCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
-              <span className="text-xs sm:text-sm text-gray-600">Out of Stock</span>
+              <span className="text-xs sm:text-sm text-jckl-slate">Out of Stock</span>
             </div>
             <div className="text-xl sm:text-2xl font-bold text-red-600">{outOfStock.length}</div>
           </div>
@@ -356,13 +356,13 @@ export default function AdminInventory() {
         <div className="space-y-3 sm:space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Inventory Management</h1>
-              <p className="text-xs sm:text-sm text-gray-600 mt-1">View and edit stock quantities</p>
+              <h1 className="text-xl sm:text-2xl font-bold text-jckl-navy">Inventory Management</h1>
+              <p className="text-xs sm:text-sm text-jckl-slate mt-1">View and edit stock quantities</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <button 
                 onClick={() => setShowReports(!showReports)}
-                className="inline-flex items-center justify-center gap-2 border border-gray-300 px-3 sm:px-4 py-2 rounded-lg text-sm hover:bg-gray-50 w-full sm:w-auto"
+                className="inline-flex items-center justify-center gap-2 border border-jckl-gold px-3 sm:px-4 py-2 rounded-lg text-sm hover:bg-white w-full sm:w-auto"
               >
                 <BarChart3 className="w-4 h-4" />
                 <span>{showReports ? 'Hide' : 'Show'} Reports</span>
@@ -370,7 +370,7 @@ export default function AdminInventory() {
               <button 
                 onClick={load} 
                 disabled={loading}
-                className="inline-flex items-center justify-center gap-2 border border-gray-300 px-3 sm:px-4 py-2 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-60 w-full sm:w-auto"
+                className="inline-flex items-center justify-center gap-2 border border-jckl-gold px-3 sm:px-4 py-2 rounded-lg text-sm hover:bg-white disabled:opacity-60 w-full sm:w-auto"
               >
                 <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                 <span>Refresh</span>
@@ -397,7 +397,7 @@ export default function AdminInventory() {
           {hasUnsavedChanges && (
             <div className="p-3 sm:p-4 rounded-lg bg-blue-50 border border-blue-200">
               <div className="flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <AlertTriangle className="w-5 h-5 text-jckl-navy flex-shrink-0 mt-0.5" />
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-semibold text-blue-900">Unsaved Changes</div>
                   <div className="text-xs sm:text-sm text-blue-800 mt-1">
@@ -412,10 +412,10 @@ export default function AdminInventory() {
           {showReports && (
             <div className="bg-white rounded-lg border border-gray-100 p-4 sm:p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900">Inventory Reports</h3>
+                <h3 className="text-lg font-semibold text-jckl-navy">Inventory Reports</h3>
                 <button
                   onClick={() => setShowReports(false)}
-                  className="text-gray-500 hover:text-gray-700"
+                  className="text-jckl-slate hover:text-jckl-slate"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -424,8 +424,8 @@ export default function AdminInventory() {
               {/* Report Charts */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 {/* Stock by Category */}
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="text-sm font-semibold text-gray-900 mb-4">Stock by Category</h4>
+                <div className="bg-white p-4 rounded-lg">
+                  <h4 className="text-sm font-semibold text-jckl-navy mb-4">Stock by Category</h4>
                   <div className="h-64">
                     <Bar 
                       data={stockDistributionChart}
@@ -440,8 +440,8 @@ export default function AdminInventory() {
                 </div>
 
                 {/* Status Distribution */}
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="text-sm font-semibold text-gray-900 mb-4">Item Status Distribution</h4>
+                <div className="bg-white p-4 rounded-lg">
+                  <h4 className="text-sm font-semibold text-jckl-navy mb-4">Item Status Distribution</h4>
                   <div className="h-64">
                     <Pie 
                       data={statusDistributionChart}
@@ -456,10 +456,10 @@ export default function AdminInventory() {
               </div>
 
               {/* Category Statistics Table */}
-              <div className="bg-gray-50 p-4 rounded-lg overflow-x-auto">
-                <h4 className="text-sm font-semibold text-gray-900 mb-3">Category Summary</h4>
+              <div className="bg-white p-4 rounded-lg overflow-x-auto">
+                <h4 className="text-sm font-semibold text-jckl-navy mb-3">Category Summary</h4>
                 <table className="w-full text-xs sm:text-sm">
-                  <thead className="bg-gray-100">
+                  <thead className="bg-jckl-cream">
                     <tr>
                       <th className="px-3 py-2 text-left font-semibold">Category</th>
                       <th className="px-3 py-2 text-center font-semibold">Items</th>
@@ -468,12 +468,12 @@ export default function AdminInventory() {
                       <th className="px-3 py-2 text-center font-semibold">Out of Stock</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-jckl-gold">
                     {categoryStats.map(cat => (
-                      <tr key={cat.category} className="hover:bg-gray-100">
+                      <tr key={cat.category} className="hover:bg-jckl-cream">
                         <td className="px-3 py-2">{cat.category}</td>
                         <td className="px-3 py-2 text-center">{cat.itemCount}</td>
-                        <td className="px-3 py-2 text-center font-semibold text-blue-600">{cat.totalStock}</td>
+                        <td className="px-3 py-2 text-center font-semibold text-jckl-navy">{cat.totalStock}</td>
                         <td className="px-3 py-2 text-center font-semibold text-orange-600">{cat.lowStockCount}</td>
                         <td className="px-3 py-2 text-center font-semibold text-red-600">{cat.outOfStockCount}</td>
                       </tr>
@@ -486,7 +486,7 @@ export default function AdminInventory() {
               <div className="flex flex-col sm:flex-row gap-2">
                 <button
                   onClick={exportInventoryToCsv}
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
+                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-jckl-navy text-white rounded-lg hover:bg-jckl-navy text-sm font-medium"
                 >
                   <Download className="w-4 h-4" />
                   Export Full Inventory
@@ -508,13 +508,13 @@ export default function AdminInventory() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search items..."
-              className="w-full border border-gray-300 rounded-lg pl-9 pr-9 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-jckl-gold rounded-lg pl-9 pr-9 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
             />
-            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-jckl-slate absolute left-3 top-1/2 -translate-y-1/2" />
             {q && (
               <button
                 onClick={() => setQ("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-jckl-slate hover:text-jckl-slate"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -524,7 +524,7 @@ export default function AdminInventory() {
           {/* Mobile Filters Toggle */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="md:hidden w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-white hover:bg-gray-50"
+            className="md:hidden w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-jckl-gold rounded-lg text-sm bg-white hover:bg-white"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
@@ -534,17 +534,17 @@ export default function AdminInventory() {
 
           {/* Mobile Filters (Collapsible) */}
           {showFilters && (
-            <div className="md:hidden space-y-3 p-4 bg-white border border-gray-200 rounded-lg">
+            <div className="md:hidden space-y-3 p-4 bg-white border border-jckl-gold rounded-lg">
               <div>
-                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2">Category</label>
-                <select value={cat} onChange={(e) => setCat(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm">
+                <label className="block text-xs font-semibold text-jckl-slate uppercase tracking-wide mb-2">Category</label>
+                <select value={cat} onChange={(e) => setCat(e.target.value)} className="w-full border border-jckl-gold rounded-lg px-3 py-2.5 text-sm">
                   {categories.map(c => <option key={c} value={c}>{c === "all" ? "All categories" : c}</option>)}
                 </select>
               </div>
               
               <div>
-                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2">Status</label>
-                <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm">
+                <label className="block text-xs font-semibold text-jckl-slate uppercase tracking-wide mb-2">Status</label>
+                <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full border border-jckl-gold rounded-lg px-3 py-2.5 text-sm">
                   <option value="all">All status</option>
                   <option value="available">Available</option>
                   <option value="out">Out of stock</option>
@@ -552,8 +552,8 @@ export default function AdminInventory() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2">Sort</label>
-                <select value={sort} onChange={(e) => setSort(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm">
+                <label className="block text-xs font-semibold text-jckl-slate uppercase tracking-wide mb-2">Sort</label>
+                <select value={sort} onChange={(e) => setSort(e.target.value)} className="w-full border border-jckl-gold rounded-lg px-3 py-2.5 text-sm">
                   {SORT_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                 </select>
               </div>
@@ -567,19 +567,19 @@ export default function AdminInventory() {
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Search by name or category…"
-                className="w-full border border-gray-300 rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-jckl-gold rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
               />
-              <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-jckl-slate absolute left-3 top-1/2 -translate-y-1/2" />
             </div>
-            <select value={cat} onChange={(e) => setCat(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+            <select value={cat} onChange={(e) => setCat(e.target.value)} className="border border-jckl-gold rounded-lg px-3 py-2 text-sm">
               {categories.map(c => <option key={c} value={c}>{c === "all" ? "All categories" : c}</option>)}
             </select>
-            <select value={status} onChange={(e) => setStatus(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+            <select value={status} onChange={(e) => setStatus(e.target.value)} className="border border-jckl-gold rounded-lg px-3 py-2 text-sm">
               <option value="all">All status</option>
               <option value="available">Available</option>
               <option value="out">Out of stock</option>
             </select>
-            <select value={sort} onChange={(e) => setSort(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+            <select value={sort} onChange={(e) => setSort(e.target.value)} className="border border-jckl-gold rounded-lg px-3 py-2 text-sm">
               {SORT_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
             </select>
           </div>
@@ -588,42 +588,42 @@ export default function AdminInventory() {
         {/* Desktop Table View */}
         <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-x-auto">
           <table className="min-w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-white">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Item</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Category</th>
-                <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Stock</th>
-                <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-slate uppercase tracking-wider">Item</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-slate uppercase tracking-wider">Category</th>
+                <th className="px-6 py-3 text-center text-xs font-semibold text-jckl-slate uppercase tracking-wider">Stock</th>
+                <th className="px-6 py-3 text-center text-xs font-semibold text-jckl-slate uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-right text-xs font-semibold text-jckl-slate uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-jckl-gold">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-10 text-center text-sm text-gray-500">Loading…</td>
+                  <td colSpan={5} className="px-6 py-10 text-center text-sm text-jckl-slate">Loading…</td>
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-10 text-center text-sm text-gray-500">No items found.</td>
+                  <td colSpan={5} className="px-6 py-10 text-center text-sm text-jckl-slate">No items found.</td>
                 </tr>
               ) : (
                 filtered.map((it) => {
                   const isLow = Number(it.stock) <= LOW_STOCK_THRESHOLD;
                   const hasChanged = stockEdits[it.id] !== String(it.stock);
                   return (
-                    <tr key={it.id} className={`hover:bg-gray-50 transition ${isLow ? "bg-yellow-50" : ""}`}>
+                    <tr key={it.id} className={`hover:bg-white transition ${isLow ? "bg-yellow-50" : ""}`}>
                       <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-gray-900">{it.name}</div>
+                        <div className="text-sm font-medium text-jckl-navy">{it.name}</div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-700">{it.category || "-"}</td>
-                      <td className="px-6 py-4 text-center text-sm text-gray-700">
+                      <td className="px-6 py-4 text-sm text-jckl-slate">{it.category || "-"}</td>
+                      <td className="px-6 py-4 text-center text-sm text-jckl-slate">
                         <div className="inline-flex items-center border rounded overflow-hidden">
                           <button
                             onClick={() => {
                               const cur = Number(stockEdits[it.id] ?? it.stock) || 0;
                               setEditStock(it.id, String(Math.max(0, cur - 1)));
                             }}
-                            className="px-3 py-2 hover:bg-gray-100 transition"
+                            className="px-3 py-2 hover:bg-jckl-cream transition"
                             type="button"
                           >
                             <Minus className="w-4 h-4" />
@@ -631,14 +631,14 @@ export default function AdminInventory() {
                           <input
                             value={stockEdits[it.id] !== undefined ? stockEdits[it.id] : String(it.stock)}
                             onChange={(e) => setEditStock(it.id, e.target.value.replace(/[^\d]/g, ""))}
-                            className={`w-20 text-center border-l border-r border-gray-300 px-2 py-2 text-sm font-medium ${hasChanged ? 'bg-blue-50 text-blue-900' : ''}`}
+                            className={`w-20 text-center border-l border-r border-jckl-gold px-2 py-2 text-sm font-medium ${hasChanged ? 'bg-blue-50 text-blue-900' : ''}`}
                           />
                           <button
                             onClick={() => {
                               const cur = Number(stockEdits[it.id] ?? it.stock) || 0;
                               setEditStock(it.id, String(cur + 1));
                             }}
-                            className="px-3 py-2 hover:bg-gray-100 transition"
+                            className="px-3 py-2 hover:bg-jckl-cream transition"
                             type="button"
                           >
                             <Plus className="w-4 h-4" />
@@ -654,7 +654,7 @@ export default function AdminInventory() {
                         <button
                           onClick={() => saveStock(it.id, stockEdits[it.id] ?? it.stock)}
                           disabled={busyId === it.id || !hasChanged}
-                          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-sm disabled:opacity-60 disabled:cursor-not-allowed transition"
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-jckl-navy text-white hover:bg-jckl-navy text-sm disabled:opacity-60 disabled:cursor-not-allowed transition"
                         >
                           {busyId === it.id ? (
                             <>
@@ -693,7 +693,7 @@ export default function AdminInventory() {
               </div>
             ))
           ) : filtered.length === 0 ? (
-            <div className="bg-white rounded-lg border border-gray-100 p-8 text-center text-sm text-gray-500">
+            <div className="bg-white rounded-lg border border-gray-100 p-8 text-center text-sm text-jckl-slate">
               No items found.
             </div>
           ) : (
@@ -707,8 +707,8 @@ export default function AdminInventory() {
                 >
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex-1 min-w-0 pr-3">
-                      <div className="text-sm font-semibold text-gray-900 break-words">{it.name}</div>
-                      <div className="text-xs text-gray-500 mt-1">{it.category || "-"}</div>
+                      <div className="text-sm font-semibold text-jckl-navy break-words">{it.name}</div>
+                      <div className="text-xs text-jckl-slate mt-1">{it.category || "-"}</div>
                       {isLow && (
                         <div className="inline-flex items-center gap-1 mt-2 text-xs text-orange-700 bg-orange-100 px-2 py-1 rounded-full">
                           <AlertTriangle className="w-3 h-3" />
@@ -723,14 +723,14 @@ export default function AdminInventory() {
 
                   <div className="space-y-3">
                     <div className="flex items-center justify-between gap-3">
-                      <span className="text-xs text-gray-600 font-medium">Stock Quantity</span>
+                      <span className="text-xs text-jckl-slate font-medium">Stock Quantity</span>
                       <div className="inline-flex items-center border rounded-lg overflow-hidden">
                         <button
                           onClick={() => {
                             const cur = Number(stockEdits[it.id] ?? it.stock) || 0;
                             setEditStock(it.id, String(Math.max(0, cur - 1)));
                           }}
-                          className="px-3 py-2 hover:bg-gray-100 active:bg-gray-200 transition"
+                          className="px-3 py-2 hover:bg-jckl-cream active:bg-gray-200 transition"
                           type="button"
                         >
                           <Minus className="w-4 h-4" />
@@ -738,14 +738,14 @@ export default function AdminInventory() {
                         <input
                           value={stockEdits[it.id] !== undefined ? stockEdits[it.id] : String(it.stock)}
                           onChange={(e) => setEditStock(it.id, e.target.value.replace(/[^\d]/g, ""))}
-                          className={`w-16 text-center border-l border-r border-gray-300 px-2 py-2 text-sm font-semibold ${hasChanged ? 'bg-blue-50 text-blue-900' : ''}`}
+                          className={`w-16 text-center border-l border-r border-jckl-gold px-2 py-2 text-sm font-semibold ${hasChanged ? 'bg-blue-50 text-blue-900' : ''}`}
                         />
                         <button
                           onClick={() => {
                             const cur = Number(stockEdits[it.id] ?? it.stock) || 0;
                             setEditStock(it.id, String(cur + 1));
                           }}
-                          className="px-3 py-2 hover:bg-gray-100 active:bg-gray-200 transition"
+                          className="px-3 py-2 hover:bg-jckl-cream active:bg-gray-200 transition"
                           type="button"
                         >
                           <Plus className="w-4 h-4" />
@@ -756,7 +756,7 @@ export default function AdminInventory() {
                     <button
                       onClick={() => saveStock(it.id, stockEdits[it.id] ?? it.stock)}
                       disabled={busyId === it.id || !hasChanged}
-                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-sm font-medium disabled:opacity-60 disabled:cursor-not-allowed transition"
+                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-jckl-navy text-white hover:bg-jckl-navy text-sm font-medium disabled:opacity-60 disabled:cursor-not-allowed transition"
                     >
                       {busyId === it.id ? (
                         <>

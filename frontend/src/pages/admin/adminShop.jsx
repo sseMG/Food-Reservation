@@ -221,7 +221,7 @@ export default function AdminShop() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">
+    <div className="min-h-screen bg-white pb-20 md:pb-0">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8 space-y-4 sm:space-y-6">
@@ -229,8 +229,8 @@ export default function AdminShop() {
         <section className="space-y-3">
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Manage Products</h1>
-              <p className="text-sm sm:text-base text-gray-600 mt-1">
+              <h1 className="text-2xl sm:text-3xl font-bold text-jckl-navy">Manage Products</h1>
+              <p className="text-sm sm:text-base text-jckl-slate mt-1">
                 Add, edit, filter and manage canteen items
               </p>
             </div>
@@ -239,7 +239,7 @@ export default function AdminShop() {
             <button
               onClick={load}
               disabled={loading}
-              className="hidden md:inline-flex items-center gap-2 border px-3 py-2 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-60"
+              className="hidden md:inline-flex items-center gap-2 border px-3 py-2 rounded-lg text-sm hover:bg-jckl-cream disabled:opacity-60"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
               Refresh
@@ -248,20 +248,20 @@ export default function AdminShop() {
 
           {/* Stats Cards - Mobile optimized */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-            <div className="bg-white rounded-lg p-3 border border-gray-100">
-              <div className="text-xs text-gray-500">Total Items</div>
-              <div className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">{stats.total}</div>
+            <div className="bg-white rounded-lg p-3 border border-jckl-gold">
+              <div className="text-xs text-jckl-slate">Total Items</div>
+              <div className="text-xl sm:text-2xl font-bold text-jckl-navy mt-1">{stats.total}</div>
             </div>
-            <div className="bg-white rounded-lg p-3 border border-gray-100">
-              <div className="text-xs text-gray-500">Available</div>
+            <div className="bg-white rounded-lg p-3 border border-jckl-gold">
+              <div className="text-xs text-jckl-slate">Available</div>
               <div className="text-xl sm:text-2xl font-bold text-green-600 mt-1">{stats.available}</div>
             </div>
-            <div className="bg-white rounded-lg p-3 border border-gray-100">
-              <div className="text-xs text-gray-500">Out of Stock</div>
+            <div className="bg-white rounded-lg p-3 border border-jckl-gold">
+              <div className="text-xs text-jckl-slate">Out of Stock</div>
               <div className="text-xl sm:text-2xl font-bold text-red-600 mt-1">{stats.outOfStock}</div>
             </div>
-            <div className="bg-white rounded-lg p-3 border border-gray-100">
-              <div className="text-xs text-gray-500">Low Stock</div>
+            <div className="bg-white rounded-lg p-3 border border-jckl-gold">
+              <div className="text-xs text-jckl-slate">Low Stock</div>
               <div className="text-xl sm:text-2xl font-bold text-orange-600 mt-1">{stats.lowStock}</div>
             </div>
           </div>
@@ -272,7 +272,7 @@ export default function AdminShop() {
             <div className="relative md:hidden flex-1">
               <button
                 onClick={() => setShowAddMenu(!showAddMenu)}
-                className="w-full inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 text-sm font-medium"
+                className="w-full inline-flex items-center justify-center gap-2 bg-jckl-navy text-white px-3 py-2 rounded-lg hover:bg-jckl-navy text-sm font-medium opacity-90 hover:opacity-100"
               >
                 <PlusCircle className="w-4 h-4" />
                 Add Product
@@ -282,19 +282,19 @@ export default function AdminShop() {
               {showAddMenu && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowAddMenu(false)} />
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-jckl-gold rounded-lg shadow-lg z-50 overflow-hidden">
                     {categoryOptions.map((c, idx) => (
                       <Link
                         key={`${c.name}-${idx}`}
                         to={`/admin/shop/add/${encodeURIComponent(c.name)}`}
-                        className={`block px-4 py-3 text-sm hover:bg-gray-50 ${idx < categoryOptions.length - 1 ? 'border-b' : ''}`}
+                        className={`block px-4 py-3 text-sm hover:bg-jckl-cream ${idx < categoryOptions.length - 1 ? 'border-b' : ''}`}
                         onClick={() => setShowAddMenu(false)}
                       >
                         Add {c.name}
                       </Link>
                     ))}
                     {categoryOptions.length === 0 && (
-                      <div className="px-4 py-3 text-sm text-gray-500">No categories available.</div>
+                      <div className="px-4 py-3 text-sm text-jckl-slate">No categories available.</div>
                     )}
                   </div>
                 </>
@@ -306,7 +306,7 @@ export default function AdminShop() {
               <Link
                 key={c.name}
                 to={`/admin/shop/add/${encodeURIComponent(c.name)}`}
-                className="hidden md:inline-flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 text-sm"
+                className="hidden md:inline-flex items-center gap-2 bg-jckl-navy text-white px-3 py-2 rounded-lg hover:bg-jckl-navy text-sm opacity-90 hover:opacity-100"
               >
                 <PlusCircle className="w-4 h-4" />
                 <CategoryIcon name={c.name} iconID={c.iconID} />
@@ -317,7 +317,7 @@ export default function AdminShop() {
             {/* Edit Items button (all screens) */}
             <Link
               to="/admin/shop/edit-items"
-              className="inline-flex items-center justify-center gap-2 bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 text-sm font-medium flex-1 md:flex-none"
+              className="inline-flex items-center justify-center gap-2 bg-jckl-navy text-white px-3 py-2 rounded-lg hover:bg-jckl-navy text-sm font-medium flex-1 md:flex-none opacity-90 hover:opacity-100"
             >
               <Edit className="w-4 h-4" />
               <span className="hidden sm:inline">Edit Items</span>
@@ -327,7 +327,7 @@ export default function AdminShop() {
         </section>
 
         {/* Search & Filters */}
-        <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-3 sm:p-4 space-y-3">
+        <section className="bg-white rounded-xl shadow-sm border border-jckl-gold p-3 sm:p-4 space-y-3">
           {/* Search bar - always visible */}
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
@@ -335,15 +335,15 @@ export default function AdminShop() {
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Search products..."
-                className="w-full border border-gray-300 rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-jckl-gold rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
               />
-              <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-jckl-slate absolute left-3 top-1/2 -translate-y-1/2" />
             </div>
 
             {/* Mobile: Filter toggle button */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="md:hidden inline-flex items-center gap-2 border border-gray-300 px-3 py-2 rounded-lg text-sm hover:bg-gray-50"
+              className="md:hidden inline-flex items-center gap-2 border border-jckl-gold px-3 py-2 rounded-lg text-sm hover:bg-jckl-cream"
             >
               <Filter className="w-4 h-4" />
               {showFilters ? <X className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -353,7 +353,7 @@ export default function AdminShop() {
             <button
               onClick={load}
               disabled={loading}
-              className="hidden sm:inline-flex md:hidden items-center gap-2 border px-3 py-2 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-60"
+              className="hidden sm:inline-flex md:hidden items-center gap-2 border px-3 py-2 rounded-lg text-sm hover:bg-jckl-cream disabled:opacity-60"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             </button>
@@ -362,11 +362,11 @@ export default function AdminShop() {
           {/* Filter controls - collapsible on mobile */}
           <div className={`grid grid-cols-1 sm:grid-cols-3 gap-3 ${showFilters ? 'block' : 'hidden'} md:grid`}>
             <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <Filter className="w-4 h-4 text-jckl-slate flex-shrink-0" />
               <select
                 value={cat}
                 onChange={(e) => setCat(e.target.value)}
-                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 border border-jckl-gold rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
               >
                 {categories.map((c) => (
                   <option key={c} value={c}>{c === "all" ? "All categories" : c}</option>
@@ -377,7 +377,7 @@ export default function AdminShop() {
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-jckl-gold rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
             >
               <option value="all">All status</option>
               <option value="available">Available</option>
@@ -387,7 +387,7 @@ export default function AdminShop() {
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-jckl-gold rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
             >
               {SORT_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -397,7 +397,7 @@ export default function AdminShop() {
 
           {/* Active filters indicator */}
           {(q || cat !== "all" || status !== "all" || sort !== "name-asc") && (
-            <div className="flex items-center gap-2 text-xs text-gray-600 pt-2 border-t">
+            <div className="flex items-center gap-2 text-xs text-jckl-slate pt-2 border-t">
               <span className="font-medium">Showing {filtered.length} of {items.length} items</span>
               <button
                 onClick={() => {
@@ -406,7 +406,7 @@ export default function AdminShop() {
                   setStatus("all");
                   setSort("name-asc");
                 }}
-                className="text-blue-600 hover:text-blue-700 ml-auto"
+                className="text-jckl-navy hover:text-jckl-navy ml-auto"
               >
                 Clear filters
               </button>
@@ -417,13 +417,13 @@ export default function AdminShop() {
         {/* Products List */}
         <section className="space-y-3">
           {loading ? (
-            <div className="bg-white rounded-xl border border-gray-100 p-8 sm:p-10 text-center text-sm text-gray-500">
+            <div className="bg-white rounded-xl border border-jckl-gold p-8 sm:p-10 text-center text-sm text-jckl-slate">
               <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2" />
               Loading products…
             </div>
           ) : filtered.length === 0 ? (
-            <div className="bg-white rounded-xl border border-gray-100 p-8 sm:p-10 text-center">
-              <div className="text-sm text-gray-500">
+            <div className="bg-white rounded-xl border border-jckl-gold p-8 sm:p-10 text-center">
+              <div className="text-sm text-jckl-slate">
                 {q || cat !== "all" || status !== "all" 
                   ? "No products match your filters."
                   : "No products found. Add your first product!"}
@@ -438,33 +438,33 @@ export default function AdminShop() {
                   const isLowStock = p.stock > 0 && p.stock <= 5;
                   
                   return (
-                    <div key={p.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                    <div key={p.id} className="bg-white rounded-xl shadow-sm border border-jckl-gold p-4">
                       <div className="flex items-start gap-3">
                         {/* Product info */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2 mb-2">
                             <div className="flex-1 min-w-0">
-                              <h3 className="text-sm font-medium text-gray-900 truncate">{p.name}</h3>
-                              <div className="text-xs text-gray-500 mt-0.5">{p.category || "Uncategorized"}</div>
+                              <h3 className="text-sm font-medium text-jckl-navy truncate">{p.name}</h3>
+                              <div className="text-xs text-jckl-slate mt-0.5">{p.category || "Uncategorized"}</div>
                             </div>
                             
                             {/* Mobile menu */}
                             <div className="relative flex-shrink-0">
                               <button
                                 onClick={() => setActiveMenu(activeMenu === p.id ? null : p.id)}
-                                className="p-1 rounded hover:bg-gray-100"
+                                className="p-1 rounded hover:bg-jckl-cream"
                                 disabled={busyId === p.id}
                               >
-                                <MoreVertical className="w-4 h-4 text-gray-500" />
+                                <MoreVertical className="w-4 h-4 text-jckl-slate" />
                               </button>
 
                               {activeMenu === p.id && (
                                 <>
                                   <div className="fixed inset-0 z-40" onClick={() => setActiveMenu(null)} />
-                                  <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 w-48 overflow-hidden">
+                                  <div className="absolute right-0 top-full mt-1 bg-white border border-jckl-gold rounded-lg shadow-lg z-50 w-48 overflow-hidden">
                                     <button
                                       onClick={() => toggleVisibility(p.id, !p.visible)}
-                                      className="w-full flex items-center gap-2 px-4 py-3 text-sm hover:bg-gray-50 border-b"
+                                      className="w-full flex items-center gap-2 px-4 py-3 text-sm hover:bg-jckl-cream border-b"
                                     >
                                       {p.visible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                       {p.visible ? "Hide from menu" : "Show on menu"}
@@ -499,7 +499,7 @@ export default function AdminShop() {
                             </span>
                             
                             {!p.visible && (
-                              <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 text-gray-700">
+                              <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-jckl-cream text-jckl-navy">
                                 Hidden
                               </span>
                             )}
@@ -512,10 +512,10 @@ export default function AdminShop() {
                           </div>
 
                           <div className="flex items-center justify-between">
-                            <div className="text-xs text-gray-600">
+                            <div className="text-xs text-jckl-slate">
                               Stock: <span className="font-medium">{p.stock ?? 0}</span>
                             </div>
-                            <div className="text-base font-semibold text-gray-900">
+                            <div className="text-base font-semibold text-jckl-navy">
                               {typeof p.price === "number" ? peso.format(p.price) : "-"}
                             </div>
                           </div>
@@ -527,38 +527,38 @@ export default function AdminShop() {
               </div>
 
               {/* Desktop: Table view */}
-              <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="hidden md:block bg-white rounded-xl shadow-sm border border-jckl-gold overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="min-w-full">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-jckl-cream">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Item</th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Category</th>
-                        <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Stock</th>
-                        <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                        <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Price</th>
-                        <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-navy uppercase tracking-wider">Item</th>
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-navy uppercase tracking-wider">Category</th>
+                        <th className="px-6 py-3 text-center text-xs font-semibold text-jckl-navy uppercase tracking-wider">Stock</th>
+                        <th className="px-6 py-3 text-center text-xs font-semibold text-jckl-navy uppercase tracking-wider">Status</th>
+                        <th className="px-6 py-3 text-right text-xs font-semibold text-jckl-navy uppercase tracking-wider">Price</th>
+                        <th className="px-6 py-3 text-right text-xs font-semibold text-jckl-navy uppercase tracking-wider">Actions</th>
                       </tr>
                     </thead>
 
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="divide-y divide-jckl-gold">
                       {filtered.map((p) => {
                         const available = (p.stock ?? 0) > 0;
                         const isLowStock = p.stock > 0 && p.stock <= 5;
                         
                         return (
-                          <tr key={p.id} className="hover:bg-gray-50">
+                          <tr key={p.id} className="hover:bg-jckl-cream">
                             <td className="px-6 py-4">
-                              <div className="text-sm font-medium text-gray-900">{p.name}</div>
-                              {p.img && <div className="text-xs text-gray-500 truncate max-w-xs">{p.img}</div>}
+                              <div className="text-sm font-medium text-jckl-navy">{p.name}</div>
+                              {p.img && <div className="text-xs text-jckl-slate truncate max-w-xs">{p.img}</div>}
                               {isLowStock && (
                                 <span className="inline-flex mt-1 px-2 py-0.5 text-[10px] font-medium rounded-full bg-orange-100 text-orange-700">
                                   Low Stock
                                 </span>
                               )}
                             </td>
-                            <td className="px-6 py-4 text-sm text-gray-700">{p.category || "-"}</td>
-                            <td className="px-6 py-4 text-center text-sm text-gray-700">{p.stock ?? 0}</td>
+                            <td className="px-6 py-4 text-sm text-jckl-slate">{p.category || "-"}</td>
+                            <td className="px-6 py-4 text-center text-sm text-jckl-slate">{p.stock ?? 0}</td>
                             <td className="px-6 py-4 text-center">
                               <span
                                 className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
@@ -568,7 +568,7 @@ export default function AdminShop() {
                                 {available ? "Available" : "Out of stock"}
                               </span>
                             </td>
-                            <td className="px-6 py-4 text-right text-sm font-semibold text-gray-900">
+                            <td className="px-6 py-4 text-right text-sm font-semibold text-jckl-navy">
                               {typeof p.price === "number" ? peso.format(p.price) : "-"}
                             </td>
                             <td className="px-6 py-4">
@@ -582,7 +582,7 @@ export default function AdminShop() {
                                   <span className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full transition-colors ${p.visible ? "bg-emerald-500" : "bg-gray-300"}`}>
                                     <span className={`absolute left-0 top-0.5 inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${p.visible ? "translate-x-5" : "translate-x-0"}`} />
                                   </span>
-                                  <span className="text-sm text-gray-700">{p.visible ? "Visible" : "Hidden"}</span>
+                                  <span className="text-sm text-jckl-navy">{p.visible ? "Visible" : "Hidden"}</span>
                                 </button>
 
                                 <button
@@ -626,8 +626,8 @@ export default function AdminShop() {
                   <AlertTriangle className="w-6 h-6 text-red-600" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Delete Product?</h3>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <h3 className="text-lg font-semibold text-jckl-navy">Delete Product?</h3>
+                  <p className="text-sm text-jckl-slate mt-1">
                     {items.find(i => i.id === deleteConfirm)?.name}
                   </p>
                 </div>
@@ -640,11 +640,11 @@ export default function AdminShop() {
               </div>
             </div>
 
-            <div className="px-6 py-4 bg-gray-50 border-t flex gap-3">
+            <div className="px-6 py-4 bg-white border-t flex gap-3">
               <button
                 onClick={() => setDeleteConfirm(null)}
                 disabled={busyId === deleteConfirm}
-                className="flex-1 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 disabled:opacity-60"
+                className="flex-1 px-4 py-2 bg-white border border-jckl-gold rounded-lg text-sm font-medium hover:bg-white disabled:opacity-60"
               >
                 Cancel
               </button>

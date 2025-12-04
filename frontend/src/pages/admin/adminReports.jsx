@@ -889,15 +889,15 @@ export default function AdminReports() {
   }, [filteredTopProducts]);
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24 flex flex-col">
+    <div className="min-h-screen bg-white pb-24 flex flex-col">
       <Navbar />
 
       <main className="flex-1 max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 space-y-8 bg-white rounded-t-2xl shadow-md border border-gray-100 mt-2 mb-0">
         {/* Header */}
         <section className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Reports & Statistics</h1>
-            <p className="text-sm sm:text-base text-gray-600">Combined monthly reports and current month statistics.</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-jckl-navy">Reports & Statistics</h1>
+            <p className="text-sm sm:text-base text-jckl-slate">Combined monthly reports and current month statistics.</p>
           </div>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
             {/* Month/Year selectors */}
@@ -931,8 +931,8 @@ export default function AdminReports() {
               }}
               className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition ${
                 useDateRange
-                  ? "bg-blue-600 text-white border-blue-600"
-                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                  ? "bg-jckl-navy text-white border-blue-600"
+                  : "bg-white text-jckl-slate border-jckl-gold hover:bg-white"
               }`}
             >
               <Calendar className="w-4 h-4" />
@@ -949,11 +949,11 @@ export default function AdminReports() {
                 productsBar,
                 dashboard
               })}
-              className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm whitespace-nowrap"
+              className="px-3 py-2 bg-jckl-navy text-white rounded hover:bg-jckl-navy text-sm whitespace-nowrap"
             >
               Export Report
             </button>
-            <button type="button" onClick={load} className="inline-flex items-center justify-center gap-2 border px-3 py-2 rounded-lg text-sm hover:bg-gray-50">
+            <button type="button" onClick={load} className="inline-flex items-center justify-center gap-2 border px-3 py-2 rounded-lg text-sm hover:bg-white">
               <RefreshCw className="w-4 h-4" />
               <span className="hidden sm:inline">Refresh</span>
             </button>
@@ -964,7 +964,7 @@ export default function AdminReports() {
         {useDateRange && (
           <section className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 sm:p-6 rounded-lg border border-blue-200 shadow-sm">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base sm:text-lg font-semibold text-gray-900">Select Date Range</h3>
+              <h3 className="text-base sm:text-lg font-semibold text-jckl-navy">Select Date Range</h3>
               <button
                 onClick={() => {
                   setUseeDateRange(false);
@@ -973,14 +973,14 @@ export default function AdminReports() {
                 }}
                 className="p-1 hover:bg-blue-200 rounded transition"
               >
-                <X className="w-5 h-5 text-gray-600" />
+                <X className="w-5 h-5 text-jckl-slate" />
               </button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
               {/* Start Date */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-jckl-slate mb-2">
                   Start Date
                 </label>
                 <input
@@ -988,13 +988,13 @@ export default function AdminReports() {
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
                   max={endDate || undefined}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-jckl-gold rounded-lg focus:outline-none focus:ring-2 focus:ring-jckl-gold focus:border-transparent"
                 />
               </div>
 
               {/* End Date */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-jckl-slate mb-2">
                   End Date
                 </label>
                 <input
@@ -1002,7 +1002,7 @@ export default function AdminReports() {
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
                   min={startDate || undefined}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-jckl-gold rounded-lg focus:outline-none focus:ring-2 focus:ring-jckl-gold focus:border-transparent"
                 />
               </div>
 
@@ -1012,7 +1012,7 @@ export default function AdminReports() {
                   setStartDate("");
                   setEndDate("");
                 }}
-                className="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-medium"
+                className="w-full px-4 py-2 bg-white border border-jckl-gold text-jckl-slate rounded-lg hover:bg-white transition text-sm font-medium"
               >
                 Clear Dates
               </button>
@@ -1020,7 +1020,7 @@ export default function AdminReports() {
 
             {startDate && endDate && (
               <div className="mt-3 p-3 bg-white rounded border border-blue-200">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-jckl-slate">
                   Filtering data from <strong>{new Date(startDate).toLocaleDateString()}</strong> to <strong>{new Date(endDate).toLocaleDateString()}</strong>
                 </p>
               </div>
@@ -1032,40 +1032,40 @@ export default function AdminReports() {
         <section className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <div className="bg-white rounded-lg sm:rounded-2xl p-3 sm:p-5 shadow-sm border border-gray-100">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs sm:text-sm text-gray-600">Revenue</span>
+              <span className="text-xs sm:text-sm text-jckl-slate">Revenue</span>
               <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
             </div>
-            <div className="text-xl sm:text-3xl font-bold text-gray-900">{peso.format(resStats.revenue)}</div>
-            <div className="text-xs text-gray-500 mt-1">{periodLabel}</div>
+            <div className="text-xl sm:text-3xl font-bold text-jckl-navy">{peso.format(resStats.revenue)}</div>
+            <div className="text-xs text-jckl-slate mt-1">{periodLabel}</div>
           </div>
 
           <div className="bg-white rounded-lg sm:rounded-2xl p-3 sm:p-5 shadow-sm border border-gray-100">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs sm:text-sm text-gray-600">Orders</span>
-              <ClipboardList className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+              <span className="text-xs sm:text-sm text-jckl-slate">Orders</span>
+              <ClipboardList className="w-4 h-4 sm:w-5 sm:h-5 text-jckl-navy" />
             </div>
-            <div className="text-xl sm:text-3xl font-bold text-gray-900">{resStats.orders}</div>
-            <div className="text-xs text-gray-500 mt-1">{periodLabel}</div>
+            <div className="text-xl sm:text-3xl font-bold text-jckl-navy">{resStats.orders}</div>
+            <div className="text-xs text-jckl-slate mt-1">{periodLabel}</div>
           </div>
 
           <div className="bg-white rounded-lg sm:rounded-2xl p-3 sm:p-5 shadow-sm border border-gray-100">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs sm:text-sm text-gray-600">Pending</span>
+              <span className="text-xs sm:text-sm text-jckl-slate">Pending</span>
               <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
             </div>
-            <div className="text-xl sm:text-3xl font-bold text-gray-900">{resStats.pendingReservations}</div>
-            <div className="text-xs text-gray-500 mt-1">
+            <div className="text-xl sm:text-3xl font-bold text-jckl-navy">{resStats.pendingReservations}</div>
+            <div className="text-xs text-jckl-slate mt-1">
               {new Date().toLocaleDateString()} at {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </div>
           </div>
 
           <div className="bg-white rounded-lg sm:rounded-2xl p-3 sm:p-5 shadow-sm border border-gray-100">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs sm:text-sm text-gray-600">Top-ups</span>
+              <span className="text-xs sm:text-sm text-jckl-slate">Top-ups</span>
               <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-violet-600" />
             </div>
-            <div className="text-xl sm:text-3xl font-bold text-gray-900">{topupStats?.pending ?? topMonth.length}</div>
-            <div className="text-xs text-gray-500 mt-1">
+            <div className="text-xl sm:text-3xl font-bold text-jckl-navy">{topupStats?.pending ?? topMonth.length}</div>
+            <div className="text-xs text-jckl-slate mt-1">
               {new Date().toLocaleDateString()} at {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </div>
           </div>
@@ -1075,7 +1075,7 @@ export default function AdminReports() {
         <div className="flex justify-end">
           <button
             onClick={() => exportCombinedStats(resStats, topupStats, resStats.categoryRows, dashboard)}
-            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="px-3 py-1 text-sm bg-jckl-navy text-white rounded hover:bg-jckl-navy"
           >
             Export Combined Stats
           </button>
@@ -1085,13 +1085,13 @@ export default function AdminReports() {
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Reservation status section - remove export button */}
           <div className="bg-white rounded-lg sm:rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Reservation status ({periodLabel})</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-jckl-navy mb-3 sm:mb-4">Reservation status ({periodLabel})</h3>
             <table className="w-full text-xs sm:text-sm">
               <tbody className="divide-y divide-gray-100">
                 {CANONICAL_STATUSES.map((label) => (
                   <tr key={label}>
-                    <td className="py-2 text-gray-600">{label}</td>
-                    <td className="py-2 text-right font-semibold text-gray-900">{resStats.counts[label]}</td>
+                    <td className="py-2 text-jckl-slate">{label}</td>
+                    <td className="py-2 text-right font-semibold text-jckl-navy">{resStats.counts[label]}</td>
                   </tr>
                 ))}
               </tbody>
@@ -1100,31 +1100,31 @@ export default function AdminReports() {
 
           {/* Top-ups section - remove export button */}
           <div className="bg-white rounded-lg sm:rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Top-ups ({periodLabel})</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-jckl-navy mb-3 sm:mb-4">Top-ups ({periodLabel})</h3>
             <table className="w-full text-xs sm:text-sm">
               <tbody className="divide-y divide-gray-100">
-                <tr><td className="py-2 text-gray-600">Approved</td><td className="py-2 text-right font-semibold text-gray-900">{topupStats?.approvedCount ?? 0}</td></tr>
-                <tr><td className="py-2 text-gray-600">Approved amount</td><td className="py-2 text-right font-semibold text-gray-900">{fmt(topupStats?.approvedAmt ?? 0)}</td></tr>
-                <tr><td className="py-2 text-gray-600">Pending</td><td className="py-2 text-right font-semibold text-gray-900">{topupStats?.pending ?? 0}</td></tr>
-                <tr><td className="py-2 text-gray-600">Rejected</td><td className="py-2 text-right font-semibold text-gray-900">{topupStats?.rejected ?? 0}</td></tr>
+                <tr><td className="py-2 text-jckl-slate">Approved</td><td className="py-2 text-right font-semibold text-jckl-navy">{topupStats?.approvedCount ?? 0}</td></tr>
+                <tr><td className="py-2 text-jckl-slate">Approved amount</td><td className="py-2 text-right font-semibold text-jckl-navy">{fmt(topupStats?.approvedAmt ?? 0)}</td></tr>
+                <tr><td className="py-2 text-jckl-slate">Pending</td><td className="py-2 text-right font-semibold text-jckl-navy">{topupStats?.pending ?? 0}</td></tr>
+                <tr><td className="py-2 text-jckl-slate">Rejected</td><td className="py-2 text-right font-semibold text-jckl-navy">{topupStats?.rejected ?? 0}</td></tr>
               </tbody>
             </table>
           </div>
 
           {/* Revenue by category section - remove export button */}
           <div className="bg-white rounded-lg sm:rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Revenue by category ({periodLabel})</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-jckl-navy mb-3 sm:mb-4">Revenue by category ({periodLabel})</h3>
 
             {resStats.categoryRows.length === 0 ? (
-              <p className="text-xs sm:text-sm text-gray-500">No data yet.</p>
+              <p className="text-xs sm:text-sm text-jckl-slate">No data yet.</p>
             ) : (
               <table className="w-full text-xs sm:text-sm">
-                <thead className="text-left text-gray-500">
+                <thead className="text-left text-jckl-slate">
                   <tr><th className="py-2">Category</th><th className="py-2 text-right">Revenue</th></tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {resStats.categoryRows.map((row) => (
-                    <tr key={row.category}><td className="py-2 text-gray-700">{row.category}</td><td className="py-2 text-right font-semibold text-gray-900">{peso.format(row.amount)}</td></tr>
+                    <tr key={row.category}><td className="py-2 text-jckl-slate">{row.category}</td><td className="py-2 text-right font-semibold text-jckl-navy">{peso.format(row.amount)}</td></tr>
                   ))}
                 </tbody>
               </table>
@@ -1135,22 +1135,22 @@ export default function AdminReports() {
         {/* Top-selling products section */}
         <section className="bg-white rounded-lg sm:rounded-2xl p-3 sm:p-6 shadow-sm border border-gray-100 overflow-x-auto mb-4">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900">Top-selling products ({periodLabel})</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-jckl-navy">Top-selling products ({periodLabel})</h3>
             <button
               onClick={() => exportToCsv(filteredResTopItems, 'top_items')}
-              className="px-3 py-1 text-xs sm:text-sm bg-blue-600 text-white rounded hover:bg-blue-700 whitespace-nowrap"
+              className="px-3 py-1 text-xs sm:text-sm bg-jckl-navy text-white rounded hover:bg-jckl-navy whitespace-nowrap"
             >
               Export CSV
             </button>
           </div>
           
           {filteredResTopItems.length === 0 ? (
-            <p className="text-xs sm:text-sm text-gray-500">No data yet.</p>
+            <p className="text-xs sm:text-sm text-jckl-slate">No data yet.</p>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <div className="overflow-x-auto">
                 <table className="w-full text-xs sm:text-sm">
-                  <thead className="text-left text-gray-500">
+                  <thead className="text-left text-jckl-slate">
                     <tr>
                       <th className="py-2 px-1 sm:px-2">Item</th>
                       <th className="py-2 px-1 sm:px-2">Category</th>
@@ -1163,10 +1163,10 @@ export default function AdminReports() {
                       .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                       .map((it, idx) => (
                         <tr key={(it.name || idx) + idx}>
-                          <td className="py-2 px-1 sm:px-2 text-gray-700 truncate">{it.name}</td>
-                          <td className="py-2 px-1 sm:px-2 text-gray-600 text-xs">{it.category || "Uncategorized"}</td>
-                          <td className="py-2 px-1 sm:px-2 text-right text-gray-700">{it.qty}</td>
-                          <td className="py-2 px-1 sm:px-2 text-right font-semibold text-gray-900">{peso.format(it.revenue)}</td>
+                          <td className="py-2 px-1 sm:px-2 text-jckl-slate truncate">{it.name}</td>
+                          <td className="py-2 px-1 sm:px-2 text-jckl-slate text-xs">{it.category || "Uncategorized"}</td>
+                          <td className="py-2 px-1 sm:px-2 text-right text-jckl-slate">{it.qty}</td>
+                          <td className="py-2 px-1 sm:px-2 text-right font-semibold text-jckl-navy">{peso.format(it.revenue)}</td>
                         </tr>
                     ))}
                   </tbody>
@@ -1181,7 +1181,7 @@ export default function AdminReports() {
                   >
                     Prev
                   </button>
-                  <span className="text-xs sm:text-sm text-gray-600">
+                  <span className="text-xs sm:text-sm text-jckl-slate">
                     {currentPage} / {Math.ceil(filteredResTopItems.length / itemsPerPage)}
                   </span>
                   <button
@@ -1242,7 +1242,7 @@ export default function AdminReports() {
         {/* Category filters - MOVED HERE */}
         <section className="bg-white p-3 sm:p-4 rounded shadow-sm border border-gray-100">
           <div className="space-y-3">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3">Filter by Category</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-jckl-navy mb-3">Filter by Category</h3>
             <div>
               <div className="flex flex-wrap gap-2 items-center">
                 {categories.map((c) => {
@@ -1251,14 +1251,14 @@ export default function AdminReports() {
                     <button
                       key={c}
                       onClick={() => setSelectedCategory(c)}
-                      className={`text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 rounded-lg border ${active ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-700 border-gray-200"} hover:opacity-90`}
+                      className={`text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 rounded-lg border ${active ? "bg-jckl-navy text-white border-blue-600" : "bg-white text-jckl-slate border-jckl-gold"} hover:opacity-90`}
                     >
                       {c}
                     </button>
                   );
                 })}
               </div>
-              <div className="text-xs text-gray-500 mt-2">Selected: <strong>{selectedCategory}</strong></div>
+              <div className="text-xs text-jckl-slate mt-2">Selected: <strong>{selectedCategory}</strong></div>
             </div>
           </div>
         </section>
@@ -1266,24 +1266,24 @@ export default function AdminReports() {
         {/* Top Products section */}
         <section className="bg-white rounded-lg sm:rounded-2xl p-3 sm:p-6 shadow-sm border border-gray-100 overflow-x-auto mb-4">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900">Top Products ({periodLabel})</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-jckl-navy">Top Products ({periodLabel})</h3>
             <button
               onClick={() => exportToCsv(sortedProducts.byRevenue)}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+              className="px-4 py-2 bg-jckl-navy text-white rounded hover:bg-jckl-navy text-sm"
             >
               Export as CSV
             </button>
           </div>
           
           {filteredTopProducts.length === 0 ? (
-            <p className="text-sm text-gray-500">No data available.</p>
+            <p className="text-sm text-jckl-slate">No data available.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Revenue-sorted list */}
               <div>
-                <h4 className="text-md font-medium text-gray-700 mb-3">Sorted by Revenue</h4>
+                <h4 className="text-md font-medium text-jckl-slate mb-3">Sorted by Revenue</h4>
                 <table className="w-full text-sm">
-                  <thead className="text-left text-gray-500">
+                  <thead className="text-left text-jckl-slate">
                     <tr>
                       <th className="py-2">Item</th>
                       <th className="py-2">Category</th>
@@ -1296,10 +1296,10 @@ export default function AdminReports() {
                       .slice((revenueCurrentPage - 1) * itemsPerPage, revenueCurrentPage * itemsPerPage)
                       .map((item, idx) => (
                         <tr key={`revenue-${item.name}-${idx}`}>
-                          <td className="py-2 text-gray-700">{item.name}</td>
-                          <td className="py-2 text-gray-600">{item.category || "Uncategorized"}</td>
-                          <td className="py-2 text-right text-gray-600">{item.qty}</td>
-                          <td className="py-2 text-right font-semibold text-blue-600">{peso.format(item.revenue)}</td>
+                          <td className="py-2 text-jckl-slate">{item.name}</td>
+                          <td className="py-2 text-jckl-slate">{item.category || "Uncategorized"}</td>
+                          <td className="py-2 text-right text-jckl-slate">{item.qty}</td>
+                          <td className="py-2 text-right font-semibold text-jckl-navy">{peso.format(item.revenue)}</td>
                         </tr>
                       ))}
                   </tbody>
@@ -1314,7 +1314,7 @@ export default function AdminReports() {
                   >
                     Previous
                   </button>
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm text-jckl-slate">
                     Page {revenueCurrentPage} of {Math.ceil(sortedProducts.byRevenue.length / itemsPerPage)}
                   </span>
                   <button
@@ -1329,9 +1329,9 @@ export default function AdminReports() {
 
               {/* Quantity-sorted list */}
               <div>
-                <h4 className="text-md font-medium text-gray-700 mb-3">Sorted by Quantity</h4>
+                <h4 className="text-md font-medium text-jckl-slate mb-3">Sorted by Quantity</h4>
                 <table className="w-full text-sm">
-                  <thead className="text-left text-gray-500">
+                  <thead className="text-left text-jckl-slate">
                     <tr>
                       <th className="py-2">Item</th>
                       <th className="py-2">Category</th>
@@ -1344,10 +1344,10 @@ export default function AdminReports() {
                       .slice((quantityCurrentPage - 1) * itemsPerPage, quantityCurrentPage * itemsPerPage)
                       .map((item, idx) => (
                         <tr key={`quantity-${item.name}-${idx}`}>
-                          <td className="py-2 text-gray-700">{item.name}</td>
-                          <td className="py-2 text-gray-600">{item.category || "Uncategorized"}</td>
+                          <td className="py-2 text-jckl-slate">{item.name}</td>
+                          <td className="py-2 text-jckl-slate">{item.category || "Uncategorized"}</td>
                           <td className="py-2 text-right font-semibold text-green-600">{item.qty}</td>
-                          <td className="py-2 text-right text-gray-600">{peso.format(item.revenue)}</td>
+                          <td className="py-2 text-right text-jckl-slate">{peso.format(item.revenue)}</td>
                         </tr>
                       ))}
                   </tbody>
@@ -1362,7 +1362,7 @@ export default function AdminReports() {
                   >
                     Previous
                   </button>
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm text-jckl-slate">
                     Page {quantityCurrentPage} of {Math.ceil(sortedProducts.byQuantity.length / itemsPerPage)}
                   </span>
                   <button
@@ -1382,14 +1382,14 @@ export default function AdminReports() {
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 mb-6">
           <div className="lg:col-span-2 bg-white p-3 sm:p-6 rounded shadow">
             <h3 className="text-base sm:text-lg font-semibold mb-3">Top Products (Qty & Revenue)</h3>
-            {(mergedTopProducts || []).length === 0 ? <div className="text-xs sm:text-sm text-gray-500">No top product data yet.</div> : <Bar data={productsBar} options={{ responsive: true, plugins: { legend: { position: "top" } } }} />}
+            {(mergedTopProducts || []).length === 0 ? <div className="text-xs sm:text-sm text-jckl-slate">No top product data yet.</div> : <Bar data={productsBar} options={{ responsive: true, plugins: { legend: { position: "top" } } }} />}
           </div>
           <div className="bg-white p-3 sm:p-6 rounded shadow">
             <h3 className="text-base sm:text-lg font-semibold mb-3">Category Revenue Share</h3>
             <div className="mb-3 h-64 sm:h-80">
-              {topCategories.length === 0 ? <div className="text-xs sm:text-sm text-gray-500">No category data yet.</div> : <Pie data={pieForCategory} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "right" } } }} />}
+              {topCategories.length === 0 ? <div className="text-xs sm:text-sm text-jckl-slate">No category data yet.</div> : <Pie data={pieForCategory} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "right" } } }} />}
             </div>
-            <div className="text-xs sm:text-sm text-gray-600 space-y-1">
+            <div className="text-xs sm:text-sm text-jckl-slate space-y-1">
               {
                 (selectedCategory === "All"
                   ? (topCategories || []).slice(0, 5).map((c, idx) => ({ label: c.category || c.name, amount: Number(c.revenue || c.amount || 0) }))
@@ -1408,7 +1408,7 @@ export default function AdminReports() {
           </div>
         </section>
 
-        {loading && <div className="text-center text-sm text-gray-500">Loading…</div>}
+        {loading && <div className="text-center text-sm text-jckl-slate">Loading…</div>}
       </main>
       <div className="fixed left-0 right-0 bottom-0 z-[9999] px-2 pb-2 pointer-events-none">
         <div className="pointer-events-auto">

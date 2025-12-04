@@ -215,9 +215,9 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex flex-col">
-      {/* HEADER - Updated with About page style */}
-      <header className="w-full bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+    <div className="min-h-screen bg-white flex flex-col">
+      {/* HEADER - JCKL Themed */}
+      <header className="w-full bg-white shadow-sm border-b-4 border-jckl-gold sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6 py-3 sm:py-4 flex items-center justify-between gap-2">
           <Link to="/" className="flex items-center gap-2 min-w-0 flex-shrink" aria-label="JCKL Food Reservation Home">
             <img
@@ -226,7 +226,7 @@ export default function Login() {
               loading="lazy"
               className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex-shrink-0"
             />
-            <div className="font-bold text-gray-900 min-w-0">
+            <div className="font-bold text-jckl-navy min-w-0">
               <span className="hidden xl:inline text-lg">
                 Jesus Christ King of Kings and Lord of Lords Academy Inc.
               </span>
@@ -242,7 +242,7 @@ export default function Login() {
               <li>
                 <Link
                   to="/"
-                  className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200"
+                  className="text-jckl-slate hover:text-jckl-navy font-medium transition-colors duration-200"
                 >
                   Home
                 </Link>
@@ -250,7 +250,7 @@ export default function Login() {
               <li>
                 <Link
                   to="/about"
-                  className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200"
+                  className="text-jckl-slate hover:text-jckl-navy font-medium transition-colors duration-200"
                 >
                   About Us
                 </Link>
@@ -258,7 +258,7 @@ export default function Login() {
               <li>
                 <Link
                   to="/register"
-                  className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200"
+                  className="text-jckl-slate hover:text-jckl-navy font-medium transition-colors duration-200"
                 >
                   Register
                 </Link>
@@ -266,7 +266,7 @@ export default function Login() {
               <li>
                 <Link
                   to="/login"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors duration-200"
+                  className="px-4 py-2 bg-jckl-navy text-white rounded-lg hover:bg-jckl-light-navy font-medium transition-colors duration-200"
                 >
                   Log In
                 </Link>
@@ -276,7 +276,7 @@ export default function Login() {
 
           <div className="flex items-center gap-2 flex-shrink-0">
             <Link to="/login" className="hidden sm:inline-block lg:hidden">
-              <button className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors duration-200 text-sm">
+              <button className="px-3 py-2 bg-jckl-navy text-white rounded-lg hover:bg-jckl-light-navy font-medium transition-colors duration-200 text-sm">
                 Log In
               </button>
             </Link>
@@ -284,7 +284,7 @@ export default function Login() {
             {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen((s) => !s)}
-              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-700"
+              className="lg:hidden p-2 rounded-lg hover:bg-jckl-cream text-jckl-navy"
               aria-label="Toggle menu"
               aria-expanded={mobileMenuOpen}
               aria-controls="mobile-menu"
@@ -296,13 +296,13 @@ export default function Login() {
 
         {/* Mobile menu dropdown */}
         {mobileMenuOpen && (
-          <div id="mobile-menu" className="lg:hidden border-t border-gray-200 bg-white" role="menu" aria-label="Mobile primary navigation">
+          <div id="mobile-menu" className="lg:hidden border-t border-jckl-gold bg-white" role="menu" aria-label="Mobile primary navigation">
             <nav className="px-4 py-3 space-y-2">
               <Link
                 to="/"
                 role="menuitem"
                 ref={mobileFirstLinkRef}
-                className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition text-sm"
+                className="block px-3 py-2 text-jckl-slate hover:bg-jckl-cream rounded-lg transition text-sm"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Home
@@ -310,7 +310,7 @@ export default function Login() {
               <Link
                 to="/about"
                 role="menuitem"
-                className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition text-sm"
+                className="block px-3 py-2 text-jckl-slate hover:bg-jckl-cream rounded-lg transition text-sm"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 About Us
@@ -318,7 +318,7 @@ export default function Login() {
               <Link
                 to="/register"
                 role="menuitem"
-                className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition text-sm"
+                className="block px-3 py-2 text-jckl-slate hover:bg-jckl-cream rounded-lg transition text-sm"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Register
@@ -326,7 +326,7 @@ export default function Login() {
               <Link
                 to="/login"
                 role="menuitem"
-                className="block px-3 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition text-sm font-medium sm:hidden"
+                className="block px-3 py-2 bg-jckl-navy text-white hover:bg-jckl-light-navy rounded-lg transition text-sm font-medium sm:hidden"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Log In
@@ -348,14 +348,14 @@ export default function Login() {
                 className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl shadow-lg" 
               />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-2">Welcome Back</h1>
-            <p className="text-sm sm:text-base text-gray-600">Sign in to your food reservation account</p>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-jckl-navy mb-2">Welcome Back</h1>
+            <p className="text-sm sm:text-base text-jckl-slate">Sign in to your food reservation account</p>
           </div>
 
           {/* Login Form Card */}
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 sm:p-8">
+          <div className="bg-white rounded-2xl shadow-xl border-t-4 border-jckl-gold p-6 sm:p-8">
             {errors.form && (
-              <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 flex items-start gap-2">
+              <div className="mb-6 rounded-lg border border-jckl-accent bg-red-50 px-4 py-3 text-sm text-jckl-accent flex items-start gap-2">
                 <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
@@ -405,22 +405,22 @@ export default function Login() {
                 <div className="text-right mt-2">
                   <Link 
                     to="/forgot-password" 
-                    className="text-xs sm:text-sm text-blue-600 hover:text-blue-700 hover:underline font-medium"
+                    className="text-xs sm:text-sm text-jckl-navy hover:text-jckl-light-navy hover:underline font-medium"
                   >
                     Forgot password?
                   </Link>
                 </div>
               </div>
 
-              <Button type="submit" variant="primary" fullWidth disabled={isLoading}>
+              <Button type="submit" variant="primary" fullWidth disabled={isLoading} className="bg-jckl-navy hover:bg-jckl-light-navy">
                 {isLoading ? "Signing In..." : "Sign In"}
               </Button>
             </form>
 
-            <div className="mt-6 pt-6 border-t border-gray-100">
-              <p className="text-center text-xs sm:text-sm text-gray-600">
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <p className="text-center text-xs sm:text-sm text-jckl-slate">
                 Don't have an account?{" "}
-                <Link to="/register" className="text-blue-600 hover:text-blue-700 font-semibold">
+                <Link to="/register" className="text-jckl-navy hover:text-jckl-light-navy font-semibold">
                   Create Account
                 </Link>
               </p>
@@ -430,8 +430,8 @@ export default function Login() {
       </div>
 
       {/* FOOTER */}
-      <footer className="py-6 sm:py-8 bg-gray-900 text-center">
-        <div className="text-gray-400 text-xs sm:text-sm">
+      <footer className="py-6 sm:py-8 bg-jckl-navy text-center">
+        <div className="text-jckl-cream text-xs sm:text-sm">
           © 2025 JCKL Food Reservation System. All rights reserved.
         </div>
       </footer>

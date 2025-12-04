@@ -61,7 +61,7 @@ const getStatusConfig = (status) => {
     },
     [STATUS.APPROVED]: {
       label: 'Approved',
-      className: 'bg-blue-50 text-blue-700 border-blue-200',
+      className: 'bg-jckl-cream text-jckl-navy border-jckl-gold',
       ariaLabel: 'Order status: Approved, being prepared',
     },
     [STATUS.PREPARING]: {
@@ -76,7 +76,7 @@ const getStatusConfig = (status) => {
     },
     [STATUS.CLAIMED]: {
       label: 'Claimed',
-      className: 'bg-gray-100 text-gray-700 border-gray-200',
+      className: 'bg-jckl-cream text-jckl-navy border-jckl-gold',
       ariaLabel: 'Order status: Claimed and completed',
     },
     [STATUS.SUCCESS]: {
@@ -137,11 +137,11 @@ const ActivityItem = ({ activity, onClick }) => {
       <button
         onClick={() => onClick(activity)}
         onKeyDown={handleKeyDown}
-        className="w-full py-3 flex items-center justify-between text-left hover:bg-gray-50 rounded-lg px-2 -mx-2 transition focus-ring"
+        className="w-full py-3 flex items-center justify-between text-left hover:bg-jckl-cream rounded-lg px-2 -mx-2 transition focus-ring"
         aria-label={`View details for ${activity.title}, ${statusConfig.ariaLabel}, ${timeData.relative}`}
       >
         <div className="min-w-0 flex-1">
-          <div className="text-sm font-medium text-gray-900 truncate">
+          <div className="text-sm font-medium text-jckl-navy truncate">
             {activity.title}
           </div>
           <div className="mt-1 text-xs text-gray-500 flex items-center gap-2 flex-wrap">
@@ -162,7 +162,7 @@ const ActivityItem = ({ activity, onClick }) => {
             )}
           </div>
         </div>
-        <div className="text-sm font-semibold text-gray-900 ml-4">
+        <div className="text-sm font-semibold text-jckl-navy ml-4">
           {peso.format(activity.amount || 0)}
         </div>
       </button>
@@ -622,7 +622,7 @@ export default function Dashboard() {
   // Full-screen loading overlay (ONLY on initial load)
   if (loading && initialLoad) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center">
         <div className="relative">
           <div className="animate-spin rounded-full h-24 w-24 border-4 border-gray-200 border-t-blue-600"></div>
           <div className="absolute inset-0 flex items-center justify-center">
@@ -633,7 +633,7 @@ export default function Dashboard() {
             />
           </div>
         </div>
-        <p className="mt-6 text-gray-600 font-medium animate-pulse">
+        <p className="mt-6 text-jckl-slate font-medium animate-pulse">
           Loading your dashboard...
         </p>
       </div>
@@ -641,7 +641,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
+    <div className="min-h-screen bg-white pb-16 md:pb-0">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-3 sm:py-8 space-y-3 sm:space-y-8">
@@ -669,10 +669,10 @@ export default function Dashboard() {
         {/* Header */}
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
           <div>
-            <h1 className="text-xl sm:text-3xl font-bold text-gray-900">
+            <h1 className="text-xl sm:text-3xl font-bold text-jckl-navy">
               {greeting}, {user?.name || "Student"}
             </h1>
-            <p className="text-xs sm:text-base text-gray-600">Reserve ahead and skip the line.</p>
+            <p className="text-xs sm:text-base text-white">Reserve ahead and skip the line.</p>
           </div>
 
           {loading && !initialLoad ? (
@@ -680,7 +680,7 @@ export default function Dashboard() {
           ) : (
             <button
               onClick={() => navigate("/profile")}
-              className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-white border border-gray-200 rounded-lg sm:rounded-xl shadow-sm hover:shadow-md transition font-medium text-sm sm:text-base text-gray-800 focus-ring"
+              className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-white border border-jckl-gold rounded-lg sm:rounded-xl shadow-sm hover:shadow-md transition font-medium text-sm sm:text-base text-jckl-navy focus-ring"
             >
               <Wallet className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
               <span className="text-xs sm:text-sm">Wallet:</span> <span className="font-semibold text-xs sm:text-base">{peso.format(balance)}</span>
@@ -694,12 +694,12 @@ export default function Dashboard() {
             onClick={() => navigate("/shop")}
             className="bg-white rounded-lg sm:rounded-2xl p-3 sm:p-6 shadow-sm hover:shadow-md transition border border-gray-100 text-left focus-ring">
             <div className="flex items-center gap-1.5 sm:gap-3">
-              <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-blue-50 flex items-center justify-center">
-                <ShoppingBag className="w-4 h-4 sm:w-6 sm:h-6 text-blue-600" />
+              <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-jckl-cream flex items-center justify-center">
+                <ShoppingBag className="w-4 h-4 sm:w-6 sm:h-6 text-jckl-navy" />
               </div>
               <div>
-                <h3 className="text-xs sm:text-base font-semibold text-gray-900">Order Food</h3>
-                <p className="text-[10px] sm:text-sm text-gray-500">Browse menu</p>
+                <h3 className="text-xs sm:text-base font-semibold text-jckl-navy">Order Food</h3>
+                <p className="text-[10px] sm:text-sm text-jckl-slate">Browse menu</p>
               </div>
             </div>
           </button>
@@ -713,7 +713,7 @@ export default function Dashboard() {
                 <Wallet className="w-4 h-4 sm:w-6 sm:h-6 text-emerald-600" />
               </div>
               <div>
-                <h3 className="text-xs sm:text-base font-semibold text-gray-900">Top-Up</h3>
+                <h3 className="text-xs sm:text-base font-semibold text-jckl-navy">Top-Up</h3>
                 <p className="text-[10px] sm:text-sm text-gray-500 hidden sm:block">Add balance via QR</p>
               </div>
             </div>
@@ -728,7 +728,7 @@ export default function Dashboard() {
                 <ClipboardList className="w-4 h-4 sm:w-6 sm:h-6 text-violet-600" />
               </div>
               <div>
-                <h3 className="text-xs sm:text-base font-semibold text-gray-900">History</h3>
+                <h3 className="text-xs sm:text-base font-semibold text-jckl-navy">History</h3>
                 <p className="text-[10px] sm:text-sm text-gray-500 hidden sm:block">View orders & top-ups</p>
               </div>
             </div>
@@ -739,11 +739,11 @@ export default function Dashboard() {
             className="bg-white rounded-lg sm:rounded-2xl p-3 sm:p-6 shadow-sm hover:shadow-md transition border border-gray-100 text-left focus-ring"
           >
             <div className="flex items-center gap-1.5 sm:gap-3">
-              <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gray-100 flex items-center justify-center">
-                <LogOut className="w-4 h-4 sm:w-6 sm:h-6 text-gray-700" />
+              <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-jckl-cream flex items-center justify-center">
+                <LogOut className="w-4 h-4 sm:w-6 sm:h-6 text-jckl-navy" />
               </div>
               <div>
-                <h3 className="text-xs sm:text-base font-semibold text-gray-900">Logout</h3>
+                <h3 className="text-xs sm:text-base font-semibold text-jckl-navy">Logout</h3>
                 <p className="text-[10px] sm:text-sm text-gray-500 hidden sm:block">Sign out of your account</p>
               </div>
             </div>
@@ -761,18 +761,18 @@ export default function Dashboard() {
           ) : (
             <>
               <div className="rounded-lg sm:rounded-2xl p-3 sm:p-5 shadow-sm border border-gray-100 bg-white">
-                <p className="text-[10px] sm:text-sm text-gray-600">Orders this month</p>
-                <p className="mt-1 text-xl sm:text-3xl font-bold text-gray-900">{stats.ordersCount}</p>
+                <p className="text-[10px] sm:text-sm text-jckl-slate">Orders this month</p>
+                <p className="mt-1 text-xl sm:text-3xl font-bold text-jckl-navy">{stats.ordersCount}</p>
               </div>
               <div className="rounded-lg sm:rounded-2xl p-3 sm:p-5 shadow-sm border border-gray-100 bg-white">
-                <p className="text-[10px] sm:text-sm text-gray-600">Total spent this month</p>
-                <p className="mt-1 text-xl sm:text-3xl font-bold text-gray-900">
+                <p className="text-[10px] sm:text-sm text-jckl-slate">Total spent this month</p>
+                <p className="mt-1 text-xl sm:text-3xl font-bold text-jckl-navy">
                   {peso.format(stats.totalSpent)}
                 </p>
               </div>
               <div className="rounded-lg sm:rounded-2xl p-3 sm:p-5 shadow-sm border border-gray-100 bg-white">
-                <p className="text-[10px] sm:text-sm text-gray-600">Ready for pickup</p>
-                <p className="mt-1 text-xl sm:text-3xl font-bold text-gray-900">{stats.readyCount}</p>
+                <p className="text-[10px] sm:text-sm text-jckl-slate">Ready for pickup</p>
+                <p className="mt-1 text-xl sm:text-3xl font-bold text-jckl-navy">{stats.readyCount}</p>
               </div>
             </>
           )}
@@ -829,14 +829,14 @@ export default function Dashboard() {
         <section className="bg-white rounded-lg sm:rounded-2xl shadow-sm border border-gray-100 p-3 sm:p-6">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
             <div>
-              <h2 className="text-base sm:text-xl font-bold text-gray-900">Recent Activity</h2>
+              <h2 className="text-base sm:text-xl font-bold text-jckl-navy">Recent Activity</h2>
               {!loading && (
                 <div className="text-xs sm:text-sm text-gray-500">Showing {recentPreview.length} of {activity.length} recent items</div>
               )}
             </div>
             <button
               onClick={() => navigate("/transactions")}
-              className="text-xs sm:text-sm text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 focus-ring"
+              className="text-xs sm:text-sm text-jckl-navy hover:text-jckl-light-navy inline-flex items-center gap-1 focus-ring"
             >
               See all <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
             </button>
@@ -851,17 +851,17 @@ export default function Dashboard() {
               <SkeletonActivityRow />
             </ul>
           ) : activity.length === 0 ? (
-            <div className="bg-blue-50 rounded-lg sm:rounded-xl p-4 sm:p-8 text-center">
-              <div className="w-12 h-12 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 bg-blue-100 rounded-full flex items-center justify-center">
-                <ShoppingBag className="w-6 h-6 sm:w-10 sm:h-10 text-blue-600" />
+            <div className="bg-jckl-cream rounded-lg sm:rounded-xl p-4 sm:p-8 text-center border-t-4 border-jckl-gold">
+              <div className="w-12 h-12 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 bg-jckl-gold rounded-full flex items-center justify-center">
+                <ShoppingBag className="w-6 h-6 sm:w-10 sm:h-10 text-jckl-navy" />
               </div>
-              <h3 className="text-sm sm:text-lg font-bold text-gray-900 mb-1 sm:mb-2">Welcome to JCKL Canteen!</h3>
-              <p className="text-xs sm:text-base text-gray-600 mb-4 sm:mb-6">
+              <h3 className="text-sm sm:text-lg font-bold text-jckl-navy mb-1 sm:mb-2">Welcome to JCKL Canteen!</h3>
+              <p className="text-xs sm:text-base text-jckl-slate mb-4 sm:mb-6">
                 Pre-order your meals and skip the lunch rush. Your first order gets priority handling!
               </p>
               <button
                 onClick={() => navigate('/shop')}
-                className="inline-flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg sm:rounded-xl text-xs sm:text-base font-medium hover:bg-blue-700 transition focus-ring"
+                className="inline-flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-jckl-navy text-white rounded-lg sm:rounded-xl text-xs sm:text-base font-medium hover:bg-jckl-light-navy transition focus-ring"
               >
                 Browse Menu <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
               </button>
@@ -881,7 +881,7 @@ export default function Dashboard() {
 
         {/* Categories quick access - now functional with URL params */}
         <section>
-          <h2 className="text-base sm:text-xl font-bold text-gray-900 mb-2 sm:mb-4">Categories</h2>
+          <h2 className="text-base sm:text-xl font-bold text-jckl-navy mb-2 sm:mb-4">Categories</h2>
           <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-1.5 sm:gap-4">
             {adminCategories.map((c) => {
               const catName = typeof c === 'string' ? c : (c && c.name) || '';
@@ -895,7 +895,7 @@ export default function Dashboard() {
                   <div className="mx-auto mb-1 sm:mb-3 w-6 h-6 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gray-100 flex items-center justify-center text-xl sm:text-3xl">
                     {getCategoryEmoji(catName, iconID)}
                   </div>
-                  <div className="text-[10px] sm:text-sm font-medium text-gray-900">{catName}</div>
+                  <div className="text-[10px] sm:text-sm font-medium text-jckl-navy">{catName}</div>
                 </button>
               );
             })}
@@ -903,10 +903,10 @@ export default function Dashboard() {
         </section>
 
         {/* Social Links Section - Polished like major apps */}
-        <section className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg sm:rounded-2xl shadow-sm border border-blue-100 p-4 sm:p-6">
+        <section className="bg-gradient-to-br from-jckl-cream to-jckl-cream rounded-lg sm:rounded-2xl shadow-sm border border-jckl-gold p-4 sm:p-6">
           <div className="text-center mb-4">
-            <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-1">Connect with JCKL Academy</h2>
-            <p className="text-xs sm:text-sm text-gray-600">Stay updated with school news and announcements</p>
+            <h2 className="text-base sm:text-lg font-bold text-jckl-navy mb-1">Connect with JCKL Academy</h2>
+            <p className="text-xs sm:text-sm text-jckl-slate">Stay updated with school news and announcements</p>
           </div>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -914,17 +914,17 @@ export default function Dashboard() {
               href="https://www.facebook.com/JCKLAcademy"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto group flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-white hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 focus-ring"
+              className="w-full sm:w-auto group flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-white hover:bg-jckl-cream border border-jckl-gold hover:border-jckl-gold rounded-xl shadow-sm hover:shadow-md transition-all duration-200 focus-ring"
               aria-label="Visit JCKL Academy Facebook page"
             >
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+              <div className="w-8 h-8 bg-jckl-navy rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                 <Facebook className="w-5 h-5 text-white" fill="white" />
               </div>
               <div className="text-left flex-1">
-                <div className="text-sm font-semibold text-gray-900">Facebook</div>
-                <div className="text-xs text-gray-600">@JCKLAcademy</div>
+                <div className="text-sm font-semibold text-jckl-navy">Facebook</div>
+                <div className="text-xs text-jckl-slate">@JCKLAcademy</div>
               </div>
-              <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors" />
+              <ExternalLink className="w-4 h-4 text-jckl-slate group-hover:text-jckl-navy transition-colors" />
             </a>
 
             <a
@@ -938,8 +938,8 @@ export default function Dashboard() {
                 <Globe className="w-5 h-5 text-white" />
               </div>
               <div className="text-left flex-1">
-                <div className="text-sm font-semibold text-gray-900">Official Website</div>
-                <div className="text-xs text-gray-600">jcklacademy.edu.ph</div>
+                <div className="text-sm font-semibold text-jckl-navy">Official Website</div>
+                <div className="text-xs text-jckl-slate">jcklacademy.edu.ph</div>
               </div>
               <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-indigo-600 transition-colors" />
             </a>

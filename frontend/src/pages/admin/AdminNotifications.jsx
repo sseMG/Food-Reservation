@@ -342,35 +342,35 @@ export default function AdminNotifications() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-jckl-cream">
       <AdminAvbar />
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
         {/* Header - Mobile Optimized */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
           <div>
-            <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Admin Notifications</h1>
-            <p className="text-xs sm:text-sm text-gray-500 mt-1">Manage system notifications</p>
+            <h1 className="text-xl sm:text-2xl font-semibold text-jckl-navy">Admin Notifications</h1>
+            <p className="text-xs sm:text-sm text-jckl-slate mt-1">Manage system notifications</p>
           </div>
           <button 
             onClick={load} 
-            className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition"
+            className="w-full sm:w-auto px-4 py-2 border border-jckl-gold text-jckl-navy rounded-lg text-sm font-medium hover:bg-jckl-cream transition"
           >
             Refresh
           </button>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-jckl-gold overflow-hidden">
           {/* Action Bar - Mobile Optimized */}
-          <div className="p-3 sm:p-4 border-b bg-gray-50">
+          <div className="p-3 sm:p-4 border-b border-jckl-gold bg-jckl-cream">
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <div className="flex items-center gap-2 flex-1">
                 <input 
                   type="checkbox" 
                   checked={selected.size === paginatedNotifications.length && paginatedNotifications.length > 0} 
                   onChange={toggleAll}
-                  className="w-4 h-4 rounded border-gray-300"
+                  className="w-4 h-4 rounded border-jckl-gold accent-jckl-navy"
                 />
-                <span className="text-xs sm:text-sm text-gray-600">
+                <span className="text-xs sm:text-sm text-jckl-slate">
                   {selected.size > 0 ? `${selected.size} selected` : 'Select all'}
                 </span>
               </div>
@@ -379,7 +379,7 @@ export default function AdminNotifications() {
                 <button 
                   onClick={markSelectedRead} 
                   disabled={selected.size === 0} 
-                  className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg text-xs sm:text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition"
+                  className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 bg-jckl-navy text-white rounded-lg text-xs sm:text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-jckl-light-navy transition"
                 >
                   <CheckCheck className="w-4 h-4" />
                   <span className="hidden sm:inline">Mark Read</span>
@@ -388,7 +388,7 @@ export default function AdminNotifications() {
                 <button 
                   onClick={deleteSelected} 
                   disabled={selected.size === 0} 
-                  className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 bg-red-600 text-white rounded-lg text-xs sm:text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-red-700 transition"
+                  className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 bg-jckl-accent text-white rounded-lg text-xs sm:text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition"
                 >
                   <Trash2 className="w-4 h-4" />
                   <span className="hidden sm:inline">Delete</span>
@@ -396,55 +396,55 @@ export default function AdminNotifications() {
               </div>
             </div>
             
-            <div className="mt-2 text-xs text-gray-500">
+            <div className="mt-2 text-xs text-jckl-slate">
               {notifications.length} total notifications
             </div>
           </div>
 
           {loading ? (
             <div className="p-8 text-center">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-blue-600 mb-2"></div>
-              <p className="text-sm text-gray-500">Loading notifications...</p>
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-jckl-cream border-t-jckl-navy mb-2"></div>
+              <p className="text-sm text-jckl-slate">Loading notifications...</p>
             </div>
           ) : paginatedNotifications.length === 0 ? (
             <div className="p-8 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-                <CheckCheck className="w-8 h-8 text-gray-400" />
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-jckl-cream flex items-center justify-center">
+                <CheckCheck className="w-8 h-8 text-jckl-navy" />
               </div>
-              <p className="text-sm text-gray-500">No notifications to display</p>
+              <p className="text-sm text-jckl-slate">No notifications to display</p>
             </div>
           ) : (
             <>
               {/* Desktop Table View */}
               <div className="hidden lg:block overflow-x-auto">
                 <table className="min-w-full">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-jckl-cream">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-12"></th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">From</th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Subject</th>
-                      <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Sent</th>
-                      <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-navy uppercase tracking-wider w-12"></th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-navy uppercase tracking-wider">From</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-navy uppercase tracking-wider">Subject</th>
+                      <th className="px-6 py-3 text-right text-xs font-semibold text-jckl-navy uppercase tracking-wider">Sent</th>
+                      <th className="px-6 py-3 text-right text-xs font-semibold text-jckl-navy uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
 
-                  <tbody className="divide-y divide-gray-200 bg-white">
+                  <tbody className="divide-y divide-jckl-gold bg-white">
                     {paginatedNotifications.map((n) => (
-                      <tr key={n.id} className={`${n.read ? "" : "bg-blue-50"} hover:bg-gray-50 transition`}>
+                      <tr key={n.id} className={`${n.read ? "" : "bg-jckl-cream/50"} hover:bg-jckl-cream/30 transition`}>
                         <td className="px-6 py-4">
                           <input 
                             type="checkbox" 
                             checked={selected.has(n.id)} 
                             onChange={() => toggle(n.id)}
-                            className="w-4 h-4 rounded border-gray-300"
+                            className="w-4 h-4 rounded border-jckl-gold accent-jckl-navy"
                           />
                         </td>
-                        <td className="px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">{n.actor?.name || "System"}</td>
-                        <td className="px-6 py-4 text-sm text-gray-700 cursor-pointer max-w-md" onClick={() => openPreview(n)}>
-                          <div className="font-medium text-sm line-clamp-1">{n.title}</div>
-                          <div className="text-xs text-gray-500 line-clamp-2 mt-1">{n.body}</div>
+                        <td className="px-6 py-4 text-sm font-medium text-jckl-navy whitespace-nowrap">{n.actor?.name || "System"}</td>
+                        <td className="px-6 py-4 text-sm text-jckl-slate cursor-pointer max-w-md" onClick={() => openPreview(n)}>
+                          <div className="font-medium text-sm line-clamp-1 text-jckl-navy">{n.title}</div>
+                          <div className="text-xs text-jckl-slate line-clamp-2 mt-1">{n.body}</div>
                         </td>
-                        <td className="px-6 py-4 text-right text-xs text-gray-500 whitespace-nowrap">
+                        <td className="px-6 py-4 text-right text-xs text-jckl-slate whitespace-nowrap">
                           {new Date(n.createdAt).toLocaleDateString('en-PH', { 
                             month: 'short', 
                             day: 'numeric',
@@ -456,13 +456,13 @@ export default function AdminNotifications() {
                           <div className="inline-flex gap-2">
                             <button 
                               onClick={() => openPreview(n)} 
-                              className="text-sm px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition font-medium"
+                              className="text-sm px-3 py-1.5 border border-jckl-gold text-jckl-navy rounded-lg hover:bg-jckl-cream transition font-medium"
                             >
                               Open
                             </button>
                             <button 
                               onClick={() => deleteSingle(n.id)} 
-                              className="text-sm px-3 py-1.5 border border-red-300 rounded-lg text-red-600 hover:bg-red-50 transition font-medium"
+                              className="text-sm px-3 py-1.5 border border-jckl-accent rounded-lg text-jckl-accent hover:bg-jckl-cream transition font-medium"
                             >
                               Delete
                             </button>
@@ -475,42 +475,42 @@ export default function AdminNotifications() {
               </div>
 
               {/* Mobile Card View */}
-              <div className="lg:hidden divide-y divide-gray-200">
+              <div className="lg:hidden divide-y divide-jckl-gold">
                 {paginatedNotifications.map((n) => (
                   <div 
                     key={n.id} 
-                    className={`p-4 ${n.read ? "bg-white" : "bg-blue-50"} hover:bg-gray-50 transition`}
+                    className={`p-4 ${n.read ? "bg-white" : "bg-jckl-cream/50"} hover:bg-jckl-cream/30 transition`}
                   >
                     <div className="flex items-start gap-3">
                       <input 
                         type="checkbox" 
                         checked={selected.has(n.id)} 
                         onChange={() => toggle(n.id)}
-                        className="mt-1 w-4 h-4 rounded border-gray-300 flex-shrink-0"
+                        className="mt-1 w-4 h-4 rounded border-jckl-gold accent-jckl-navy flex-shrink-0"
                       />
                       
                       <div className="flex-1 min-w-0" onClick={() => openPreview(n)}>
                         <div className="flex items-start justify-between gap-2 mb-2">
                           <div className="flex-1 min-w-0">
-                            <div className="text-sm font-semibold text-gray-900 line-clamp-2 mb-1">
+                            <div className="text-sm font-semibold text-jckl-navy line-clamp-2 mb-1">
                               {n.title}
                             </div>
-                            <div className="text-xs text-gray-600 mb-1">
+                            <div className="text-xs text-jckl-slate mb-1">
                               From: <span className="font-medium">{n.actor?.name || "System"}</span>
                             </div>
                           </div>
                           {!n.read && (
                             <div className="flex-shrink-0">
-                              <span className="inline-block w-2 h-2 bg-blue-600 rounded-full"></span>
+                              <span className="inline-block w-2 h-2 bg-jckl-navy rounded-full"></span>
                             </div>
                           )}
                         </div>
                         
-                        <p className="text-xs text-gray-600 line-clamp-2 mb-2">
+                        <p className="text-xs text-jckl-slate line-clamp-2 mb-2">
                           {n.body}
                         </p>
                         
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-jckl-slate/60">
                           {new Date(n.createdAt).toLocaleDateString('en-PH', { 
                             month: 'short', 
                             day: 'numeric',
@@ -522,7 +522,7 @@ export default function AdminNotifications() {
 
                       <button 
                         onClick={() => deleteSingle(n.id)}
-                        className="flex-shrink-0 p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                        className="flex-shrink-0 p-2 text-jckl-accent hover:bg-jckl-cream rounded-lg transition"
                         aria-label="Delete notification"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -534,22 +534,22 @@ export default function AdminNotifications() {
 
               {/* Pagination Controls - Mobile Optimized */}
               {totalPages > 1 && (
-                <div className="p-3 sm:p-4 border-t bg-gray-50">
+                <div className="p-3 sm:p-4 border-t border-jckl-gold bg-jckl-cream">
                   <div className="flex items-center justify-between gap-2">
                     <button
                       onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                       disabled={currentPage === 1}
-                      className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-xs sm:text-sm font-medium hover:bg-white transition disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 border border-jckl-gold text-jckl-navy rounded-lg text-xs sm:text-sm font-medium hover:bg-white transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <ChevronLeft className="w-4 h-4" />
                       <span className="hidden sm:inline">Previous</span>
                     </button>
 
                     <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
-                      <span className="text-xs sm:text-sm text-gray-600">
-                        Page <span className="font-semibold">{currentPage}</span> of <span className="font-semibold">{totalPages}</span>
+                      <span className="text-xs sm:text-sm text-jckl-slate">
+                        Page <span className="font-semibold text-jckl-navy">{currentPage}</span> of <span className="font-semibold text-jckl-navy">{totalPages}</span>
                       </span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-jckl-slate/60">
                         ({startIndex + 1}–{Math.min(endIndex, notifications.length)} of {notifications.length})
                       </span>
                     </div>
@@ -557,7 +557,7 @@ export default function AdminNotifications() {
                     <button
                       onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                       disabled={currentPage === totalPages}
-                      className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-xs sm:text-sm font-medium hover:bg-white transition disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 border border-jckl-gold text-jckl-navy rounded-lg text-xs sm:text-sm font-medium hover:bg-white transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <span className="hidden sm:inline">Next</span>
                       <ChevronRight className="w-4 h-4" />
@@ -575,7 +575,7 @@ export default function AdminNotifications() {
         <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center bg-black/40 p-0 sm:p-4">
           <div className="w-full sm:max-w-2xl bg-white sm:rounded-lg shadow-lg overflow-hidden max-h-screen sm:max-h-[90vh] flex flex-col sm:my-8 animate-slide-up sm:animate-none">
             {/* Header */}
-            <div className="flex items-start gap-3 sm:gap-4 p-4 sm:p-6 border-b bg-gradient-to-r from-gray-50 to-white flex-shrink-0">
+            <div className="flex items-start gap-3 sm:gap-4 p-4 sm:p-6 border-b border-jckl-gold bg-gradient-to-r from-jckl-cream to-white flex-shrink-0">
               <div className="flex-shrink-0">
                 {(() => {
                   const adminFallback = { name: "Canteen Admin", profilePictureUrl: "/jckl-192.png" };
@@ -584,14 +584,14 @@ export default function AdminNotifications() {
                     <img
                       src={display.profilePictureUrl}
                       alt=""
-                      className="w-10 h-10 sm:w-14 sm:h-14 rounded-full object-cover border-2 border-white shadow-sm"
+                      className="w-10 h-10 sm:w-14 sm:h-14 rounded-full object-cover border-2 border-jckl-gold shadow-sm"
                       onError={(e) => { 
                         e.target.onerror = null; 
                         e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(display.name || 'CA')}&background=random`; 
                       }}
                     />
                   ) : (
-                    <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-base sm:text-lg font-medium text-blue-600">
+                    <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-jckl-navy to-jckl-purple flex items-center justify-center text-base sm:text-lg font-medium text-white">
                       {(display.name || "C").charAt(0)}
                     </div>
                   );
@@ -599,9 +599,9 @@ export default function AdminNotifications() {
               </div>
 
               <div className="flex-1 min-w-0">
-                <div className="text-xs text-gray-500">From {(preview.actor && preview.actor.name) || "Canteen Admin"}</div>
-                <h3 className="text-base sm:text-xl font-semibold text-gray-900 line-clamp-2 mt-0.5">{preview.title}</h3>
-                <div className="text-xs text-gray-400 mt-1">
+                <div className="text-xs text-jckl-slate">From {(preview.actor && preview.actor.name) || "Canteen Admin"}</div>
+                <h3 className="text-base sm:text-xl font-semibold text-jckl-navy line-clamp-2 mt-0.5">{preview.title}</h3>
+                <div className="text-xs text-jckl-slate/60 mt-1">
                   {new Date(preview.createdAt).toLocaleDateString('en-PH', { 
                     month: 'short', 
                     day: 'numeric',
@@ -614,7 +614,7 @@ export default function AdminNotifications() {
 
               <button 
                 onClick={() => setPreview(null)} 
-                className="flex-shrink-0 p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                className="flex-shrink-0 p-2 rounded-full text-jckl-slate hover:text-jckl-navy hover:bg-jckl-cream transition-colors"
                 aria-label="Close preview"
               >
                 <X className="w-5 h-5" />
@@ -624,23 +624,23 @@ export default function AdminNotifications() {
             {/* Body - Scrollable */}
             <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-4">
               {preview.body && (
-                <p className="text-sm sm:text-base text-gray-700 leading-relaxed">{preview.body}</p>
+                <p className="text-sm sm:text-base text-jckl-navy leading-relaxed">{preview.body}</p>
               )}
 
               {preview.data && renderReservationData(preview.data)}
             </div>
 
             {/* Footer - Sticky */}
-            <div className="px-4 sm:px-6 py-3 sm:py-4 border-t bg-gray-50 flex gap-2 sm:gap-3 flex-shrink-0">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-jckl-gold bg-jckl-cream flex gap-2 sm:gap-3 flex-shrink-0">
               <button
                 onClick={() => setPreview(null)}
-                className="flex-1 sm:flex-none px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+                className="flex-1 sm:flex-none px-4 py-2.5 bg-white border border-jckl-gold text-jckl-navy rounded-lg text-sm font-medium hover:bg-jckl-cream transition-colors"
               >
                 Close
               </button>
               <button
                 onClick={() => deleteSingle(preview.id)}
-                className="flex-1 sm:flex-none px-4 py-2.5 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors"
+                className="flex-1 sm:flex-none px-4 py-2.5 bg-jckl-accent text-white rounded-lg text-sm font-medium hover:opacity-90 transition-colors"
               >
                 Delete
               </button>

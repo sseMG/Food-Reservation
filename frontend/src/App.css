@@ -2,6 +2,19 @@
   text-align: center;
 }
 
+/* JCKL Academy Theme Variables */
+:root {
+  --jckl-navy: #1a3a7a;
+  --jckl-purple: #6b3fa0;
+  --jckl-gold: #fcd34d;
+  --jckl-cream: #f9f7f1;
+  --jckl-white: #ffffff;
+  --jckl-slate: #374151;
+  --jckl-accent: #dc2626;
+  --jckl-light-navy: #2d5aae;
+  --jckl-light-purple: #8b5cf6;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -14,18 +27,24 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background: linear-gradient(135deg, var(--jckl-navy) 0%, var(--jckl-light-navy) 100%);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: var(--jckl-white);
 }
 
 .App-link {
-  color: #61dafb;
+  color: var(--jckl-gold);
+  text-decoration: none;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.App-link:hover {
+  opacity: 0.8;
 }
 
 @keyframes App-logo-spin {

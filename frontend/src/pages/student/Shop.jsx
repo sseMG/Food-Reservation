@@ -52,18 +52,18 @@ function GuestHeader({ mobileMenuOpen, setMobileMenuOpen }) {
             <a href="/" className="inline-flex items-center gap-2 sm:gap-3 min-w-0 flex-shrink">
               <img src="/jckl-192.png" alt="JCKL" className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg flex-shrink-0" />
               <div className="min-w-0">
-                <span className="hidden xl:inline text-[15px] font-semibold text-gray-900">Jesus Christ King of Kings and Lord of Lords Academy Inc.</span>
-                <span className="hidden md:inline xl:hidden text-[15px] font-semibold text-gray-900 truncate max-w-[520px]">Jesus Christ King of Kings and Lord of Lords Academy Inc.</span>
-                <span className="md:hidden text-xs sm:text-sm font-semibold text-gray-900">JCKL Academy</span>
+                <span className="hidden xl:inline text-[15px] font-semibold text-jckl-navy">Jesus Christ King of Kings and Lord of Lords Academy Inc.</span>
+                <span className="hidden md:inline xl:hidden text-[15px] font-semibold text-jckl-navy truncate max-w-[520px]">Jesus Christ King of Kings and Lord of Lords Academy Inc.</span>
+                <span className="md:hidden text-xs sm:text-sm font-semibold text-jckl-navy">JCKL Academy</span>
               </div>
             </a>
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-              <a href="/register" className="hidden sm:inline text-xs sm:text-sm text-gray-600 hover:text-gray-900">Create Account</a>
-              <a href="/login" className="text-xs sm:text-sm text-blue-600 hover:text-blue-700 font-medium hidden sm:inline">Log In</a>
+              <a href="/register" className="hidden sm:inline text-xs sm:text-sm text-jckl-slate hover:text-jckl-navy">Create Account</a>
+              <a href="/login" className="text-xs sm:text-sm text-jckl-navy hover:text-jckl-light-navy font-medium hidden sm:inline">Log In</a>
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="sm:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-700 transition-colors"
+                className="sm:hidden p-2 rounded-lg hover:bg-jckl-cream text-jckl-navy transition-colors"
               >
                 {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
@@ -76,7 +76,7 @@ function GuestHeader({ mobileMenuOpen, setMobileMenuOpen }) {
       {mobileMenuOpen && (
         <>
           <div className="fixed inset-0 bg-black/40 z-30 sm:hidden" onClick={() => setMobileMenuOpen(false)} />
-          <nav className="fixed top-14 left-0 right-0 bg-white border-b border-gray-200 z-40 sm:hidden shadow-lg">
+          <nav className="fixed top-14 left-0 right-0 bg-white border-b border-jckl-gold z-40 sm:hidden shadow-lg">
             <div className="px-4 py-3 space-y-2">
               <a
                 href="/"
@@ -104,7 +104,7 @@ function GuestHeader({ mobileMenuOpen, setMobileMenuOpen }) {
               </a>
               <a
                 href="/register"
-                className="flex items-center gap-3 px-3 py-2 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors font-medium"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg text-jckl-navy hover:bg-jckl-cream transition-colors font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <UserPlus className="w-5 h-5" />
@@ -150,12 +150,12 @@ function EmptyCartSuggestions({ items, onAdd, categoriesMap = {} }) {
 
   return (
     <div className="py-4 space-y-3">
-      <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+      <div className="text-xs font-medium text-jckl-slate uppercase tracking-wide">
         Popular items
       </div>
       {popularItems.map(item => (
-        <div key={item.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition">
-          <div className="w-12 h-12 rounded bg-gray-100 flex items-center justify-center flex-shrink-0">
+        <div key={item.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-jckl-cream transition">
+          <div className="w-12 h-12 rounded bg-jckl-cream flex items-center justify-center flex-shrink-0 text-jckl-navy">
             {item.img ? (
               <img src={item.img} alt={item.name} className="w-full h-full object-cover rounded" />
             ) : (
@@ -163,12 +163,12 @@ function EmptyCartSuggestions({ items, onAdd, categoriesMap = {} }) {
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-medium text-gray-900 truncate">{item.name}</div>
-            <div className="text-xs text-gray-500">{peso.format(item.price)}</div>
+            <div className="text-sm font-medium text-jckl-navy truncate">{item.name}</div>
+            <div className="text-xs text-jckl-slate">{peso.format(item.price)}</div>
           </div>
           <button
             onClick={() => onAdd(item.id)}
-            className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            className="p-2 bg-jckl-navy text-white rounded-lg hover:bg-jckl-light-navy transition"
           >
             <Plus className="w-4 h-4" />
           </button>
@@ -535,7 +535,7 @@ export default function Shop({ publicView = false }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">
+    <div className="min-h-screen bg-white pb-20 md:pb-0">
       {publicView ? <GuestHeader mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} /> : <Navbar />}
 
       <Toast 
@@ -554,7 +554,7 @@ export default function Shop({ publicView = false }) {
                   <span>Today's Special</span>
                 </div>
                 <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold">Pre-order now and skip the lunch rush!</h2>
-                <p className="text-sm sm:text-base text-blue-100">Order your favorite meals ahead of time and enjoy more break time.</p>
+                <p className="text-sm sm:text-base text-white">Order your favorite meals ahead of time and enjoy more break time.</p>
                 <button
                   onClick={() => {
                     menuGridRef.current?.scrollIntoView({ 
@@ -562,7 +562,7 @@ export default function Shop({ publicView = false }) {
                       block: 'start' 
                     });
                   }}
-                  className="inline-flex items-center gap-2 bg-white text-blue-600 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-blue-50 transition w-fit text-sm sm:text-base shadow-md"
+                  className="inline-flex items-center gap-2 bg-jckl-cream text-jckl-navy px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-jckl-gold transition w-fit text-sm sm:text-base shadow-md"
                 >
                   <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
                   Start Ordering
@@ -575,12 +575,12 @@ export default function Shop({ publicView = false }) {
         <div 
           ref={filterBarRef}
           className={`sticky top-14 sm:top-16 z-30 transition-all duration-300 ${
-            scrolled ? 'bg-white shadow-md -mx-2 sm:-mx-4 px-2 sm:px-4 py-3' : 'bg-white border border-gray-100 rounded-lg sm:rounded-xl px-2 sm:px-4 py-3'
+            scrolled ? 'bg-white shadow-md -mx-2 sm:-mx-4 px-2 sm:px-4 py-3' : 'bg-white border border-jckl-gold rounded-lg sm:rounded-xl px-2 sm:px-4 py-3'
           }`}
         >
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-              <div className="inline-flex items-center gap-1 sm:gap-2 mr-1 text-gray-600">
+              <div className="inline-flex items-center gap-1 sm:gap-2 mr-1 text-jckl-navy">
                 <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span className="text-[10px] sm:text-xs font-medium uppercase tracking-wide">Categories</span>
               </div>
@@ -591,8 +591,8 @@ export default function Shop({ publicView = false }) {
                     onClick={() => setCategory(c)}
                     className={`px-2.5 sm:px-3 py-1.5 rounded-lg border text-xs sm:text-sm font-medium transition ${
                       category === c
-                        ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                        : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
+                        ? "bg-jckl-navy text-white border-jckl-navy shadow-sm"
+                        : "bg-white text-jckl-navy border-jckl-gold hover:bg-jckl-cream hover:border-jckl-gold"
                     }`}
                   >
                     {c !== "all" && (
@@ -610,11 +610,11 @@ export default function Shop({ publicView = false }) {
             </div>
 
             <div className="flex items-center gap-2">
-              <label className="text-[10px] sm:text-xs text-gray-600 font-medium uppercase tracking-wide">Sort by</label>
+              <label className="text-[10px] sm:text-xs text-jckl-slate font-medium uppercase tracking-wide">Sort by</label>
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value)}
-                className="border border-gray-200 rounded-lg px-2 sm:px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="border border-jckl-gold rounded-lg px-2 sm:px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold bg-white text-jckl-navy"
               >
                 <option value="name-asc">Name (A–Z)</option>
                 <option value="name-desc">Name (Z–A)</option>
@@ -629,7 +629,7 @@ export default function Shop({ publicView = false }) {
                     setCategory("all");
                     setSort("featured");
                   }}
-                  className="ml-auto inline-flex items-center gap-1 text-xs sm:text-sm text-blue-600 hover:text-blue-700 font-medium"
+                  className="ml-auto inline-flex items-center gap-1 text-xs sm:text-sm text-jckl-navy hover:text-jckl-light-navy font-medium"
                 >
                   <X className="w-3.5 h-3.5" />
                   <span>Clear filters</span>
@@ -641,8 +641,8 @@ export default function Shop({ publicView = false }) {
 
         <div className="flex items-start sm:items-center justify-between gap-3 sm:gap-4 flex-col sm:flex-row">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Canteen Menu</h1>
-            <p className="text-xs sm:text-sm text-gray-500 mt-1">
+            <h1 className="text-2xl sm:text-3xl font-bold text-jckl-navy">Canteen Menu</h1>
+            <p className="text-xs sm:text-sm text-jckl-slate mt-1">
               {filtered.length} {filtered.length === 1 ? 'item' : 'items'} available
             </p>
           </div>
@@ -652,7 +652,7 @@ export default function Shop({ publicView = false }) {
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Search menu…"
-                className="w-full sm:w-72 border border-gray-200 rounded-lg pl-9 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full sm:w-72 border border-jckl-gold rounded-lg pl-9 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold focus:border-transparent text-jckl-navy"
               />
               <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
             </div>
@@ -661,7 +661,7 @@ export default function Shop({ publicView = false }) {
                 fetchMenu();
                 fetchWallet();
               }}
-              className="inline-flex items-center gap-2 border border-gray-200 px-3 py-2.5 rounded-lg text-sm hover:bg-gray-50 transition"
+              className="inline-flex items-center gap-2 border border-jckl-gold px-3 py-2.5 rounded-lg text-sm hover:bg-jckl-cream transition text-jckl-navy"
             >
               <RefreshCw className="w-4 h-4" />
               <span className="hidden sm:inline">Refresh</span>
@@ -676,7 +676,7 @@ export default function Shop({ publicView = false }) {
                 Array.from({ length: 6 }).map((_, i) => (
                   <div
                     key={`skeleton-${i}`}
-                    className="bg-white rounded-lg shadow-sm border border-gray-100 p-4"
+                    className="bg-white rounded-lg shadow-sm border-t-4 border-jckl-gold p-4"
                   >
                     <div className="h-36 rounded bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 bg-[length:200%_100%] animate-shimmer mb-4" />
                     <div className="h-4 w-1/2 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 bg-[length:200%_100%] animate-shimmer rounded mb-2" />
@@ -688,11 +688,11 @@ export default function Shop({ publicView = false }) {
                   </div>
                 ))
               ) : filtered.length === 0 ? (
-                <div className="col-span-full bg-white rounded-lg border border-gray-100 p-10 text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                <div className="col-span-full bg-white rounded-lg border-t-4 border-jckl-gold p-10 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-jckl-cream flex items-center justify-center text-jckl-navy">
                     <Search className="w-8 h-8 text-gray-400" />
                   </div>
-                  <p className="text-sm text-gray-500">No items found.</p>
+                  <p className="text-sm text-jckl-slate">No items found.</p>
                 </div>
               ) : (
                 filtered.map((it) => {
@@ -702,9 +702,9 @@ export default function Shop({ publicView = false }) {
                   return (
                     <div 
                       key={it.id} 
-                      className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 hover:shadow-md transition-all duration-200 group"
+                      className="bg-white rounded-lg shadow-sm border-t-4 border-jckl-gold p-4 hover:shadow-md transition-all duration-200 group"
                     >
-                      <div className="relative h-36 mb-4 rounded-lg overflow-hidden bg-gray-100">
+                      <div className="relative h-36 mb-4 rounded-lg overflow-hidden bg-jckl-cream">
                         {it.img ? (
                           <img
                             src={it.img}
@@ -725,15 +725,15 @@ export default function Shop({ publicView = false }) {
                           onClick={() => openPreviewModal(it)}
                           className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
                         >
-                          <div className="bg-white text-gray-900 px-4 py-2 rounded-lg font-medium inline-flex items-center gap-2">
+                          <div className="bg-white text-jckl-navy px-4 py-2 rounded-lg font-medium inline-flex items-center gap-2">
                             <Eye className="w-4 h-4" />
                             Quick View
                           </div>
                         </button>
                       </div>
                       
-                      <div className="font-medium text-gray-900 truncate">{it.name}</div>
-                      <div className="text-sm text-gray-600">{peso.format(it.price)}</div>
+                      <div className="font-medium text-jckl-navy truncate">{it.name}</div>
+                      <div className="text-sm text-jckl-slate">{peso.format(it.price)}</div>
                       
                       <div className="mt-2">
                         {soldOut ? (
@@ -755,7 +755,7 @@ export default function Shop({ publicView = false }) {
                         {publicView ? (
                           <button
                             onClick={() => openPreviewModal(it)}
-                            className="inline-flex items-center gap-2 text-sm text-blue-600 hover:underline"
+                            className="inline-flex items-center gap-2 text-sm text-jckl-navy hover:underline"
                           >
                             Preview <ChevronRight className="w-3 h-3" />
                           </button>
@@ -764,7 +764,7 @@ export default function Shop({ publicView = false }) {
                             <div className="inline-flex items-center border rounded-lg">
                               <button 
                                 onClick={() => inc(it.id)} 
-                                className="px-2 py-1.5 hover:bg-gray-50 transition disabled:opacity-50" 
+                                className="px-2 py-1.5 hover:bg-jckl-cream transition disabled:opacity-50 text-jckl-navy" 
                                 disabled={soldOut}
                               >
                                 <Plus className="w-4 h-4" />
@@ -773,7 +773,7 @@ export default function Shop({ publicView = false }) {
                             <button
                               onClick={() => inc(it.id)}
                               disabled={soldOut}
-                              className="inline-flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 text-sm disabled:opacity-60 transition-all duration-200 transform hover:scale-105"
+                              className="inline-flex items-center gap-2 bg-jckl-navy text-white px-3 py-2 rounded-lg hover:bg-jckl-light-navy text-sm disabled:opacity-60 transition-all duration-200 transform hover:scale-105"
                             >
                               <ShoppingCart className="w-4 h-4" />
                               Add
@@ -788,10 +788,10 @@ export default function Shop({ publicView = false }) {
             </div>
 
             {!publicView && recentlyViewedItems.length > 0 && (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+              <div className="bg-white rounded-lg shadow-sm border-t-4 border-jckl-gold p-4">
                 <div className="flex items-center gap-2 mb-4">
-                  <Eye className="w-5 h-5 text-gray-700" />
-                  <h3 className="font-semibold text-gray-900">Recently Viewed</h3>
+                  <Eye className="w-5 h-5 text-jckl-navy" />
+                  <h3 className="font-semibold text-jckl-navy">Recently Viewed</h3>
                 </div>
                 <div className="flex gap-4 overflow-x-auto pb-2">
                   {recentlyViewedItems.map(it => (
@@ -800,7 +800,7 @@ export default function Shop({ publicView = false }) {
                       className="flex-shrink-0 w-32 cursor-pointer hover:scale-105 transition-transform"
                       onClick={() => openPreviewModal(it)}
                     >
-                      <div className="w-32 h-32 rounded-lg overflow-hidden bg-gray-100 mb-2">
+                      <div className="w-32 h-32 rounded-lg overflow-hidden bg-jckl-cream mb-2">
                         {it.img ? (
                           <img src={it.img} alt={it.name} className="w-full h-full object-cover" />
                         ) : (
@@ -809,8 +809,8 @@ export default function Shop({ publicView = false }) {
                           </div>
                         )}
                       </div>
-                      <div className="text-xs font-medium text-gray-900 truncate">{it.name}</div>
-                      <div className="text-xs text-gray-600">{peso.format(it.price)}</div>
+                      <div className="text-xs font-medium text-jckl-navy truncate">{it.name}</div>
+                      <div className="text-xs text-jckl-slate">{peso.format(it.price)}</div>
                     </div>
                   ))}
                 </div>
@@ -819,17 +819,17 @@ export default function Shop({ publicView = false }) {
           </section>
 
           {!publicView && (
-            <aside className="hidden lg:flex bg-white rounded-lg shadow-sm border border-gray-100 p-4 h-[72vh] sticky top-24 flex-col">
+            <aside className="hidden lg:flex bg-white rounded-lg shadow-sm border-t-4 border-jckl-gold p-4 h-[72vh] sticky top-24 flex-col">
               <div className="flex items-center justify-between">
-                <h2 className="font-semibold text-gray-900">Your Cart</h2>
-                <span id="cart-icon" className="text-xs text-gray-600 inline-flex items-center gap-1">
+                <h2 className="font-semibold text-jckl-navy">Your Cart</h2>
+                <span id="cart-icon" className="text-xs text-jckl-slate inline-flex items-center gap-1">
                   <ShoppingCart className="w-3.5 h-3.5" />
                   {list.reduce((a, b) => a + b.qty, 0)} items
                 </span>
               </div>
 
               <div className="mt-2 flex items-center justify-between text-sm">
-                <div className="inline-flex items-center gap-2 text-gray-700">
+                <div className="inline-flex items-center gap-2 text-jckl-navy">
                   <Wallet className="w-4 h-4" />
                   <span>Wallet:</span>
                 </div>
@@ -848,16 +848,16 @@ export default function Shop({ publicView = false }) {
               <div className="mt-3 divide-y overflow-auto flex-1 min-h-0">
                 {list.length === 0 ? (
                   <div className="py-6 text-center space-y-4">
-                    <div className="w-16 h-16 mx-auto rounded-full bg-gray-100 flex items-center justify-center">
+                    <div className="w-16 h-16 mx-auto rounded-full bg-jckl-cream flex items-center justify-center text-jckl-navy">
                       <ShoppingCart className="w-8 h-8 text-gray-400" />
                     </div>
-                    <div className="text-sm text-gray-500">Your cart is empty.</div>
+                    <div className="text-sm text-jckl-slate">Your cart is empty.</div>
                     <EmptyCartSuggestions items={items} onAdd={(id) => inc(id)} categoriesMap={categoriesMap} />
                   </div>
                 ) : (
                   list.map((it) => (
                     <div key={it.id} className="py-3 flex items-start gap-3">
-                      <div className="w-12 h-12 rounded bg-gray-100 flex-shrink-0">
+                      <div className="w-12 h-12 rounded bg-jckl-cream flex-shrink-0">
                         {it.img ? (
                           <img src={it.img} alt={it.name} className="w-full h-full object-cover rounded" />
                         ) : (
@@ -867,22 +867,22 @@ export default function Shop({ publicView = false }) {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-gray-900 truncate">{it.name}</div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-sm font-medium text-jckl-navy truncate">{it.name}</div>
+                        <div className="text-xs text-jckl-slate">
                           {peso.format(Number(it.price) || 0)}
                         </div>
                         <div className="flex items-center gap-2 mt-2">
                           <div className="inline-flex items-center border rounded">
                             <button 
                               onClick={() => dec(it.id)} 
-                              className="px-1.5 py-1 hover:bg-gray-50"
+                              className="px-1.5 py-1 hover:bg-jckl-cream text-jckl-navy"
                             >
                               <Minus className="w-3 h-3" />
                             </button>
                             <span className="px-2 text-xs">{it.qty}</span>
                             <button
                               onClick={() => inc(it.id)}
-                              className="px-1.5 py-1 hover:bg-gray-50 disabled:opacity-50"
+                              className="px-1.5 py-1 hover:bg-jckl-cream disabled:opacity-50 text-jckl-navy"
                               disabled={it.qty >= it.stock}
                             >
                               <Plus className="w-3 h-3" />
@@ -893,7 +893,7 @@ export default function Shop({ publicView = false }) {
                           </div>
                           <button
                             onClick={() => removeFromCart(it.id)}
-                            className="ml-auto text-xs text-gray-500 hover:text-red-600"
+                            className="ml-auto text-xs text-jckl-slate hover:text-red-600"
                           >
                             <X className="w-4 h-4" />
                           </button>
@@ -905,7 +905,7 @@ export default function Shop({ publicView = false }) {
               </div>
 
               <div className="mt-4 flex items-center justify-between border-t pt-3">
-                <span className="text-sm text-gray-600">Total</span>
+                <span className="text-sm text-jckl-slate">Total</span>
                 <span className="text-lg font-semibold">{peso.format(total)}</span>
               </div>
 
@@ -913,7 +913,7 @@ export default function Shop({ publicView = false }) {
                 <button
                   onClick={goCart}
                   disabled={!list.length}
-                  className="w-full inline-flex items-center justify-center gap-2 border px-4 py-3 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-60 transition"
+                  className="w-full inline-flex items-center justify-center gap-2 border border-jckl-gold px-4 py-3 rounded-lg text-sm hover:bg-jckl-cream disabled:opacity-60 transition text-jckl-navy"
                 >
                   <ShoppingCart className="w-4 h-4" />
                   Go to Cart
@@ -929,7 +929,7 @@ export default function Shop({ publicView = false }) {
                 {list.length > 0 && (
                   <button
                     onClick={clearCart}
-                    className="w-full text-sm text-gray-600 hover:underline"
+                    className="w-full text-sm text-jckl-navy hover:underline"
                   >
                     Clear cart
                   </button>
@@ -945,7 +945,7 @@ export default function Shop({ publicView = false }) {
           {list.length > 0 && (
             <button
               onClick={() => setMobileCartOpen(!mobileCartOpen)}
-              className="lg:hidden fixed bottom-20 right-4 z-40 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition"
+              className="lg:hidden fixed bottom-20 right-4 z-40 bg-jckl-navy text-white p-4 rounded-full shadow-lg hover:bg-jckl-light-navy transition"
             >
               <div className="relative">
                 <ShoppingCart className="w-6 h-6" />
@@ -968,10 +968,10 @@ export default function Shop({ publicView = false }) {
                 </div>
 
                 <div className="flex items-center justify-between p-4 border-b">
-                  <h3 className="font-semibold text-gray-900">Your Cart</h3>
+                  <h3 className="font-semibold text-jckl-navy">Your Cart</h3>
                   <button 
                     onClick={() => setMobileCartOpen(false)}
-                    className="p-2 hover:bg-gray-100 rounded-lg"
+                    className="p-2 hover:bg-jckl-cream rounded-lg text-jckl-navy"
                   >
                     <ChevronDown className="w-5 h-5" />
                   </button>
@@ -979,7 +979,7 @@ export default function Shop({ publicView = false }) {
 
                 <div className="flex-1 overflow-y-auto p-4 space-y-3">
                   {list.map((it) => (
-                    <div key={it.id} className="flex items-start gap-3 bg-gray-50 p-3 rounded-lg">
+                    <div key={it.id} className="flex items-start gap-3 bg-jckl-cream p-3 rounded-lg">
                       <div className="w-16 h-16 rounded bg-gray-200 flex-shrink-0">
                         {it.img ? (
                           <img src={it.img} alt={it.name} className="w-full h-full object-cover rounded" />
@@ -990,8 +990,8 @@ export default function Shop({ publicView = false }) {
                         )}
                       </div>
                       <div className="flex-1">
-                        <div className="font-medium text-gray-900">{it.name}</div>
-                        <div className="text-sm text-gray-600">{peso.format(it.price)}</div>
+                        <div className="font-medium text-jckl-navy">{it.name}</div>
+                        <div className="text-sm text-jckl-slate">{peso.format(it.price)}</div>
                         <div className="flex items-center gap-2 mt-2">
                           <div className="inline-flex items-center border rounded">
                             <button onClick={() => dec(it.id)} className="px-2 py-1">
@@ -1011,9 +1011,9 @@ export default function Shop({ publicView = false }) {
                       </div>
                       <button
                         onClick={() => removeFromCart(it.id)}
-                        className="p-2 hover:bg-white rounded"
+                        className="p-2 hover:bg-jckl-cream rounded text-jckl-navy"
                       >
-                        <X className="w-5 h-5 text-gray-500" />
+                        <X className="w-5 h-5 text-jckl-navy" />
                       </button>
                     </div>
                   ))}
@@ -1040,7 +1040,7 @@ export default function Shop({ publicView = false }) {
                         openReserve();
                       }}
                       disabled={insufficient}
-                      className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-3 rounded-lg font-medium disabled:opacity-60"
+                      className="inline-flex items-center justify-center gap-2 bg-jckl-navy text-white px-4 py-3 rounded-lg font-medium disabled:opacity-60 hover:bg-jckl-light-navy"
                     >
                       <Clock className="w-4 h-4" />
                       Reserve
@@ -1058,13 +1058,13 @@ export default function Shop({ publicView = false }) {
           <div className="min-h-screen px-4 text-center flex items-center justify-center">
             <div className="fixed inset-0 bg-black/30" onClick={closeReserve} />
             
-            <div className="relative inline-block w-full max-w-2xl bg-white rounded-xl shadow-xl border border-gray-100 text-left">
+            <div className="relative inline-block w-full max-w-2xl bg-white rounded-xl shadow-xl border-t-4 border-jckl-gold text-left">
               <div className="sticky top-0 z-10 flex items-center justify-between p-4 border-b bg-white rounded-t-xl">
                 <div className="flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-blue-600" />
+                  <Clock className="w-5 h-5 text-jckl-navy" />
                   <h3 className="font-semibold">Confirm Reservation</h3>
                 </div>
-                <button onClick={closeReserve} className="p-2 rounded-lg hover:bg-gray-100">
+                <button onClick={closeReserve} className="p-2 rounded-lg hover:bg-jckl-cream text-jckl-navy">
                   <X className="w-4 h-4" />
                 </button>
               </div>
@@ -1075,7 +1075,7 @@ export default function Shop({ publicView = false }) {
                     <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Grade Level</label>
+                          <label className="block text-sm font-medium text-jckl-navy mb-1">Grade Level</label>
                           <select
                             value={reserve.grade}
                             onChange={(e) => setReserve((r) => ({ ...r, grade: e.target.value }))}
@@ -1089,7 +1089,7 @@ export default function Shop({ publicView = false }) {
                           </select>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Section</label>
+                          <label className="block text-sm font-medium text-jckl-navy mb-1">Section</label>
                           <input
                             value={reserve.section}
                             onChange={(e) => setReserve((r) => ({ ...r, section: e.target.value }))}
@@ -1100,12 +1100,12 @@ export default function Shop({ publicView = false }) {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Pickup Window</label>
+                        <label className="block text-sm font-medium text-jckl-navy mb-1">Pickup Window</label>
                         <div className="grid gap-2">
                           {SLOTS.map((s) => (
                             <label
                               key={s.id}
-                              className="flex items-center gap-3 p-3 rounded-lg border hover:bg-gray-50 cursor-pointer"
+                              className="flex items-center gap-3 p-3 rounded-lg border border-jckl-gold hover:bg-jckl-cream cursor-pointer"
                             >
                               <input
                                 type="radio"
@@ -1120,7 +1120,7 @@ export default function Shop({ publicView = false }) {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Note (optional)</label>
+                        <label className="block text-sm font-medium text-jckl-navy mb-1">Note (optional)</label>
                         <textarea
                           rows={3}
                           value={reserve.note}
@@ -1138,7 +1138,7 @@ export default function Shop({ publicView = false }) {
                           <div key={it.id} className="p-3 flex justify-between text-sm">
                             <div>
                               <div className="font-medium">{it.name}</div>
-                              <div className="text-xs text-gray-500">{it.qty} × {peso.format(it.price)}</div>
+                              <div className="text-xs text-jckl-slate">{it.qty} × {peso.format(it.price)}</div>
                             </div>
                             <div className="font-medium">{peso.format(it.qty * it.price)}</div>
                           </div>
@@ -1151,15 +1151,15 @@ export default function Shop({ publicView = false }) {
                 <div className="sticky bottom-0 bg-white border-t p-4 rounded-b-xl">
                   <div className="space-y-2 mb-4">
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Total</span>
+                      <span className="text-sm text-jckl-slate">Total</span>
                       <span className="text-lg font-semibold">{peso.format(total)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Wallet Balance</span>
+                      <span className="text-jckl-slate">Wallet Balance</span>
                       <span className="font-semibold">{peso.format(wallet.balance)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Remaining</span>
+                      <span className="text-jckl-slate">Remaining</span>
                       <span className={`font-semibold ${insufficient ? 'text-red-600' : 'text-emerald-600'}`}>
                         {peso.format(Math.max(0, wallet.balance - total))}
                       </span>
@@ -1169,14 +1169,14 @@ export default function Shop({ publicView = false }) {
                   <div className="flex gap-3">
                     <button
                       onClick={closeReserve}
-                      className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+                      className="px-4 py-2 border border-jckl-gold rounded-lg hover:bg-jckl-cream text-jckl-navy"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={submitReservation}
                       disabled={submitting || insufficient}
-                      className="flex-1 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-60 font-medium"
+                      className="flex-1 bg-jckl-navy text-white px-4 py-3 rounded-lg hover:bg-jckl-light-navy disabled:opacity-60 font-medium"
                     >
                       {submitting ? "Submitting..." : "Submit Reservation"}
                     </button>
@@ -1212,11 +1212,11 @@ export default function Shop({ publicView = false }) {
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="text-lg font-semibold">{preview.name}</h3>
-                    <div className="text-sm text-gray-500">{preview.category}</div>
+                    <div className="text-sm text-jckl-slate">{preview.category}</div>
                   </div>
                   <div className="text-xl font-bold">{peso.format(preview.price)}</div>
                 </div>
-                {preview.desc && <p className="text-sm text-gray-600">{preview.desc}</p>}
+                {preview.desc && <p className="text-sm text-jckl-slate">{preview.desc}</p>}
                 <div className="flex items-center justify-between pt-2">
                   {preview.stock <= 0 ? (
                     <span className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-700">Out of stock</span>
@@ -1236,7 +1236,7 @@ export default function Shop({ publicView = false }) {
                         setPreview(null);
                       }}
                       disabled={preview.stock <= 0}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-60 inline-flex items-center gap-2"
+                      className="bg-jckl-navy text-white px-4 py-2 rounded-lg hover:bg-jckl-light-navy disabled:opacity-60 inline-flex items-center gap-2"
                     >
                       <ShoppingCart className="w-4 h-4" />
                       Add to Cart

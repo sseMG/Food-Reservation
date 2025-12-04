@@ -148,9 +148,9 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex flex-col">
-      {/* HEADER - Updated with About page style */}
-      <header className="w-full bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+    <div className="min-h-screen bg-white flex flex-col">
+      {/* HEADER - JCKL Themed */}
+      <header className="w-full bg-white shadow-sm border-b-4 border-jckl-gold sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6 py-3 sm:py-4 flex items-center justify-between gap-2">
           <Link to="/" className="flex items-center gap-2 min-w-0 flex-shrink" aria-label="JCKL Food Reservation Home">
             <img 
@@ -158,7 +158,7 @@ export default function Register() {
               alt="JCKL Academy Logo" 
               className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex-shrink-0"
             />
-            <div className="font-bold text-gray-900 min-w-0">
+            <div className="font-bold text-jckl-navy min-w-0">
               <span className="hidden xl:inline text-lg">Jesus Christ King of Kings and Lord of Lords Academy Inc.</span>
               <span className="hidden md:inline xl:hidden text-base truncate max-w-[400px]">Jesus Christ King of Kings and Lord of Lords Academy Inc.</span>
               <span className="md:hidden text-sm truncate">JCKL Academy</span>
@@ -170,7 +170,7 @@ export default function Register() {
               <li>
                 <Link
                   to="/"
-                  className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200"
+                  className="text-jckl-slate hover:text-jckl-navy font-medium transition-colors duration-200"
                 >
                   Home
                 </Link>
@@ -178,7 +178,7 @@ export default function Register() {
               <li>
                 <Link
                   to="/about"
-                  className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200"
+                  className="text-jckl-slate hover:text-jckl-navy font-medium transition-colors duration-200"
                 >
                   About Us
                 </Link>
@@ -186,7 +186,7 @@ export default function Register() {
               <li>
                 <Link
                   to="/register"
-                  className="text-blue-600 font-medium border-b-2 border-blue-600 pb-1"
+                  className="text-jckl-navy font-medium border-b-2 border-jckl-gold pb-1"
                 >
                   Register
                 </Link>
@@ -194,7 +194,7 @@ export default function Register() {
               <li>
                 <button
                   onClick={() => navigate("/login")}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors duration-200"
+                  className="px-4 py-2 bg-jckl-navy text-white rounded-lg hover:bg-jckl-light-navy font-medium transition-colors duration-200"
                 >
                   Log In
                 </button>
@@ -204,7 +204,7 @@ export default function Register() {
           
           <div className="flex items-center gap-2 flex-shrink-0">
             <Link to="/login" className="hidden sm:inline-block lg:hidden">
-              <button className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors duration-200 text-sm">
+              <button className="px-3 py-2 bg-jckl-navy text-white rounded-lg hover:bg-jckl-light-navy font-medium transition-colors duration-200 text-sm">
                 Log In
               </button>
             </Link>
@@ -212,7 +212,7 @@ export default function Register() {
             {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-700"
+              className="lg:hidden p-2 rounded-lg hover:bg-jckl-cream text-jckl-navy"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -222,32 +222,32 @@ export default function Register() {
         
         {/* Mobile menu dropdown */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-gray-200 bg-white">
+          <div className="lg:hidden border-t border-jckl-gold bg-white">
             <nav className="px-4 py-3 space-y-2">
               <Link
                 to="/"
-                className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition text-sm"
+                className="block px-3 py-2 text-jckl-slate hover:bg-jckl-cream rounded-lg transition text-sm"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Home
               </Link>
               <Link
                 to="/about"
-                className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition text-sm"
+                className="block px-3 py-2 text-jckl-slate hover:bg-jckl-cream rounded-lg transition text-sm"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 About Us
               </Link>
               <Link
                 to="/register"
-                className="block px-3 py-2 text-blue-600 bg-blue-50 rounded-lg text-sm font-medium"
+                className="block px-3 py-2 text-jckl-navy bg-jckl-cream rounded-lg text-sm font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Register
               </Link>
               <Link
                 to="/login"
-                className="block px-3 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition text-sm font-medium sm:hidden"
+                className="block px-3 py-2 bg-jckl-navy text-white hover:bg-jckl-light-navy rounded-lg transition text-sm font-medium sm:hidden"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Log In
@@ -269,16 +269,16 @@ export default function Register() {
                 className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl shadow-lg"
               />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-2">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-jckl-navy mb-2">
               Create Your Account
             </h1>
-            <p className="text-sm sm:text-base text-gray-600">
+            <p className="text-sm sm:text-base text-jckl-slate">
               Join the food reservation system at JCKL Academy
             </p>
           </div>
 
           {/* Registration Form Card */}
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 sm:p-8">
+          <div className="bg-white rounded-2xl shadow-xl border-t-4 border-jckl-gold p-6 sm:p-8">
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
               <Input
                 label="Full Name"
@@ -371,27 +371,28 @@ export default function Register() {
                 variant="primary"
                 fullWidth
                 disabled={isLoading}
+                className="bg-jckl-navy hover:bg-jckl-light-navy"
               >
                 {isLoading ? "Creating Account..." : "Create Account"}
               </Button>
             </form>
 
-            <div className="mt-6 pt-6 border-t border-gray-100">
-              <p className="text-center text-sm text-gray-600">
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <p className="text-center text-sm text-jckl-slate">
                 Already have an account?{" "}
                 <Link
                   to="/login"
-                  className="text-blue-600 hover:text-blue-700 font-semibold"
+                  className="text-jckl-navy hover:text-jckl-light-navy font-semibold"
                 >
                   Sign In
                 </Link>
               </p>
             </div>
 
-            <div className="mt-4 bg-blue-50 border border-blue-100 rounded-lg p-3 sm:p-4">
+            <div className="mt-4 bg-jckl-cream border border-jckl-gold rounded-lg p-3 sm:p-4">
               <div className="flex items-start gap-2 sm:gap-3">
                 <svg
-                  className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5"
+                  className="w-5 h-5 text-jckl-navy flex-shrink-0 mt-0.5"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                   aria-hidden="true"
@@ -402,9 +403,9 @@ export default function Register() {
                     clipRule="evenodd"
                   />
                 </svg>
-                <div className="text-xs sm:text-sm text-blue-800">
+                <div className="text-xs sm:text-sm text-jckl-navy">
                   <p className="font-semibold mb-1">Student Accounts Only</p>
-                  <p className="text-blue-700">
+                  <p className="text-jckl-slate">
                     This registration is for JCKL Academy students. Use your
                     school email and valid student ID.
                   </p>
@@ -416,8 +417,8 @@ export default function Register() {
       </div>
 
       {/* FOOTER */}
-      <footer className="py-6 sm:py-8 bg-gray-900 text-center">
-        <div className="text-gray-400 text-xs sm:text-sm">
+      <footer className="py-6 sm:py-8 bg-jckl-navy text-center">
+        <div className="text-jckl-cream text-xs sm:text-sm">
           © 2025 JCKL Food Reservation System. All rights reserved.
         </div>
       </footer>

@@ -162,7 +162,7 @@ const Avatar = ({ user, size = "md" }) => {
 
   return (
     <div
-      className={`${sizeClasses[size]} rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-lg font-medium text-blue-600`}
+      className={`${sizeClasses[size]} rounded-full bg-gradient-to-br from-jckl-cream to-jckl-cream flex items-center justify-center text-lg font-medium text-jckl-navy`}
     >
       {(user?.name || "C").charAt(0).toUpperCase()}
     </div>

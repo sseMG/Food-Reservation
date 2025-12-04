@@ -152,11 +152,11 @@ export default function EditProfile() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
+    <div className="min-h-screen bg-white pb-16 md:pb-0">
       <Navbar />
       <main className="max-w-2xl mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-8 lg:py-12">
-        <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 lg:p-10">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-gray-900">
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border-t-4 border-jckl-gold p-6 sm:p-8 lg:p-10">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-jckl-navy">
             Edit Profile
           </h2>
           
@@ -164,7 +164,7 @@ export default function EditProfile() {
             {/* Profile Picture */}
             <div className="mb-6 sm:mb-8 flex flex-col items-center">
               <div className="relative">
-                <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden bg-blue-100">
+                <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden bg-jckl-cream">
                   {imagePreview ? (
                     <img
                       src={imagePreview}
@@ -172,12 +172,12 @@ export default function EditProfile() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-3xl sm:text-4xl font-bold text-blue-700">
+                    <div className="w-full h-full flex items-center justify-center text-3xl sm:text-4xl font-bold text-jckl-navy">
                       {form.name?.[0]?.toUpperCase() || "U"}
                     </div>
                   )}
                 </div>
-                <label className="absolute bottom-0 right-0 bg-blue-600 rounded-full p-2 cursor-pointer hover:bg-blue-700 transition-colors">
+                <label className="absolute bottom-0 right-0 bg-jckl-navy rounded-full p-2 cursor-pointer hover:bg-jckl-light-navy transition-colors">
                   <Camera className="w-5 h-5 text-white" />
                   <input
                     type="file"
@@ -188,13 +188,13 @@ export default function EditProfile() {
                   />
                 </label>
               </div>
-              <p className="text-xs sm:text-sm text-gray-500 mt-2 text-center">Click the camera icon to upload a profile picture</p>
+              <p className="text-xs sm:text-sm text-jckl-slate mt-2 text-center">Click the camera icon to upload a profile picture</p>
             </div>
 
             {/* Form Fields */}
             {['name', 'studentId', 'phone'].map((field) => (
               <div key={field}>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-jckl-navy mb-2">
                   {field === 'studentId' ? 'Student ID' : 
                    field === 'phone' ? 'Contact Number' : 'Full Name'}
                 </label>
@@ -203,7 +203,7 @@ export default function EditProfile() {
                   type={field === 'email' ? 'email' : 'text'}
                   value={form[field]}
                   onChange={handleChange}
-                  className="mt-1 block w-full border border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                  className="mt-1 block w-full border border-jckl-gold rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-jckl-gold focus:border-transparent bg-white text-jckl-navy"
                   placeholder={`Enter your ${field === 'studentId' ? 'student ID' : 
                               field === 'phone' ? 'phone number' : field}`}
                   disabled={loading || field === 'studentId'}
@@ -213,16 +213,16 @@ export default function EditProfile() {
 
             {/* Email field - Read only */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-jckl-navy mb-2">
                 Email Address
               </label>
               <input
                 type="email"
                 value={form.email}
                 disabled
-                className="mt-1 block w-full border border-gray-200 rounded-lg p-3 bg-gray-50 text-gray-600 cursor-not-allowed"
+                className="mt-1 block w-full border border-jckl-gold rounded-lg p-3 bg-jckl-cream text-jckl-navy cursor-not-allowed"
               />
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-jckl-slate mt-2">
                 To change your email, go to your profile and use the "Change Email" option.
               </p>
             </div>
@@ -232,14 +232,14 @@ export default function EditProfile() {
               <button
                 type="button"
                 onClick={() => navigate("/profile")}
-                className="px-6 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm sm:text-base"
+                className="px-6 py-2.5 bg-white border border-jckl-gold text-jckl-navy rounded-lg hover:bg-jckl-cream transition-colors font-medium text-sm sm:text-base"
                 disabled={loading}
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2.5 bg-jckl-navy text-white rounded-lg hover:bg-jckl-light-navy transition-colors font-medium text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={loading}
               >
                 {loading ? "Saving..." : "Save Changes"}

@@ -98,18 +98,18 @@ export default function ChangeEmail() {
   // Show verification confirmation page if we have token/email in URL
   if (isVerifying) {
     return (
-      <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
+      <div className="min-h-screen bg-white pb-16 md:pb-0">
         <Navbar />
         <main className="max-w-md mx-auto px-3 sm:px-4 py-6 sm:py-12">
           <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
             {!verificationSent ? (
               <>
-                <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-center text-gray-900">
+                <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-center text-jckl-navy">
                   Confirm Email Change
                 </h2>
-                <p className="text-sm text-gray-600 text-center mb-6">
+                <p className="text-sm text-jckl-slate text-center mb-6">
                   Click the button below to confirm changing your email to:
-                  <span className="block font-semibold text-gray-900 mt-2 break-all">{decodeURIComponent(email)}</span>
+                  <span className="block font-semibold text-jckl-navy mt-2 break-all">{decodeURIComponent(email)}</span>
                 </p>
 
                 {error && (
@@ -121,14 +121,14 @@ export default function ChangeEmail() {
                 <button
                   onClick={handleConfirmEmailChange}
                   disabled={loading}
-                  className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed mb-3"
+                  className="w-full px-4 py-3 bg-jckl-navy text-white rounded-lg hover:bg-jckl-light-navy transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed mb-3"
                 >
                   {loading ? "Confirming..." : "Confirm Email Change"}
                 </button>
 
                 <button
                   onClick={() => navigate("/profile")}
-                  className="w-full px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                  className="w-full px-4 py-3 bg-jckl-cream text-jckl-navy rounded-lg hover:bg-jckl-gold transition-colors font-medium border border-jckl-gold"
                   disabled={loading}
                 >
                   Back to Profile
@@ -142,20 +142,20 @@ export default function ChangeEmail() {
                   </div>
                 </div>
 
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                <h2 className="text-2xl sm:text-3xl font-bold text-jckl-navy">
                   Email changed successfully!
                 </h2>
 
-                <p className="text-sm sm:text-base text-gray-600">
+                <p className="text-sm sm:text-base text-jckl-slate">
                   Your email has been updated to
-                  <span className="block font-semibold text-gray-900 mt-1 break-all">
+                  <span className="block font-semibold text-jckl-navy mt-1 break-all">
                     {decodeURIComponent(email)}
                   </span>
                 </p>
 
                 <button
                   onClick={() => navigate("/profile")}
-                  className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium mt-6"
+                  className="w-full px-4 py-3 bg-jckl-navy text-white rounded-lg hover:bg-jckl-light-navy transition-colors font-medium mt-6"
                 >
                   Back to Profile
                 </button>
@@ -170,16 +170,16 @@ export default function ChangeEmail() {
 
   // Main request form
   return (
-    <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
+    <div className="min-h-screen bg-white pb-16 md:pb-0">
       <Navbar />
       <main className="max-w-md mx-auto px-3 sm:px-4 py-6 sm:py-12">
         <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
           {!emailSent ? (
             <>
-              <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-center text-gray-900">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-center text-jckl-navy">
                 Change Email
               </h2>
-              <p className="text-sm text-gray-600 text-center mb-6">
+              <p className="text-sm text-jckl-slate text-center mb-6">
                 We'll send a verification link to your current email address
               </p>
 
@@ -191,26 +191,26 @@ export default function ChangeEmail() {
 
               <form onSubmit={handleRequestEmailChange} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-jckl-navy mb-2">
                     Current Email
                   </label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <Mail className="w-4 h-4 text-jckl-slate absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
                       type="email"
                       value={currentEmail}
                       disabled
-                      className="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-3 bg-gray-50 text-gray-600 cursor-not-allowed"
+                      className="w-full border border-jckl-gold rounded-lg pl-10 pr-4 py-3 bg-jckl-cream text-jckl-navy cursor-not-allowed"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-jckl-navy mb-2">
                     New Email Address
                   </label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <Mail className="w-4 h-4 text-jckl-slate absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
                       type="email"
                       value={newEmail}
@@ -218,12 +218,12 @@ export default function ChangeEmail() {
                         setNewEmail(e.target.value);
                         setError("");
                       }}
-                      className="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                      className="w-full border border-jckl-gold rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-jckl-gold focus:border-transparent text-jckl-navy bg-white"
                       placeholder="your-new@email.com"
                       disabled={loading}
                     />
                   </div>
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-xs text-jckl-slate mt-2">
                     A verification link will be sent to your current email address
                   </p>
                 </div>
@@ -232,7 +232,7 @@ export default function ChangeEmail() {
                   <button
                     type="button"
                     onClick={() => navigate("/profile")}
-                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium disabled:opacity-60"
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-jckl-cream text-jckl-navy rounded-lg hover:bg-jckl-gold transition-colors font-medium disabled:opacity-60 border border-jckl-gold"
                     disabled={loading}
                   >
                     <ArrowLeft className="w-4 h-4" />
@@ -241,7 +241,7 @@ export default function ChangeEmail() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="flex-1 px-4 py-3 bg-jckl-navy text-white rounded-lg hover:bg-jckl-light-navy transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {loading ? "Sending..." : "Send Verification Link"}
                   </button>
@@ -251,24 +251,24 @@ export default function ChangeEmail() {
           ) : (
             <div className="text-center space-y-4">
               <div className="flex justify-center mb-4">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-blue-100 flex items-center justify-center">
-                  <Mail className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600" />
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-jckl-cream flex items-center justify-center">
+                  <Mail className="w-8 h-8 sm:w-10 sm:h-10 text-jckl-navy" />
                 </div>
               </div>
 
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+              <h2 className="text-2xl sm:text-3xl font-bold text-jckl-navy">
                 Check your email!
               </h2>
 
               <p className="text-sm sm:text-base text-gray-600">
                 We've sent a verification link to
-                <span className="block font-semibold text-gray-900 mt-1 break-all">
+                <span className="block font-semibold text-jckl-navy mt-1 break-all">
                   {currentEmail}
                 </span>
               </p>
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
-                <p className="text-sm text-blue-900">
+              <div className="bg-jckl-cream border border-jckl-gold rounded-lg p-4 mt-6">
+                <p className="text-sm text-jckl-navy">
                   <strong>Next steps:</strong> Click the link in your email to confirm your new email address. The link will expire in 1 hour.
                 </p>
               </div>
@@ -276,7 +276,7 @@ export default function ChangeEmail() {
               <div className="space-y-3 mt-8">
                 <button
                   onClick={() => navigate("/profile")}
-                  className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  className="w-full px-4 py-3 bg-jckl-navy text-white rounded-lg hover:bg-jckl-light-navy transition-colors font-medium"
                 >
                   Back to Profile
                 </button>
@@ -287,7 +287,7 @@ export default function ChangeEmail() {
                     setError("");
                     setNewEmail("");
                   }}
-                  className="w-full px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                  className="w-full px-4 py-3 border border-jckl-gold text-jckl-navy rounded-lg hover:bg-jckl-cream transition-colors font-medium"
                 >
                   Use Different Email
                 </button>
@@ -300,7 +300,7 @@ export default function ChangeEmail() {
                     setEmailSent(false);
                     setError("");
                   }}
-                  className="text-blue-600 hover:text-blue-700 font-medium"
+                  className="text-jckl-navy hover:text-jckl-light-navy font-medium"
                 >
                   try again
                 </button>
