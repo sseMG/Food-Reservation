@@ -2,7 +2,7 @@ name: Test Suite
 
 on:
   push:
-    branches: [ main, develop, mongodb-cloudinary-support-repository-pattern-impl ]
+    branches: [ main, develop, mongodb-cloudinary-support-repository-pattern-impl, fix-for-mongoose-gh-ci-close-connection-failing ]
   pull_request:
     branches: [ main ]
 
