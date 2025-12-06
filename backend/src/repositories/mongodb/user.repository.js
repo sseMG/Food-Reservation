@@ -127,49 +127,73 @@ class MongoUserRepository extends BaseRepository {
   }
 
   /**
-   * Increment user balance
+   * Increment user balance (atomic operation)
    */
   async incrementBalance(userId, amount) {
     const col = this.getCollection();
     const filter = createIdFilter(userId);
+    const requestedAmount = Number(amount);
     
-    // First check if document exists
-    const existing = await col.findOne(filter);
-    if (!existing) {
-      return null;
+    // Use atomic findOneAndUpdate
+    const result = await col.findOneAndUpdate(
+      filter,
+      {
+        $inc: { balance: requestedAmount },
+        $set: { updatedAt: new Date().toISOString() }
+      },
+      {
+        returnDocument: 'after'
+      }
+    );
+    
+    // Handle both old (result.value) and new (result directly) MongoDB driver formats
+    const doc = result?.value || result;
+    if (!doc) {
+      return null; // User not found
     }
     
-    // Update the document
-    await col.updateOne(filter, { $inc: { balance: Number(amount) } });
-    
-    // Get the updated document
-    const updated = await col.findOne(filter);
-    return updated ? sanitizeForResponse(normalizeMongoDoc(updated)) : null;
+    return sanitizeForResponse(normalizeMongoDoc(doc));
   }
 
   /**
-   * Decrement user balance
+   * Decrement user balance (atomic operation with validation)
    */
   async decrementBalance(userId, amount) {
     const col = this.getCollection();
     const filter = createIdFilter(userId);
+    const requestedAmount = Number(amount);
     
-    // First check if document exists
-    const existing = await col.findOne(filter);
-    if (!existing) {
-      return null;
+    // Use atomic findOneAndUpdate with balance validation
+    // Only decrement if balance >= amount (prevents negative balance)
+    const result = await col.findOneAndUpdate(
+      {
+        $and: [
+          filter,
+          { balance: { $gte: requestedAmount } }
+        ]
+      },
+      {
+        $inc: { balance: -requestedAmount },
+        $set: { updatedAt: new Date().toISOString() }
+      },
+      {
+        returnDocument: 'after'
+      }
+    );
+    
+    // Handle both old (result.value) and new (result directly) MongoDB driver formats
+    const doc = result?.value || result;
+    if (!doc) {
+      // Either user not found or insufficient balance
+      const existing = await col.findOne(filter);
+      if (!existing) {
+        return null;  // User not found
+      }
+      // Insufficient balance
+      throw new Error(`Insufficient balance for user ${userId}. Available: ${existing.balance || 0}, Requested: ${requestedAmount}`);
     }
     
-    // Get current balance to ensure it doesn't go negative
-    const currentBalance = Number(existing.balance || 0);
-    const newBalance = Math.max(0, currentBalance - Number(amount));
-    
-    // Update the document
-    await col.updateOne(filter, { $set: { balance: newBalance, updatedAt: new Date().toISOString() } });
-    
-    // Get the updated document
-    const updated = await col.findOne(filter);
-    return updated ? sanitizeForResponse(normalizeMongoDoc(updated)) : null;
+    return sanitizeForResponse(normalizeMongoDoc(doc));
   }
 }
 

@@ -5,10 +5,19 @@
 const mongoose = require('mongoose');
 
 /**
- * Check if MongoDB is connected
+ * Check if MongoDB should be used
+ * Priority: 
+ * 1. If MONGO_URI is explicitly deleted (undefined), use JSON
+ * 2. If MONGO_URI exists and connection is ready, use MongoDB
+ * 3. Otherwise use JSON
  */
 function usingMongo() {
-  return !!(mongoose && mongoose.connection && mongoose.connection.readyState === 1);
+  // If MONGO_URI is explicitly deleted (for tests), force JSON mode
+  if (process.env.MONGO_URI === undefined) {
+    return false;
+  }
+  // If MONGO_URI exists and MongoDB is connected, use MongoDB
+  return !!(process.env.MONGO_URI && mongoose && mongoose.connection && mongoose.connection.readyState === 1);
 }
 
 // Cache repository instances (singleton pattern)
