@@ -6,8 +6,8 @@ const ImageUploadFactory = require('../../../repositories/image-upload/image-upl
 const RepositoryFactory = require('../../../repositories/repository.factory');
 const { createTestAdmin, getAuthHeaders } = require('../../helpers/test-helpers');
 
-// Helper: check if Cloudinary credentials are present (for optional integration tests)
-function hasCloudinaryCredentials() {
+// Helper function to validate Cloudinary credentials and throw error if missing
+function requireCloudinaryCredentials() {
   const missing = [];
   if (!process.env.CLOUDINARY_CLOUD_NAME) {
     missing.push('CLOUDINARY_CLOUD_NAME');
@@ -18,17 +18,13 @@ function hasCloudinaryCredentials() {
   if (!process.env.CLOUDINARY_API_SECRET) {
     missing.push('CLOUDINARY_API_SECRET');
   }
-
+  
   if (missing.length > 0) {
-    // Do not throw here: we want the suite to be skippable on machines without Cloudinary.
-    // Individual tests will check this helper and early-return instead.
-    console.warn(
-      `Skipping Cloudinary integration tests. Missing environment variables: ${missing.join(', ')}.`
+    throw new Error(
+      `Cloudinary credentials are missing. Please set the following environment variables: ${missing.join(', ')}. ` +
+      `You can set them in a .env file in the backend directory or as system environment variables.`
     );
-    return false;
   }
-
-  return true;
 }
 
 describe('Image Upload Integration Tests', () => {
@@ -190,18 +186,12 @@ describe('Image Upload Integration Tests', () => {
 
   describe('Cloudinary Storage', () => {
     beforeEach(() => {
-      if (!hasCloudinaryCredentials()) {
-        return;
-      }
       process.env.IMAGE_STORAGE_TYPE = 'cloudinary';
       ImageUploadFactory.clearCache();
     });
 
     test('should upload menu item image to Cloudinary', async () => {
-      if (!hasCloudinaryCredentials()) {
-        // Skip test gracefully when Cloudinary is not configured
-        return;
-      }
+      requireCloudinaryCredentials();
 
       const imageBuffer = createTestImageFile();
       
@@ -228,10 +218,7 @@ describe('Image Upload Integration Tests', () => {
     });
 
     test('should upload profile picture to Cloudinary', async () => {
-      if (!hasCloudinaryCredentials()) {
-        // Skip test gracefully when Cloudinary is not configured
-        return;
-      }
+      requireCloudinaryCredentials();
 
       // Ensure user exists in the current repository
       const userRepo = RepositoryFactory.getUserRepository();
@@ -292,14 +279,11 @@ describe('Image Upload Integration Tests', () => {
     });
 
     test('should return cloudinary repository when set', () => {
-      if (!hasCloudinaryCredentials()) {
-        // Skip test gracefully when Cloudinary is not configured
-        return;
-      }
-
+      requireCloudinaryCredentials();
+      
       process.env.IMAGE_STORAGE_TYPE = 'cloudinary';
       ImageUploadFactory.clearCache();
-
+      
       const repo = ImageUploadFactory.getRepository();
       expect(repo.constructor.name).toBe('CloudinaryImageUploadRepository');
     });

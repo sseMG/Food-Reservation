@@ -2,15 +2,12 @@ const request = require('supertest');
 const app = require('../../index');
 const RepositoryFactory = require('../../repositories/repository.factory');
 const { createTestAdmin, getAuthHeaders, createTestMenuItem } = require('../helpers/test-helpers');
-const { resetJsonCategories } = require('../helpers/json-db-helpers');
-const { resetMongoCategories } = require('../helpers/mongo-db-helpers');
 
 describe('Admin Categories API', () => {
   describe('JSON DB', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       delete process.env.MONGO_URI;
       RepositoryFactory.clearCache();
-      await resetJsonCategories();
     });
 
     test('GET returns array', async () => {
@@ -82,9 +79,8 @@ describe('Admin Categories API', () => {
   });
 
   describe('Mongo DB', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       RepositoryFactory.clearCache();
-      await resetMongoCategories();
     });
 
     test('GET returns array', async () => {
@@ -99,14 +95,10 @@ describe('Admin Categories API', () => {
       const admin = await createTestAdmin();
       const headers = getAuthHeaders(admin);
       const res = await request(app).post('/api/admin/categories').set(headers).send({ name: 'APIMongo', iconID: 5 });
-      if (res.status === 200) {
-        expect(res.body.ok).toBe(true);
-        expect(Array.isArray(res.body.categories)).toBe(true);
-        expect(res.body.categories.some(c => c.name === 'APIMongo')).toBe(true);
-      } else {
-        // If the category already exists (e.g. created by another test run), 409 is acceptable
-        expect(res.status).toBe(409);
-      }
+      expect(res.status).toBe(200);
+      expect(res.body.ok).toBe(true);
+      expect(Array.isArray(res.body.categories)).toBe(true);
+      expect(res.body.categories.some(c => c.name === 'APIMongo')).toBe(true);
     });
   });
 });
