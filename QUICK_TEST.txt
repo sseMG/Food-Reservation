@@ -1,0 +1,17 @@
+QUICK BROWSER CONSOLE TEST (Copy-paste this entire block)
+================================================================
+
+// 1. First, get an item ID with this:
+fetch('http://localhost:3000/api/menu').then(r => r.json()).then(items => console.table(items.map(i => ({ id: i.id, name: i.name, stock: i.stock }))));
+
+// 2. Then paste this (change ITEM_ID to your actual item):
+const ITEM_ID = 'ITM_PASTE_YOUR_ID_HERE'; const CONCURRENCY = 30; const TOKEN = localStorage.getItem('token'); const BASE_URL = 'http://localhost:3000'; async function makeReservation(i) { try { const res = await fetch(`${BASE_URL}/api/reservations`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}` }, body: JSON.stringify({ items: [{ id: ITEM_ID, qty: 1 }], slot: 'Lunch', grade: '10', section: 'A', student: 'Test', note: `Test #${i}` }) }); const data = await res.json().catch(() => ({})); console.log(`#${i}`, res.status, res.ok ? '✓ SUCCESS' : `✗ ${data.error || 'Failed'}`); return { status: res.status }; } catch (err) { console.log(`#${i} ERROR`, err.message); return {}; } } (async () => { console.log('🔥 Testing overselling protection...\n'); const results = await Promise.all(Array.from({ length: CONCURRENCY }, (_, i) => makeReservation(i + 1))); const success = results.filter(r => r.status === 200).length; console.log(`\n📊 RESULTS:`); console.log(`✓ Success: ${success}`); console.log(`✗ Failed: ${results.length - success}`); console.log(success <= 10 ? '\n✅ Overselling PREVENTED!' : '\n❌ OVERSOLD! Bug still present!'); })();
+
+================================================================
+
+WHAT YOU SHOULD SEE:
+- First 5-10 requests succeed (200 ✓)
+- Rest fail with "Insufficient stock" (400 ✗)
+- Final message: "✅ Overselling PREVENTED!"
+
+If you see 30 successes when stock is only 5, the bug is NOT fixed!

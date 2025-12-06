@@ -1,10 +1,12 @@
 const BaseRepository = require('../base.repository');
 const { load, save } = require('../../lib/db');
+const { Mutex } = require('async-mutex');
 
 class JsonUserRepository extends BaseRepository {
   constructor() {
     super();
     this.collectionName = 'users';
+    this.balanceMutex = new Mutex();
   }
 
   async findById(id) {
@@ -104,26 +106,63 @@ class JsonUserRepository extends BaseRepository {
   }
 
   /**
-   * Increment user balance
+   * Increment user balance (thread-safe)
    */
   async incrementBalance(userId, amount) {
-    const db = await load();
-    const user = await this.findById(userId);
-    if (!user) return null;
-    
-    const newBalance = Number(user.balance || 0) + Number(amount);
-    return await this.update(userId, { balance: newBalance });
+    const release = await this.balanceMutex.acquire();
+    try {
+      const db = await load();
+      const users = Array.isArray(db[this.collectionName]) ? db[this.collectionName] : [];
+      const index = users.findIndex(u => String(u.id) === String(userId));
+      
+      if (index === -1) return null;
+      
+      const newBalance = Number(users[index].balance || 0) + Number(amount);
+      users[index] = {
+        ...users[index],
+        balance: newBalance,
+        updatedAt: new Date().toISOString(),
+      };
+      
+      await save(db);
+      return users[index];
+    } finally {
+      release();
+    }
   }
 
   /**
-   * Decrement user balance
+   * Decrement user balance (thread-safe with validation)
    */
   async decrementBalance(userId, amount) {
-    const user = await this.findById(userId);
-    if (!user) return null;
-    
-    const newBalance = Math.max(0, Number(user.balance || 0) - Number(amount));
-    return await this.update(userId, { balance: newBalance });
+    const release = await this.balanceMutex.acquire();
+    try {
+      const db = await load();
+      const users = Array.isArray(db[this.collectionName]) ? db[this.collectionName] : [];
+      const index = users.findIndex(u => String(u.id) === String(userId));
+      
+      if (index === -1) return null;
+      
+      const currentBalance = Number(users[index].balance || 0);
+      const requestedAmount = Number(amount);
+      
+      // Prevent negative balance
+      if (currentBalance < requestedAmount) {
+        throw new Error(`Insufficient balance for user ${userId}. Available: ${currentBalance}, Requested: ${requestedAmount}`);
+      }
+      
+      const newBalance = currentBalance - requestedAmount;
+      users[index] = {
+        ...users[index],
+        balance: newBalance,
+        updatedAt: new Date().toISOString(),
+      };
+      
+      await save(db);
+      return users[index];
+    } finally {
+      release();
+    }
   }
 }
 

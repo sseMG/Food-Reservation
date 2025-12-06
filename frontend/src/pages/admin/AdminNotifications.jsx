@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import AdminAvbar from "../../components/adminavbar";
+import AdminBottomNav from "../../components/mobile/AdminBottomNav";
 import { api } from "../../lib/api";
 import { X, ChevronLeft, ChevronRight, Trash2, CheckCheck, MoreVertical } from "lucide-react";
 
@@ -24,7 +25,7 @@ export default function AdminNotifications() {
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const paginatedNotifications = notifications.slice(startIndex, endIndex);
 
-  // 🔥 Format reservation data nicely
+  // Format reservation data nicely
   const renderReservationData = (data) => {
     if (!data) return null;
 
@@ -128,7 +129,7 @@ export default function AdminNotifications() {
       );
     }
 
-    // 🔥 Format top-up data nicely
+    // Format top-up data nicely
     if (data.topupid || data.amount || data.provider) {
       // Parse student object if it's a JSON string
       let studentData = null;
@@ -342,7 +343,7 @@ export default function AdminNotifications() {
   };
 
   return (
-    <div className="min-h-screen bg-jckl-cream">
+    <div className="min-h-screen bg-jckl-cream pb-20 md:pb-0">
       <AdminAvbar />
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
         {/* Header - Mobile Optimized */}
@@ -664,6 +665,9 @@ export default function AdminNotifications() {
           animation: slide-up 0.3s ease-out;
         }
       `}</style>
+      
+      {/* Bottom Nav (mobile) */}
+      <AdminBottomNav />
     </div>
   );
 }

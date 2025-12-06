@@ -6,7 +6,6 @@ const CloudinaryImageUploadRepository = require('./cloudinary.image-upload.repos
  * Returns the appropriate image upload repository based on configuration
  */
 class ImageUploadFactory {
-  static instance = null;
 
   /**
    * Get the configured image upload repository
@@ -38,7 +37,7 @@ class ImageUploadFactory {
    * Clear the cached repository instance (useful for testing)
    */
   static clearCache() {
-    this.instance = null;
+    ImageUploadFactory.instance = null;
   }
 
   /**
@@ -49,6 +48,8 @@ class ImageUploadFactory {
     return (process.env.IMAGE_STORAGE_TYPE || 'filesystem').toLowerCase();
   }
 }
+
+ImageUploadFactory.instance = null;
 
 module.exports = ImageUploadFactory;
 

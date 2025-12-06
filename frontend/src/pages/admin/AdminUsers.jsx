@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import Navbar from "../../components/adminavbar";
+import AdminBottomNav from "../../components/mobile/AdminBottomNav";
 import { api } from "../../lib/api";
 import { Link } from "react-router-dom";
 import { 
@@ -563,9 +564,6 @@ export default function AdminUsers() {
             </button>
           </div>
         </div>
-
-
-
         {/* Approved/Rejected Users Section */}
         <div className="hidden lg:block bg-white rounded-2xl shadow-sm border border-jckl-gold overflow-hidden">
           <div className="overflow-x-auto">
@@ -1374,6 +1372,9 @@ export default function AdminUsers() {
           </div>
         )}
       </main>
+
+      {/* Bottom Nav (mobile) */}
+      <AdminBottomNav />
     </div>
   );
 }
