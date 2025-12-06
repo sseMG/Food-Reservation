@@ -128,73 +128,56 @@ class MongoMenuRepository extends BaseRepository {
   }
 
   /**
-   * Increment stock (atomic operation)
+   * Increment stock
    */
   async incrementStock(id, amount) {
     const col = this.getCollection();
     const filter = createIdFilter(id);
-    const requestedAmount = Number(amount);
     
-    // Use atomic findOneAndUpdate
-    const result = await col.findOneAndUpdate(
-      filter,
-      {
-        $inc: { stock: requestedAmount },
-        $set: { updatedAt: new Date().toISOString() }
-      },
-      {
-        returnDocument: 'after'
-      }
-    );
-    
-    // Handle both old (result.value) and new (result directly) MongoDB driver formats
-    const doc = result?.value || result;
-    if (!doc) {
-      return null; // Item not found
+    // First check if document exists
+    const existing = await col.findOne(filter);
+    if (!existing) {
+      return null;
     }
     
-    return sanitizeForResponse(normalizeMongoDoc(doc));
+    // Update the document
+    await col.updateOne(filter, { $inc: { stock: Number(amount) } });
+    
+    // Get the updated document
+    const updated = await col.findOne(filter);
+    return updated ? sanitizeForResponse(normalizeMongoDoc(updated)) : null;
   }
 
   /**
-   * Decrement stock (atomic operation with validation)
+   * Decrement stock
    */
   async decrementStock(id, amount) {
     const col = this.getCollection();
     const filter = createIdFilter(id);
-    const requestedAmount = Number(amount);
     
-    // Use atomic findOneAndUpdate with stock validation
-    // Only decrement if stock >= amount (prevents overselling)
-    const result = await col.findOneAndUpdate(
-      {
-        $and: [
-          filter,
-          { stock: { $gte: requestedAmount } }
-        ]
-      },
-      {
-        $inc: { stock: -requestedAmount },
-        $set: { updatedAt: new Date().toISOString() }
-      },
-      {
-        returnDocument: 'after'
-      }
-    );
-    
-    // Handle both old (result.value) and new (result directly) MongoDB driver formats
-    const doc = result?.value || result;
-    if (!doc) {
-      // Either item not found or insufficient stock
-      const existing = await col.findOne(filter);
-      if (!existing) {
-        return null;  // Item not found
-      }
-      // Insufficient stock
-      throw new Error(`Insufficient stock for item ${id}. Available: ${existing.stock || 0}, Requested: ${requestedAmount}`);
+    // First check if document exists
+    const existing = await col.findOne(filter);
+    if (!existing) {
+      return null;
     }
     
-    return sanitizeForResponse(normalizeMongoDoc(doc));
+    // Use aggregation pipeline to ensure stock doesn't go negative
+    await col.updateOne(
+      filter,
+      [
+        {
+          $set: {
+            stock: {
+              $max: [0, { $subtract: ['$stock', Number(amount)] }]
+            }
+          }
+        }
+      ]
+    );
+    
+    // Get the updated document
+    const updated = await col.findOne(filter);
+    return updated ? sanitizeForResponse(normalizeMongoDoc(updated)) : null;
   }
 }
 

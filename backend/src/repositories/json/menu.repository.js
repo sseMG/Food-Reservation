@@ -1,12 +1,10 @@
 const BaseRepository = require('../base.repository');
 const { load, save } = require('../../lib/db');
-const { Mutex } = require('async-mutex');
 
 class JsonMenuRepository extends BaseRepository {
   constructor() {
     super();
     this.collectionName = 'menu';
-    this.stockMutex = new Mutex();
   }
 
   async findById(id) {
@@ -100,63 +98,25 @@ class JsonMenuRepository extends BaseRepository {
   }
 
   /**
-   * Increment stock (thread-safe)
+   * Increment stock
    */
   async incrementStock(id, amount) {
-    const release = await this.stockMutex.acquire();
-    try {
-      const db = await load();
-      const menu = Array.isArray(db[this.collectionName]) ? db[this.collectionName] : [];
-      const index = menu.findIndex(m => String(m.id) === String(id));
-      
-      if (index === -1) return null;
-      
-      const newStock = Number(menu[index].stock || 0) + Number(amount);
-      menu[index] = {
-        ...menu[index],
-        stock: newStock,
-        updatedAt: new Date().toISOString(),
-      };
-      
-      await save(db);
-      return menu[index];
-    } finally {
-      release();
-    }
+    const item = await this.findById(id);
+    if (!item) return null;
+    
+    const newStock = Number(item.stock || 0) + Number(amount);
+    return await this.update(id, { stock: newStock });
   }
 
   /**
-   * Decrement stock (thread-safe with validation)
+   * Decrement stock
    */
   async decrementStock(id, amount) {
-    const release = await this.stockMutex.acquire();
-    try {
-      const db = await load();
-      const menu = Array.isArray(db[this.collectionName]) ? db[this.collectionName] : [];
-      const index = menu.findIndex(m => String(m.id) === String(id));
-      
-      if (index === -1) return null;
-      
-      const currentStock = Number(menu[index].stock || 0);
-      const requestedAmount = Number(amount);
-      
-      // Prevent overselling: check if we have enough stock
-      if (currentStock < requestedAmount) {
-        throw new Error(`Insufficient stock for item ${id}. Available: ${currentStock}, Requested: ${requestedAmount}`);
-      }
-      
-      const newStock = currentStock - requestedAmount;
-      menu[index] = {
-        ...menu[index],
-        stock: newStock,
-        updatedAt: new Date().toISOString(),
-      };
-      
-      await save(db);
-      return menu[index];
-    } finally {
-      release();
-    }
+    const item = await this.findById(id);
+    if (!item) return null;
+    
+    const newStock = Math.max(0, Number(item.stock || 0) - Number(amount));
+    return await this.update(id, { stock: newStock });
   }
 }
 

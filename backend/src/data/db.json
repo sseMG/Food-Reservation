@@ -1,29 +1,734 @@
 {
   "users": [
     {
-      "id": "usr_miu2lmqz",
-      "name": "Balance User",
-      "email": "balance2@example.com",
-      "balance": 70,
-      "createdAt": "2025-12-06T09:07:25.931Z",
-      "updatedAt": "2025-12-06T09:07:25.933Z",
-      "studentId": "254673743"
+      "id": 1,
+      "name": "Admin",
+      "email": "admin@school.test",
+      "role": "admin",
+      "balance": 0,
+      "passwordHash": "$2a$10$rED3EwrK8WGE7kzkjlcHGe0Niwwhk2KyzOjOfjI/FjnUpPK/tM9Rq",
+      "studentId": "000000001"
+    },
+    {
+      "id": "usr_mie2b905",
+      "name": "Sean Dela",
+      "email": "syan@gmail.com",
+      "passwordHash": "$2a$10$fzEUjYs94YZQp4eF/hEIzua9b8ZWgHQyXyrZ.SeBOaURiHMzvOaCm",
+      "role": "student",
+      "grade": "",
+      "section": "",
+      "balance": 590,
+      "studentId": "202080189",
+      "phone": "09690636652",
+      "createdAt": "2025-11-25T04:15:02.741Z",
+      "updatedAt": "2025-11-25T04:34:15.700Z"
+    },
+    {
+      "id": "usr_migylvcy",
+      "name": "Anmol David Das",
+      "email": "spadymold@gmail.com",
+      "passwordHash": "$2a$10$1tENT.NNV7J/aTnlSXtsueltsHjl4o0ixWIe//FneXIsW0ib/ktmW",
+      "role": "student",
+      "grade": "",
+      "section": "",
+      "balance": 1514,
+      "studentId": "202231211",
+      "phone": "09688523253",
+      "status": "approved",
+      "approvalNotes": "Congratulations!",
+      "createdAt": "2025-11-27T04:54:38.338Z",
+      "updatedAt": "2025-12-03T02:52:44.501Z",
+      "profilePictureUrl": "/uploads/profile-usr_migylvcy-1764495171737_989580.jpg",
+      "passwordReset": {
+        "token": "8eu4yhzwkhdm3gdq7baz2q",
+        "expiresAt": "2025-12-03T03:52:44.498Z"
+      }
+    },
+    {
+      "id": "usr_mih0aoeu",
+      "name": "Sean SHADOW",
+      "email": "shadowstormseanx3g@gmail.com",
+      "passwordHash": "$2a$10$MkOsDMPyIyPlbV/QYWgDXOBbzKjZvFROTR1KQ9o0f.dn3ytfeCFkG",
+      "role": "student",
+      "grade": "",
+      "section": "",
+      "balance": 814,
+      "studentId": "202080183",
+      "phone": "09690336529",
+      "status": "approved",
+      "approvalNotes": "",
+      "createdAt": "2025-11-27T05:41:55.350Z",
+      "updatedAt": "2025-12-02T07:47:00.203Z",
+      "emailChange": null
+    },
+    {
+      "id": "usr_mihcp1j1",
+      "name": "King Shindeiru",
+      "email": "kingshindeiru@gmail.com",
+      "passwordHash": "$2a$10$ZBqccNN9B8OKgfkcrKqtZuGGRNJj78dmMCzEmxRx8YclEQNByBDye",
+      "role": "student",
+      "grade": "",
+      "section": "",
+      "balance": 0,
+      "studentId": "20230008",
+      "phone": "09688523253",
+      "status": "approved",
+      "approvalNotes": "",
+      "createdAt": "2025-11-27T11:29:00.925Z",
+      "updatedAt": "2025-12-02T01:42:56.047Z",
+      "isArchived": false,
+      "archivedAt": null,
+      "isActive": true,
+      "profilePictureUrl": "/uploads/profile-usr_mihcp1j1-1764563008940_611166.png",
+      "passwordReset": {
+        "token": "nc4z04qnfwkt53s45ix0g",
+        "expiresAt": "2025-12-02T02:42:56.043Z"
+      }
+    },
+    {
+      "id": "usr_miippayf",
+      "name": "Anmmmm r",
+      "email": "anmoldavidd@gmail.com",
+      "passwordHash": "$2a$10$imzUcnnaSOT.i7oOlAYQ.eyq6zV7SduVKoXvHH.e/2kWkzgoR/1jO",
+      "role": "student",
+      "grade": "",
+      "section": "",
+      "balance": 0,
+      "studentId": "2022344455",
+      "phone": "09688523253",
+      "status": "approved",
+      "approvalNotes": "",
+      "createdAt": "2025-11-28T10:20:54.327Z",
+      "updatedAt": "2025-12-01T04:05:11.693Z",
+      "isArchived": true,
+      "archivedAt": "2025-12-01T04:05:11.688Z",
+      "isActive": false
+    },
+    {
+      "id": "usr_mijisuue",
+      "name": "Student Test",
+      "email": "anmollovedas@gmail.com",
+      "passwordHash": "$2a$10$nPwiXWmdYely20wFbwA6wurARSjcMYyYBQdobE777mVF7xePitVSm",
+      "role": "student",
+      "grade": "",
+      "section": "",
+      "balance": 0,
+      "studentId": "207777886",
+      "phone": "0968775906",
+      "status": "approved",
+      "approvalNotes": "",
+      "createdAt": "2025-11-28T23:55:28.934Z",
+      "updatedAt": "2025-11-28T23:55:44.499Z"
+    },
+    {
+      "id": "usr_milikwak",
+      "name": "Jubal Velasco",
+      "email": "saurinanmoldavid@gmail.com",
+      "passwordHash": "$2a$10$qWKpCVFyk3vSWJMLlRiNHeYmeCXJefThScYwh5QRWvJu5I7SMe5Jy",
+      "role": "student",
+      "grade": "",
+      "section": "",
+      "balance": 0,
+      "studentId": "2022556733",
+      "phone": "09684598564",
+      "status": "approved",
+      "approvalNotes": "",
+      "createdAt": "2025-11-30T09:24:49.916Z",
+      "updatedAt": "2025-11-30T09:26:26.264Z",
+      "isArchived": true,
+      "archivedAt": "2025-11-30T09:26:26.260Z",
+      "isActive": false
+    },
+    {
+      "id": "usr_mimo6urw",
+      "name": "NORALYN S DAS",
+      "email": "dasmolster@gmail.com",
+      "passwordHash": "$2a$10$UYnRaeRps9qmT09HiS6BaOva..5mNNMKJ7u9ITPacWEm7HoOmjS4.",
+      "role": "student",
+      "grade": "",
+      "section": "",
+      "balance": 0,
+      "studentId": "4435364677",
+      "phone": "09258151814",
+      "status": "approved",
+      "approvalNotes": "",
+      "createdAt": "2025-12-01T04:49:38.636Z",
+      "updatedAt": "2025-12-01T04:49:54.226Z"
     }
   ],
   "menu": [
     {
-      "id": "ITM_1765012044869",
-      "name": "Stock Item",
-      "category": "Food",
-      "price": 50,
-      "stock": 7,
+      "id": "ITM_1764043247803",
+      "name": "Cookies",
+      "category": "Snacks",
+      "price": 10,
+      "stock": 48,
+      "img": "/uploads/cookies-1764043247798_350782.jpg",
+      "isActive": true,
       "visible": true,
       "deleted": false,
-      "createdAt": "2025-12-06T09:07:24.869Z",
-      "updatedAt": "2025-12-06T09:07:24.871Z"
+      "createdAt": "2025-11-25T04:00:47.803Z",
+      "updatedAt": "2025-11-30T06:00:06.426Z"
+    },
+    {
+      "id": "ITM_1764043429971",
+      "name": "Popcorn",
+      "category": "Snacks",
+      "price": 40,
+      "stock": 46,
+      "img": "/uploads/popcorn-1764043429967_318815.jpg",
+      "isActive": true,
+      "visible": true,
+      "deleted": false,
+      "createdAt": "2025-11-25T04:03:49.971Z",
+      "updatedAt": "2025-12-01T05:41:35.888Z"
+    },
+    {
+      "id": "ITM_1764044048789",
+      "name": "Chocolate Cake Slice",
+      "category": "Desserts",
+      "price": 80,
+      "stock": 7,
+      "img": "/uploads/chocolate-cake-slice-1764044048785_538685.jpg",
+      "isActive": true,
+      "visible": true,
+      "deleted": false,
+      "createdAt": "2025-11-25T04:14:08.789Z",
+      "updatedAt": "2025-12-01T05:41:35.879Z"
+    },
+    {
+      "id": "ITM_1764044595710",
+      "name": "Cappuccino heart coffee",
+      "category": "Warm Drink",
+      "price": 150,
+      "stock": 5,
+      "img": "/uploads/cappuccino-heart-coffee-1764044595705_619897.jpg",
+      "isActive": true,
+      "visible": true,
+      "deleted": false,
+      "createdAt": "2025-11-25T04:23:15.710Z",
+      "updatedAt": "2025-12-02T07:47:00.224Z"
+    },
+    {
+      "id": "ITM_1764044849234",
+      "name": "Cold Cappuccino Coffee",
+      "category": "Cold Drinks",
+      "price": 140,
+      "stock": 5,
+      "img": "/uploads/cold-cappuccino-coffee-1764044849230_494469.jpg",
+      "isActive": true,
+      "visible": true,
+      "deleted": false,
+      "createdAt": "2025-11-25T04:27:29.234Z",
+      "updatedAt": "2025-12-01T04:31:45.639Z"
+    },
+    {
+      "id": "ITM_1764325526167",
+      "name": "Piattos",
+      "category": "Junk Foods",
+      "price": 60,
+      "stock": 17,
+      "img": "/uploads/piattos-1764325526161_740675.jpg",
+      "isActive": true,
+      "visible": true,
+      "deleted": false,
+      "createdAt": "2025-11-28T10:25:26.167Z",
+      "updatedAt": "2025-12-01T04:52:39.660Z"
+    },
+    {
+      "id": "ITM_1764327544576",
+      "name": "Rice Meal A",
+      "category": "Meals",
+      "price": 80,
+      "stock": 27,
+      "img": "/uploads/rice-meal-a-1764327544571_957345.jpg",
+      "isActive": true,
+      "visible": true,
+      "deleted": false,
+      "createdAt": "2025-11-28T10:59:04.576Z",
+      "updatedAt": "2025-11-30T05:56:28.977Z"
+    },
+    {
+      "id": "ITM_1764327621968",
+      "name": "Beer",
+      "category": "Alak",
+      "price": 35,
+      "stock": 62,
+      "img": "/uploads/beer-1764327621962_79955.jpg",
+      "isActive": true,
+      "visible": true,
+      "deleted": false,
+      "createdAt": "2025-11-28T11:00:21.968Z",
+      "updatedAt": "2025-12-01T05:41:35.896Z"
+    },
+    {
+      "id": "ITM_1764330342264",
+      "name": "Iced Tea",
+      "category": "Cold Drinks",
+      "price": 30,
+      "stock": 33,
+      "img": "/uploads/iced-tea-1764330342259_832071.jpg",
+      "isActive": true,
+      "visible": true,
+      "deleted": false,
+      "createdAt": "2025-11-28T11:45:42.264Z",
+      "updatedAt": "2025-11-30T05:56:28.956Z"
+    },
+    {
+      "id": "ITM_1764563620378",
+      "name": "Dutch Mill",
+      "category": "Beverages",
+      "price": 20,
+      "stock": 9,
+      "img": "/uploads/dutch-mill-1764563620371_307071.jpg",
+      "isActive": true,
+      "visible": true,
+      "deleted": false,
+      "createdAt": "2025-12-01T04:33:40.378Z",
+      "updatedAt": "2025-12-01T04:52:39.652Z"
+    },
+    {
+      "id": "ITM_1764661540161",
+      "name": "Banana (One piece)",
+      "category": "Biology Foods",
+      "price": 18,
+      "stock": 22,
+      "img": "/uploads/banana-one-piece-1764661540144_34751.jpg",
+      "isActive": true,
+      "visible": true,
+      "deleted": false,
+      "createdAt": "2025-12-02T07:45:40.162Z",
+      "updatedAt": "2025-12-02T07:47:00.212Z"
+    },
+    {
+      "id": "ITM_1764666640140",
+      "name": "kupal",
+      "category": "tite ni lando",
+      "price": 46,
+      "stock": 19,
+      "img": "/uploads/kupal-1764666640133_7227.jpg",
+      "isActive": true,
+      "visible": true,
+      "deleted": false,
+      "createdAt": "2025-12-02T09:10:40.140Z",
+      "updatedAt": "2025-12-02T09:10:40.140Z"
     }
   ],
-  "reservations": [],
+  "reservations": [
+    {
+      "id": "RES_mie2zyn64b",
+      "userId": "usr_mie2b905",
+      "student": "Sean Dela",
+      "grade": "G10",
+      "section": "Psalms",
+      "when": "lunch",
+      "note": "",
+      "items": [
+        {
+          "id": "ITM_1764044048789",
+          "name": "Chocolate Cake Slice",
+          "price": 80,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764043429971",
+          "name": "Popcorn",
+          "price": 40,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764044849234",
+          "name": "Cold Cappuccino Coffee",
+          "price": 140,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764044595710",
+          "name": "Cappuccino heart coffee",
+          "price": 150,
+          "qty": 1
+        }
+      ],
+      "total": 410,
+      "status": "Claimed",
+      "transactionId": "txn_mie2zyn8",
+      "charged": true,
+      "chargedAt": "2025-11-25T04:34:15.714Z",
+      "stockDeducted": true,
+      "createdAt": "2025-11-25T04:34:15.718Z",
+      "updatedAt": "2025-11-25T04:37:17.304Z"
+    },
+    {
+      "id": "RES_mihd1n3zkl",
+      "userId": "usr_migylvcy",
+      "student": "Anmol David Das",
+      "grade": "G10",
+      "section": "Proverbs",
+      "when": "lunch",
+      "note": "",
+      "items": [
+        {
+          "id": "ITM_1764044595710",
+          "name": "Cappuccino heart coffee",
+          "price": 150,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764044048789",
+          "name": "Chocolate Cake Slice",
+          "price": 80,
+          "qty": 1
+        }
+      ],
+      "total": 230,
+      "status": "Claimed",
+      "transactionId": "txn_mihd1n41",
+      "charged": true,
+      "chargedAt": "2025-11-27T11:38:48.767Z",
+      "stockDeducted": true,
+      "createdAt": "2025-11-27T11:38:48.771Z",
+      "updatedAt": "2025-11-27T11:57:46.590Z"
+    },
+    {
+      "id": "RES_mihgnuox9u",
+      "userId": "usr_migylvcy",
+      "student": "Anmol David Das",
+      "grade": "G10",
+      "section": "Proverbs",
+      "when": "recess",
+      "note": "",
+      "items": [
+        {
+          "id": "ITM_1764043247803",
+          "name": "Cookies",
+          "price": 10,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764043429971",
+          "name": "Popcorn",
+          "price": 40,
+          "qty": 1
+        }
+      ],
+      "total": 50,
+      "status": "Rejected",
+      "transactionId": "txn_mihgnup0",
+      "charged": true,
+      "chargedAt": "2025-11-27T13:20:03.873Z",
+      "stockDeducted": true,
+      "createdAt": "2025-11-27T13:20:03.879Z",
+      "updatedAt": "2025-11-27T13:20:21.064Z",
+      "refunded": true,
+      "refundTransactionId": "txn_mihgo7yc"
+    },
+    {
+      "id": "RES_miir8b1r5g",
+      "userId": "usr_migylvcy",
+      "student": "Anmol David Das",
+      "grade": "G8",
+      "section": "Haggai",
+      "when": "lunch",
+      "note": "",
+      "items": [
+        {
+          "id": "ITM_1764327621968",
+          "name": "Beer",
+          "price": 34,
+          "qty": 3
+        },
+        {
+          "id": "ITM_1764043247803",
+          "name": "Cookies",
+          "price": 10,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764327544576",
+          "name": "Rice Meal A",
+          "price": 80,
+          "qty": 1
+        }
+      ],
+      "total": 192,
+      "status": "Claimed",
+      "transactionId": "txn_miir8b1t",
+      "charged": true,
+      "chargedAt": "2025-11-28T11:03:40.527Z",
+      "stockDeducted": true,
+      "createdAt": "2025-11-28T11:03:40.533Z",
+      "updatedAt": "2025-12-01T04:17:18.253Z"
+    },
+    {
+      "id": "RES_milb4yibi5",
+      "userId": "usr_migylvcy",
+      "student": "Anmol David Das",
+      "grade": "G10",
+      "section": "Psalms",
+      "when": "after",
+      "note": "",
+      "items": [
+        {
+          "id": "ITM_1764044595710",
+          "name": "Cappuccino heart coffee",
+          "price": 150,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764044048789",
+          "name": "Chocolate Cake Slice",
+          "price": 80,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764044849234",
+          "name": "Cold Cappuccino Coffee",
+          "price": 140,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764043247803",
+          "name": "Cookies",
+          "price": 10,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764330342264",
+          "name": "Iced Tea",
+          "price": 30,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764325526167",
+          "name": "Piattos",
+          "price": 60,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764043429971",
+          "name": "Popcorn",
+          "price": 40,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764327544576",
+          "name": "Rice Meal A",
+          "price": 80,
+          "qty": 1
+        }
+      ],
+      "total": 590,
+      "status": "Claimed",
+      "transactionId": "txn_milb4yie",
+      "charged": true,
+      "chargedAt": "2025-11-30T05:56:28.979Z",
+      "stockDeducted": true,
+      "createdAt": "2025-11-30T05:56:28.986Z",
+      "updatedAt": "2025-12-01T04:27:50.867Z"
+    },
+    {
+      "id": "RES_milb92do39",
+      "userId": "usr_migylvcy",
+      "student": "Anmol David Das",
+      "grade": "G9",
+      "section": "Corinthians",
+      "when": "recess",
+      "note": "",
+      "items": [
+        {
+          "id": "ITM_1764043247803",
+          "name": "Cookies",
+          "price": 10,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764043429971",
+          "name": "Popcorn",
+          "price": 40,
+          "qty": 1
+        }
+      ],
+      "total": 50,
+      "status": "Rejected",
+      "transactionId": "txn_milb92dr",
+      "charged": true,
+      "chargedAt": "2025-11-30T05:59:40.620Z",
+      "stockDeducted": true,
+      "createdAt": "2025-11-30T05:59:40.626Z",
+      "updatedAt": "2025-11-30T06:00:06.440Z",
+      "refunded": true,
+      "refundTransactionId": "txn_milb9mat"
+    },
+    {
+      "id": "RES_mimmyehn74",
+      "userId": "usr_migylvcy",
+      "student": "Anmol David Das",
+      "grade": "G10",
+      "section": "Proverbs",
+      "when": "recess",
+      "note": "Hi",
+      "items": [
+        {
+          "id": "ITM_1764043429971",
+          "name": "Popcorn",
+          "price": 40,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764044595710",
+          "name": "Cappuccino heart coffee",
+          "price": 150,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764325526167",
+          "name": "Piattos",
+          "price": 60,
+          "qty": 1
+        }
+      ],
+      "total": 250,
+      "status": "Claimed",
+      "transactionId": "txn_mimmyehs",
+      "charged": true,
+      "chargedAt": "2025-12-01T04:15:04.667Z",
+      "stockDeducted": true,
+      "createdAt": "2025-12-01T04:15:04.679Z",
+      "updatedAt": "2025-12-01T04:17:15.092Z"
+    },
+    {
+      "id": "RES_mimnnobj4h",
+      "userId": "usr_migylvcy",
+      "student": "Anmol David Das",
+      "grade": "G9",
+      "section": "Corinthians",
+      "when": "recess",
+      "note": "",
+      "items": [
+        {
+          "id": "ITM_1764563620378",
+          "name": "Dutch Mill",
+          "price": 20,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764325526167",
+          "name": "Piattos",
+          "price": 60,
+          "qty": 1
+        }
+      ],
+      "total": 80,
+      "status": "Rejected",
+      "transactionId": "txn_mimnnobn",
+      "charged": true,
+      "chargedAt": "2025-12-01T04:34:43.807Z",
+      "stockDeducted": true,
+      "createdAt": "2025-12-01T04:34:43.815Z",
+      "updatedAt": "2025-12-01T04:35:21.279Z",
+      "refunded": true,
+      "refundTransactionId": "txn_mimnoh89"
+    },
+    {
+      "id": "RES_mimoaqge93",
+      "userId": "usr_migylvcy",
+      "student": "Anmol David Das",
+      "grade": "G11",
+      "section": "Ermer",
+      "when": "recess",
+      "note": "",
+      "items": [
+        {
+          "id": "ITM_1764563620378",
+          "name": "Dutch Mill",
+          "price": 20,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764325526167",
+          "name": "Piattos",
+          "price": 60,
+          "qty": 1
+        }
+      ],
+      "total": 80,
+      "status": "Approved",
+      "transactionId": "txn_mimoaqgg",
+      "charged": true,
+      "chargedAt": "2025-12-01T04:52:39.662Z",
+      "stockDeducted": true,
+      "createdAt": "2025-12-01T04:52:39.669Z",
+      "updatedAt": "2025-12-01T04:53:09.874Z"
+    },
+    {
+      "id": "RES_mimq1o2igr",
+      "userId": "usr_migylvcy",
+      "student": "Anmol David Das",
+      "grade": "G11",
+      "section": "Franky",
+      "when": "lunch",
+      "note": "",
+      "items": [
+        {
+          "id": "ITM_1764044048789",
+          "name": "Chocolate Cake Slice",
+          "price": 80,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764043429971",
+          "name": "Popcorn",
+          "price": 40,
+          "qty": 1
+        },
+        {
+          "id": "ITM_1764327621968",
+          "name": "Beer",
+          "price": 35,
+          "qty": 1
+        }
+      ],
+      "total": 155,
+      "status": "Approved",
+      "transactionId": "txn_mimq1o2l",
+      "charged": true,
+      "chargedAt": "2025-12-01T05:41:35.898Z",
+      "stockDeducted": true,
+      "createdAt": "2025-12-01T05:41:35.908Z",
+      "updatedAt": "2025-12-01T05:42:45.917Z"
+    },
+    {
+      "id": "RES_mio9ysjm64",
+      "userId": "usr_mih0aoeu",
+      "student": "Sean SHADOW",
+      "grade": "G7",
+      "section": "Genesis",
+      "when": "recess",
+      "note": "",
+      "items": [
+        {
+          "id": "ITM_1764661540161",
+          "name": "Banana (One piece)",
+          "price": 18,
+          "qty": 2
+        },
+        {
+          "id": "ITM_1764044595710",
+          "name": "Cappuccino heart coffee",
+          "price": 150,
+          "qty": 1
+        }
+      ],
+      "total": 186,
+      "status": "Ready",
+      "transactionId": "txn_mio9ysjp",
+      "charged": true,
+      "chargedAt": "2025-12-02T07:47:00.226Z",
+      "stockDeducted": true,
+      "createdAt": "2025-12-02T07:47:00.236Z",
+      "updatedAt": "2025-12-02T07:48:16.262Z"
+    }
+  ],
   "topups": [
     {
       "id": "top_mie2xah1",
@@ -334,924 +1039,9 @@
       "direction": "debit",
       "status": "Success",
       "createdAt": "2025-12-02T07:47:00.229Z"
-    },
-    {
-      "id": "txn_mistcnm3",
-      "userId": "usr_mistcnkp",
-      "title": "Reservation Hold",
-      "ref": "RES_mistcnm14t",
-      "amount": 100,
-      "direction": "debit",
-      "status": "Pending",
-      "createdAt": "2025-12-05T12:00:44.427Z"
-    },
-    {
-      "id": "txn_mistdhpv",
-      "userId": "usr_mistdhom",
-      "title": "Reservation Hold",
-      "ref": "RES_mistdhpuo9",
-      "amount": 100,
-      "direction": "debit",
-      "status": "Pending",
-      "createdAt": "2025-12-05T12:01:23.443Z"
-    },
-    {
-      "id": "txn_misufsan",
-      "userId": "usr_misufs9f",
-      "title": "Reservation Hold",
-      "ref": "RES_misufsamh5",
-      "amount": 100,
-      "direction": "debit",
-      "status": "Pending",
-      "createdAt": "2025-12-05T12:31:10.079Z"
-    },
-    {
-      "id": "txn_misuknk4",
-      "userId": "usr_misukniv",
-      "title": "Reservation Hold",
-      "ref": "RES_misuknk34a",
-      "amount": 100,
-      "direction": "debit",
-      "status": "Pending",
-      "createdAt": "2025-12-05T12:34:57.220Z"
-    },
-    {
-      "id": "txn_misulysl",
-      "userId": "usr_misulyrw",
-      "title": "Reservation Hold",
-      "ref": "RES_misulyskhk",
-      "amount": 100,
-      "direction": "debit",
-      "status": "Pending",
-      "createdAt": "2025-12-05T12:35:58.437Z"
-    },
-    {
-      "id": "txn_misuny17",
-      "userId": "usr_misuny0l",
-      "title": "Reservation Hold",
-      "ref": "RES_misuny1666",
-      "amount": 100,
-      "direction": "debit",
-      "status": "Pending",
-      "createdAt": "2025-12-05T12:37:30.763Z"
-    },
-    {
-      "id": "txn_miu1moh2",
-      "userId": "usr_miu1mog5",
-      "title": "Reservation Hold",
-      "ref": "RES_miu1moh0bv",
-      "amount": 100,
-      "direction": "debit",
-      "status": "Pending",
-      "createdAt": "2025-12-06T08:40:15.206Z"
-    },
-    {
-      "id": "txn_miu1stx4",
-      "userId": "usr_miu1stwb",
-      "title": "Reservation Hold",
-      "ref": "RES_miu1stx37e",
-      "amount": 100,
-      "direction": "debit",
-      "status": "Pending",
-      "createdAt": "2025-12-06T08:45:02.200Z"
-    },
-    {
-      "id": "txn_miu1w8d1",
-      "userId": "usr_miu1w8cb",
-      "title": "Reservation Hold",
-      "ref": "RES_miu1w8d0ot",
-      "amount": 100,
-      "direction": "debit",
-      "status": "Pending",
-      "createdAt": "2025-12-06T08:47:40.885Z"
-    },
-    {
-      "id": "txn_miu1xmyu",
-      "userId": "usr_miu1xmxy",
-      "title": "Reservation Hold",
-      "ref": "RES_miu1xmyt6v",
-      "amount": 100,
-      "direction": "debit",
-      "status": "Pending",
-      "createdAt": "2025-12-06T08:48:46.470Z"
-    },
-    {
-      "id": "txn_miu2561z",
-      "userId": "usr_miu25617",
-      "title": "Reservation Hold",
-      "ref": "RES_miu2561yme",
-      "amount": 100,
-      "direction": "debit",
-      "status": "Pending",
-      "createdAt": "2025-12-06T08:54:37.799Z"
-    },
-    {
-      "id": "txn_miu28nlt",
-      "userId": "usr_miu28nkz",
-      "title": "Reservation Hold",
-      "ref": "RES_miu28nlrkb",
-      "amount": 100,
-      "direction": "debit",
-      "status": "Pending",
-      "createdAt": "2025-12-06T08:57:20.513Z"
-    },
-    {
-      "id": "txn_miu2h2k8",
-      "userId": "usr_miu2h2jj",
-      "title": "Reservation Hold",
-      "ref": "RES_miu2h2k7af",
-      "amount": 100,
-      "direction": "debit",
-      "status": "Pending",
-      "createdAt": "2025-12-06T09:03:53.144Z"
-    },
-    {
-      "id": "txn_miu2ib3t",
-      "userId": "usr_miu2ib36",
-      "title": "Reservation Hold",
-      "ref": "RES_miu2ib3sd6",
-      "amount": 100,
-      "direction": "debit",
-      "status": "Pending",
-      "createdAt": "2025-12-06T09:04:50.874Z"
-    },
-    {
-      "id": "txn_miu2lkeu",
-      "userId": "usr_miu2lke1",
-      "title": "Reservation Hold",
-      "ref": "RES_miu2lketqf",
-      "amount": 100,
-      "direction": "debit",
-      "status": "Pending",
-      "createdAt": "2025-12-06T09:07:22.902Z"
     }
   ],
   "notifications": [
-    {
-      "id": "notif_miu2lkew",
-      "for": "admin",
-      "actor": {
-        "id": "usr_miu2lke1",
-        "name": "Test User",
-        "email": "test1765012042805@example.com"
-      },
-      "type": "reservation:created",
-      "title": "New reservation submitted",
-      "body": "Test User submitted a reservation",
-      "data": {
-        "reservationId": "RES_miu2lketqf",
-        "items": [
-          {
-            "id": "ITM_1765012042876",
-            "name": "Test Item",
-            "price": 50,
-            "qty": 2
-          }
-        ],
-        "total": 100,
-        "note": "",
-        "slot": "12:00 PM",
-        "grade": "12",
-        "section": "A",
-        "student": "Test User"
-      },
-      "read": false,
-      "createdAt": "2025-12-06T09:07:22.904Z"
-    },
-    {
-      "id": "notif_miu2ljn4",
-      "for": "admin",
-      "actor": null,
-      "type": "student:pending-approval",
-      "title": "New Student Registration Pending Approval: New User",
-      "body": "A new student registration requires approval.\n\nName: New User\nStudent ID: 012041820\nEmail: newuser-json-1765012041820@example.com\nPhone: 1234567890\n\nPlease review and approve or reject this registration.",
-      "data": {
-        "userId": "usr_miu2ljn3",
-        "studentName": "New User",
-        "studentId": "012041820",
-        "email": "newuser-json-1765012041820@example.com",
-        "phone": "1234567890",
-        "grade": "",
-        "section": "",
-        "status": "pending"
-      },
-      "read": false,
-      "createdAt": "2025-12-06T09:07:21.904Z"
-    },
-    {
-      "id": "notif_miu2ib3w",
-      "for": "admin",
-      "actor": {
-        "id": "usr_miu2ib36",
-        "name": "Test User",
-        "email": "test1765011890783@example.com"
-      },
-      "type": "reservation:created",
-      "title": "New reservation submitted",
-      "body": "Test User submitted a reservation",
-      "data": {
-        "reservationId": "RES_miu2ib3sd6",
-        "items": [
-          {
-            "id": "ITM_1765011890853",
-            "name": "Test Item",
-            "price": 50,
-            "qty": 2
-          }
-        ],
-        "total": 100,
-        "note": "",
-        "slot": "12:00 PM",
-        "grade": "12",
-        "section": "A",
-        "student": "Test User"
-      },
-      "read": false,
-      "createdAt": "2025-12-06T09:04:50.875Z"
-    },
-    {
-      "id": "notif_miu2iad0",
-      "for": "admin",
-      "actor": null,
-      "type": "student:pending-approval",
-      "title": "New Student Registration Pending Approval: New User",
-      "body": "A new student registration requires approval.\n\nName: New User\nStudent ID: 011889811\nEmail: newuser-json-1765011889811@example.com\nPhone: 1234567890\n\nPlease review and approve or reject this registration.",
-      "data": {
-        "userId": "usr_miu2iacz",
-        "studentName": "New User",
-        "studentId": "011889811",
-        "email": "newuser-json-1765011889811@example.com",
-        "phone": "1234567890",
-        "grade": "",
-        "section": "",
-        "status": "pending"
-      },
-      "read": false,
-      "createdAt": "2025-12-06T09:04:49.908Z"
-    },
-    {
-      "id": "notif_miu2h2kb",
-      "for": "admin",
-      "actor": {
-        "id": "usr_miu2h2jj",
-        "name": "Test User",
-        "email": "test1765011833054@example.com"
-      },
-      "type": "reservation:created",
-      "title": "New reservation submitted",
-      "body": "Test User submitted a reservation",
-      "data": {
-        "reservationId": "RES_miu2h2k7af",
-        "items": [
-          {
-            "id": "ITM_1765011833122",
-            "name": "Test Item",
-            "price": 50,
-            "qty": 2
-          }
-        ],
-        "total": 100,
-        "note": "",
-        "slot": "12:00 PM",
-        "grade": "12",
-        "section": "A",
-        "student": "Test User"
-      },
-      "read": false,
-      "createdAt": "2025-12-06T09:03:53.146Z"
-    },
-    {
-      "id": "notif_miu2h1si",
-      "for": "admin",
-      "actor": null,
-      "type": "student:pending-approval",
-      "title": "New Student Registration Pending Approval: New User",
-      "body": "A new student registration requires approval.\n\nName: New User\nStudent ID: 011832049\nEmail: newuser-json-1765011832049@example.com\nPhone: 1234567890\n\nPlease review and approve or reject this registration.",
-      "data": {
-        "userId": "usr_miu2h1sh",
-        "studentName": "New User",
-        "studentId": "011832049",
-        "email": "newuser-json-1765011832049@example.com",
-        "phone": "1234567890",
-        "grade": "",
-        "section": "",
-        "status": "pending"
-      },
-      "read": false,
-      "createdAt": "2025-12-06T09:03:52.146Z"
-    },
-    {
-      "id": "notif_miu28nlw",
-      "for": "admin",
-      "actor": {
-        "id": "usr_miu28nkz",
-        "name": "Test User",
-        "email": "test1765011440416@example.com"
-      },
-      "type": "reservation:created",
-      "title": "New reservation submitted",
-      "body": "Test User submitted a reservation",
-      "data": {
-        "reservationId": "RES_miu28nlrkb",
-        "items": [
-          {
-            "id": "ITM_1765011440486",
-            "name": "Test Item",
-            "price": 50,
-            "qty": 2
-          }
-        ],
-        "total": 100,
-        "note": "",
-        "slot": "12:00 PM",
-        "grade": "12",
-        "section": "A",
-        "student": "Test User"
-      },
-      "read": false,
-      "createdAt": "2025-12-06T08:57:20.515Z"
-    },
-    {
-      "id": "notif_miu28mtu",
-      "for": "admin",
-      "actor": null,
-      "type": "student:pending-approval",
-      "title": "New Student Registration Pending Approval: New User",
-      "body": "A new student registration requires approval.\n\nName: New User\nStudent ID: 011439428\nEmail: newuser-json-1765011439428@example.com\nPhone: 1234567890\n\nPlease review and approve or reject this registration.",
-      "data": {
-        "userId": "usr_miu28mtt",
-        "studentName": "New User",
-        "studentId": "011439428",
-        "email": "newuser-json-1765011439428@example.com",
-        "phone": "1234567890",
-        "grade": "",
-        "section": "",
-        "status": "pending"
-      },
-      "read": false,
-      "createdAt": "2025-12-06T08:57:19.506Z"
-    },
-    {
-      "id": "notif_miu25621",
-      "for": "admin",
-      "actor": {
-        "id": "usr_miu25617",
-        "name": "Test User",
-        "email": "test1765011277697@example.com"
-      },
-      "type": "reservation:created",
-      "title": "New reservation submitted",
-      "body": "Test User submitted a reservation",
-      "data": {
-        "reservationId": "RES_miu2561yme",
-        "items": [
-          {
-            "id": "ITM_1765011277774",
-            "name": "Test Item",
-            "price": 50,
-            "qty": 2
-          }
-        ],
-        "total": 100,
-        "note": "",
-        "slot": "12:00 PM",
-        "grade": "12",
-        "section": "A",
-        "student": "Test User"
-      },
-      "read": false,
-      "createdAt": "2025-12-06T08:54:37.801Z"
-    },
-    {
-      "id": "notif_miu2555k",
-      "for": "admin",
-      "actor": null,
-      "type": "student:pending-approval",
-      "title": "New Student Registration Pending Approval: New User",
-      "body": "A new student registration requires approval.\n\nName: New User\nStudent ID: 011276518\nEmail: newuser-json-1765011276518@example.com\nPhone: 1234567890\n\nPlease review and approve or reject this registration.",
-      "data": {
-        "userId": "usr_miu2555k",
-        "studentName": "New User",
-        "studentId": "011276518",
-        "email": "newuser-json-1765011276518@example.com",
-        "phone": "1234567890",
-        "grade": "",
-        "section": "",
-        "status": "pending"
-      },
-      "read": false,
-      "createdAt": "2025-12-06T08:54:36.632Z"
-    },
-    {
-      "id": "notif_miu1xmyx",
-      "for": "admin",
-      "actor": {
-        "id": "usr_miu1xmxy",
-        "name": "Test User",
-        "email": "test1765010926373@example.com"
-      },
-      "type": "reservation:created",
-      "title": "New reservation submitted",
-      "body": "Test User submitted a reservation",
-      "data": {
-        "reservationId": "RES_miu1xmyt6v",
-        "items": [
-          {
-            "id": "ITM_1765010926441",
-            "name": "Test Item",
-            "price": 50,
-            "qty": 2
-          }
-        ],
-        "total": 100,
-        "note": "",
-        "slot": "12:00 PM",
-        "grade": "12",
-        "section": "A",
-        "student": "Test User"
-      },
-      "read": false,
-      "createdAt": "2025-12-06T08:48:46.472Z"
-    },
-    {
-      "id": "notif_miu1xm8d",
-      "for": "admin",
-      "actor": null,
-      "type": "student:pending-approval",
-      "title": "New Student Registration Pending Approval: New User",
-      "body": "A new student registration requires approval.\n\nName: New User\nStudent ID: 010925414\nEmail: newuser-json-1765010925414@example.com\nPhone: 1234567890\n\nPlease review and approve or reject this registration.",
-      "data": {
-        "userId": "usr_miu1xm8c",
-        "studentName": "New User",
-        "studentId": "010925414",
-        "email": "newuser-json-1765010925414@example.com",
-        "phone": "1234567890",
-        "grade": "",
-        "section": "",
-        "status": "pending"
-      },
-      "read": false,
-      "createdAt": "2025-12-06T08:48:45.517Z"
-    },
-    {
-      "id": "notif_miu1w8d4",
-      "for": "admin",
-      "actor": {
-        "id": "usr_miu1w8cb",
-        "name": "Test User",
-        "email": "test1765010860792@example.com"
-      },
-      "type": "reservation:created",
-      "title": "New reservation submitted",
-      "body": "Test User submitted a reservation",
-      "data": {
-        "reservationId": "RES_miu1w8d0ot",
-        "items": [
-          {
-            "id": "ITM_1765010860862",
-            "name": "Test Item",
-            "price": 50,
-            "qty": 2
-          }
-        ],
-        "total": 100,
-        "note": "",
-        "slot": "12:00 PM",
-        "grade": "12",
-        "section": "A",
-        "student": "Test User"
-      },
-      "read": false,
-      "createdAt": "2025-12-06T08:47:40.887Z"
-    },
-    {
-      "id": "notif_miu1w7jc",
-      "for": "admin",
-      "actor": null,
-      "type": "student:pending-approval",
-      "title": "New Student Registration Pending Approval: New User",
-      "body": "A new student registration requires approval.\n\nName: New User\nStudent ID: 010859712\nEmail: newuser-json-1765010859712@example.com\nPhone: 1234567890\n\nPlease review and approve or reject this registration.",
-      "data": {
-        "userId": "usr_miu1w7jc",
-        "studentName": "New User",
-        "studentId": "010859712",
-        "email": "newuser-json-1765010859712@example.com",
-        "phone": "1234567890",
-        "grade": "",
-        "section": "",
-        "status": "pending"
-      },
-      "read": false,
-      "createdAt": "2025-12-06T08:47:39.816Z"
-    },
-    {
-      "id": "notif_miu1stx6",
-      "for": "admin",
-      "actor": {
-        "id": "usr_miu1stwb",
-        "name": "Test User",
-        "email": "test1765010702105@example.com"
-      },
-      "type": "reservation:created",
-      "title": "New reservation submitted",
-      "body": "Test User submitted a reservation",
-      "data": {
-        "reservationId": "RES_miu1stx37e",
-        "items": [
-          {
-            "id": "ITM_1765010702174",
-            "name": "Test Item",
-            "price": 50,
-            "qty": 2
-          }
-        ],
-        "total": 100,
-        "note": "",
-        "slot": "12:00 PM",
-        "grade": "12",
-        "section": "A",
-        "student": "Test User"
-      },
-      "read": false,
-      "createdAt": "2025-12-06T08:45:02.202Z"
-    },
-    {
-      "id": "notif_miu1st4c",
-      "for": "admin",
-      "actor": null,
-      "type": "student:pending-approval",
-      "title": "New Student Registration Pending Approval: New User",
-      "body": "A new student registration requires approval.\n\nName: New User\nStudent ID: 010701079\nEmail: newuser-json-1765010701079@example.com\nPhone: 1234567890\n\nPlease review and approve or reject this registration.",
-      "data": {
-        "userId": "usr_miu1st4b",
-        "studentName": "New User",
-        "studentId": "010701079",
-        "email": "newuser-json-1765010701079@example.com",
-        "phone": "1234567890",
-        "grade": "",
-        "section": "",
-        "status": "pending"
-      },
-      "read": false,
-      "createdAt": "2025-12-06T08:45:01.164Z"
-    },
-    {
-      "id": "notif_miu1moh5",
-      "for": "admin",
-      "actor": {
-        "id": "usr_miu1mog5",
-        "name": "Test User",
-        "email": "test1765010415107@example.com"
-      },
-      "type": "reservation:created",
-      "title": "New reservation submitted",
-      "body": "Test User submitted a reservation",
-      "data": {
-        "reservationId": "RES_miu1moh0bv",
-        "items": [
-          {
-            "id": "ITM_1765010415176",
-            "name": "Test Item",
-            "price": 50,
-            "qty": 2
-          }
-        ],
-        "total": 100,
-        "note": "",
-        "slot": "12:00 PM",
-        "grade": "12",
-        "section": "A",
-        "student": "Test User"
-      },
-      "read": false,
-      "createdAt": "2025-12-06T08:40:15.208Z"
-    },
-    {
-      "id": "notif_miu1mnp3",
-      "for": "admin",
-      "actor": null,
-      "type": "student:pending-approval",
-      "title": "New Student Registration Pending Approval: New User",
-      "body": "A new student registration requires approval.\n\nName: New User\nStudent ID: 010414121\nEmail: newuser-json-1765010414121@example.com\nPhone: 1234567890\n\nPlease review and approve or reject this registration.",
-      "data": {
-        "userId": "usr_miu1mnp2",
-        "studentName": "New User",
-        "studentId": "010414121",
-        "email": "newuser-json-1765010414121@example.com",
-        "phone": "1234567890",
-        "grade": "",
-        "section": "",
-        "status": "pending"
-      },
-      "read": false,
-      "createdAt": "2025-12-06T08:40:14.199Z"
-    },
-    {
-      "id": "notif_misuny1a",
-      "for": "admin",
-      "actor": {
-        "id": "usr_misuny0l",
-        "name": "Test User",
-        "email": "test1764938250677@example.com"
-      },
-      "type": "reservation:created",
-      "title": "New reservation submitted",
-      "body": "Test User submitted a reservation",
-      "data": {
-        "reservationId": "RES_misuny1666",
-        "items": [
-          {
-            "id": "ITM_1764938250743",
-            "name": "Test Item",
-            "price": 50,
-            "qty": 2
-          }
-        ],
-        "total": 100,
-        "note": "",
-        "slot": "12:00 PM",
-        "grade": "12",
-        "section": "A",
-        "student": "Test User"
-      },
-      "read": false,
-      "createdAt": "2025-12-05T12:37:30.765Z"
-    },
-    {
-      "id": "notif_misunx9t",
-      "for": "admin",
-      "actor": null,
-      "type": "student:pending-approval",
-      "title": "New Student Registration Pending Approval: New User",
-      "body": "A new student registration requires approval.\n\nName: New User\nStudent ID: 938249701\nEmail: newuser-json-1764938249701@example.com\nPhone: 1234567890\n\nPlease review and approve or reject this registration.",
-      "data": {
-        "userId": "usr_misunx9s",
-        "studentName": "New User",
-        "studentId": "938249701",
-        "email": "newuser-json-1764938249701@example.com",
-        "phone": "1234567890",
-        "grade": "",
-        "section": "",
-        "status": "pending"
-      },
-      "read": false,
-      "createdAt": "2025-12-05T12:37:29.777Z"
-    },
-    {
-      "id": "notif_misulzgg",
-      "for": "admin",
-      "actor": null,
-      "type": "student:pending-approval",
-      "title": "New Student Registration Pending Approval: New User",
-      "body": "A new student registration requires approval.\n\nName: New User\nStudent ID: 938159218\nEmail: newuser-json-1764938159218@example.com\nPhone: 1234567890\n\nPlease review and approve or reject this registration.",
-      "data": {
-        "userId": "usr_misulzgg",
-        "studentName": "New User",
-        "studentId": "938159218",
-        "email": "newuser-json-1764938159218@example.com",
-        "phone": "1234567890",
-        "grade": "",
-        "section": "",
-        "status": "pending"
-      },
-      "read": false,
-      "createdAt": "2025-12-05T12:35:59.296Z"
-    },
-    {
-      "id": "notif_misulysn",
-      "for": "admin",
-      "actor": {
-        "id": "usr_misulyrw",
-        "name": "Test User",
-        "email": "test1764938158347@example.com"
-      },
-      "type": "reservation:created",
-      "title": "New reservation submitted",
-      "body": "Test User submitted a reservation",
-      "data": {
-        "reservationId": "RES_misulyskhk",
-        "items": [
-          {
-            "id": "ITM_1764938158414",
-            "name": "Test Item",
-            "price": 50,
-            "qty": 2
-          }
-        ],
-        "total": 100,
-        "note": "",
-        "slot": "12:00 PM",
-        "grade": "12",
-        "section": "A",
-        "student": "Test User"
-      },
-      "read": false,
-      "createdAt": "2025-12-05T12:35:58.439Z"
-    },
-    {
-      "id": "notif_misukobu",
-      "for": "admin",
-      "actor": null,
-      "type": "student:pending-approval",
-      "title": "New Student Registration Pending Approval: New User",
-      "body": "A new student registration requires approval.\n\nName: New User\nStudent ID: 938098128\nEmail: newuser-json-1764938098128@example.com\nPhone: 1234567890\n\nPlease review and approve or reject this registration.",
-      "data": {
-        "userId": "usr_misukobu",
-        "studentName": "New User",
-        "studentId": "938098128",
-        "email": "newuser-json-1764938098128@example.com",
-        "phone": "1234567890",
-        "grade": "",
-        "section": "",
-        "status": "pending"
-      },
-      "read": false,
-      "createdAt": "2025-12-05T12:34:58.218Z"
-    },
-    {
-      "id": "notif_misuknk7",
-      "for": "admin",
-      "actor": {
-        "id": "usr_misukniv",
-        "name": "Test User",
-        "email": "test1764938097108@example.com"
-      },
-      "type": "reservation:created",
-      "title": "New reservation submitted",
-      "body": "Test User submitted a reservation",
-      "data": {
-        "reservationId": "RES_misuknk34a",
-        "items": [
-          {
-            "id": "ITM_1764938097181",
-            "name": "Test Item",
-            "price": 50,
-            "qty": 2
-          }
-        ],
-        "total": 100,
-        "note": "",
-        "slot": "12:00 PM",
-        "grade": "12",
-        "section": "A",
-        "student": "Test User"
-      },
-      "read": false,
-      "createdAt": "2025-12-05T12:34:57.222Z"
-    },
-    {
-      "id": "notif_misug0jx",
-      "for": "admin",
-      "actor": null,
-      "type": "student:pending-approval",
-      "title": "New Student Registration Pending Approval: New User",
-      "body": "A new student registration requires approval.\n\nName: New User\nStudent ID: 937880703\nEmail: newuser-json-1764937880703@example.com\nPhone: 1234567890\n\nPlease review and approve or reject this registration.",
-      "data": {
-        "userId": "usr_misug0jw",
-        "studentName": "New User",
-        "studentId": "937880703",
-        "email": "newuser-json-1764937880703@example.com",
-        "phone": "1234567890",
-        "grade": "",
-        "section": "",
-        "status": "pending"
-      },
-      "read": false,
-      "createdAt": "2025-12-05T12:31:20.781Z"
-    },
-    {
-      "id": "notif_misufsaq",
-      "for": "admin",
-      "actor": {
-        "id": "usr_misufs9f",
-        "name": "Test User",
-        "email": "test1764937869967@example.com"
-      },
-      "type": "reservation:created",
-      "title": "New reservation submitted",
-      "body": "Test User submitted a reservation",
-      "data": {
-        "reservationId": "RES_misufsamh5",
-        "items": [
-          {
-            "id": "ITM_1764937870040",
-            "name": "Test Item",
-            "price": 50,
-            "qty": 2
-          }
-        ],
-        "total": 100,
-        "note": "",
-        "slot": "12:00 PM",
-        "grade": "12",
-        "section": "A",
-        "student": "Test User"
-      },
-      "read": false,
-      "createdAt": "2025-12-05T12:31:10.081Z"
-    },
-    {
-      "id": "notif_mistdps7",
-      "for": "admin",
-      "actor": null,
-      "type": "student:pending-approval",
-      "title": "New Student Registration Pending Approval: New User",
-      "body": "A new student registration requires approval.\n\nName: New User\nStudent ID: 936093820\nEmail: newuser-json-1764936093820@example.com\nPhone: 1234567890\n\nPlease review and approve or reject this registration.",
-      "data": {
-        "userId": "usr_mistdps7",
-        "studentName": "New User",
-        "studentId": "936093820",
-        "email": "newuser-json-1764936093820@example.com",
-        "phone": "1234567890",
-        "grade": "",
-        "section": "",
-        "status": "pending"
-      },
-      "read": false,
-      "createdAt": "2025-12-05T12:01:33.895Z"
-    },
-    {
-      "id": "notif_mistdhpy",
-      "for": "admin",
-      "actor": {
-        "id": "usr_mistdhom",
-        "name": "Test User",
-        "email": "test1764936083328@example.com"
-      },
-      "type": "reservation:created",
-      "title": "New reservation submitted",
-      "body": "Test User submitted a reservation",
-      "data": {
-        "reservationId": "RES_mistdhpuo9",
-        "items": [
-          {
-            "id": "ITM_1764936083402",
-            "name": "Test Item",
-            "price": 50,
-            "qty": 2
-          }
-        ],
-        "total": 100,
-        "note": "",
-        "slot": "12:00 PM",
-        "grade": "12",
-        "section": "A",
-        "student": "Test User"
-      },
-      "read": false,
-      "createdAt": "2025-12-05T12:01:23.445Z"
-    },
-    {
-      "id": "notif_mistctku",
-      "for": "admin",
-      "actor": null,
-      "type": "student:pending-approval",
-      "title": "New Student Registration Pending Approval: New User",
-      "body": "A new student registration requires approval.\n\nName: New User\nStudent ID: 936052078\nEmail: newuser-json-1764936052078@example.com\nPhone: 1234567890\n\nPlease review and approve or reject this registration.",
-      "data": {
-        "userId": "usr_mistctkt",
-        "studentName": "New User",
-        "studentId": "936052078",
-        "email": "newuser-json-1764936052078@example.com",
-        "phone": "1234567890",
-        "grade": "",
-        "section": "",
-        "status": "pending"
-      },
-      "read": false,
-      "createdAt": "2025-12-05T12:00:52.158Z"
-    },
-    {
-      "id": "notif_mistcnm5",
-      "for": "admin",
-      "actor": {
-        "id": "usr_mistcnkp",
-        "name": "Test User",
-        "email": "test1764936044312@example.com"
-      },
-      "type": "reservation:created",
-      "title": "New reservation submitted",
-      "body": "Test User submitted a reservation",
-      "data": {
-        "reservationId": "RES_mistcnm14t",
-        "items": [
-          {
-            "id": "ITM_1764936044379",
-            "name": "Test Item",
-            "price": 50,
-            "qty": 2
-          }
-        ],
-        "total": 100,
-        "note": "",
-        "slot": "12:00 PM",
-        "grade": "12",
-        "section": "A",
-        "student": "Test User"
-      },
-      "read": false,
-      "createdAt": "2025-12-05T12:00:44.428Z"
-    },
     {
       "id": "notif_mioa0f7s",
       "for": "usr_mih0aoeu",
@@ -3568,293 +3358,6 @@
       "items": [],
       "createdAt": "2025-12-02T07:37:37.756Z",
       "updatedAt": "2025-12-02T07:37:37.756Z"
-    },
-    {
-      "id": "cart_mistcuc4",
-      "userId": "usr_mistcubi",
-      "items": [],
-      "createdAt": "2025-12-05T12:00:53.140Z",
-      "updatedAt": "2025-12-05T12:00:53.140Z"
-    },
-    {
-      "id": "cart_mistdqjv",
-      "userId": "usr_mistdqjb",
-      "items": [],
-      "createdAt": "2025-12-05T12:01:34.891Z",
-      "updatedAt": "2025-12-05T12:01:34.891Z"
-    },
-    {
-      "id": "cart_misug1i1",
-      "userId": "usr_misug1hm",
-      "items": [],
-      "createdAt": "2025-12-05T12:31:22.009Z",
-      "updatedAt": "2025-12-05T12:31:22.009Z"
-    },
-    {
-      "id": "cart_misug1jz",
-      "userId": "usr_misug1jr",
-      "items": [
-        {
-          "itemId": "item1",
-          "qty": 2,
-          "name": "Test Item",
-          "price": 50
-        }
-      ],
-      "createdAt": "2025-12-05T12:31:22.079Z",
-      "updatedAt": "2025-12-05T12:31:22.083Z"
-    },
-    {
-      "id": "cart_misukp3m",
-      "userId": "usr_misukp39",
-      "items": [],
-      "createdAt": "2025-12-05T12:34:59.218Z",
-      "updatedAt": "2025-12-05T12:34:59.218Z"
-    },
-    {
-      "id": "cart_misukp5m",
-      "userId": "usr_misukp5c",
-      "items": [
-        {
-          "itemId": "item1",
-          "qty": 2,
-          "name": "Test Item",
-          "price": 50
-        }
-      ],
-      "createdAt": "2025-12-05T12:34:59.290Z",
-      "updatedAt": "2025-12-05T12:34:59.293Z"
-    },
-    {
-      "id": "cart_misum07m",
-      "userId": "usr_misum078",
-      "items": [],
-      "createdAt": "2025-12-05T12:36:00.274Z",
-      "updatedAt": "2025-12-05T12:36:00.274Z"
-    },
-    {
-      "id": "cart_misum09v",
-      "userId": "usr_misum09d",
-      "items": [
-        {
-          "itemId": "item1",
-          "qty": 2,
-          "name": "Test Item",
-          "price": 50
-        }
-      ],
-      "createdAt": "2025-12-05T12:36:00.355Z",
-      "updatedAt": "2025-12-05T12:36:00.358Z"
-    },
-    {
-      "id": "cart_misunyot",
-      "userId": "usr_misunyog",
-      "items": [],
-      "createdAt": "2025-12-05T12:37:31.613Z",
-      "updatedAt": "2025-12-05T12:37:31.613Z"
-    },
-    {
-      "id": "cart_misunyqv",
-      "userId": "usr_misunyqm",
-      "items": [
-        {
-          "itemId": "item1",
-          "qty": 2,
-          "name": "Test Item",
-          "price": 50
-        }
-      ],
-      "createdAt": "2025-12-05T12:37:31.687Z",
-      "updatedAt": "2025-12-05T12:37:31.691Z"
-    },
-    {
-      "id": "cart_miu1mp5c",
-      "userId": "usr_miu1mp4z",
-      "items": [],
-      "createdAt": "2025-12-06T08:40:16.080Z",
-      "updatedAt": "2025-12-06T08:40:16.080Z"
-    },
-    {
-      "id": "cart_miu1mp7e",
-      "userId": "usr_miu1mp72",
-      "items": [
-        {
-          "itemId": "item1",
-          "qty": 2,
-          "name": "Test Item",
-          "price": 50
-        }
-      ],
-      "createdAt": "2025-12-06T08:40:16.154Z",
-      "updatedAt": "2025-12-06T08:40:16.157Z"
-    },
-    {
-      "id": "cart_miu1sujs",
-      "userId": "usr_miu1sujh",
-      "items": [],
-      "createdAt": "2025-12-06T08:45:03.016Z",
-      "updatedAt": "2025-12-06T08:45:03.016Z"
-    },
-    {
-      "id": "cart_miu1sult",
-      "userId": "usr_miu1sulk",
-      "items": [
-        {
-          "itemId": "item1",
-          "qty": 2,
-          "name": "Test Item",
-          "price": 50
-        }
-      ],
-      "createdAt": "2025-12-06T08:45:03.089Z",
-      "updatedAt": "2025-12-06T08:45:03.092Z"
-    },
-    {
-      "id": "cart_miu1w92f",
-      "userId": "usr_miu1w91y",
-      "items": [],
-      "createdAt": "2025-12-06T08:47:41.799Z",
-      "updatedAt": "2025-12-06T08:47:41.799Z"
-    },
-    {
-      "id": "cart_miu1w94j",
-      "userId": "usr_miu1w949",
-      "items": [
-        {
-          "itemId": "item1",
-          "qty": 2,
-          "name": "Test Item",
-          "price": 50
-        }
-      ],
-      "createdAt": "2025-12-06T08:47:41.875Z",
-      "updatedAt": "2025-12-06T08:47:41.879Z"
-    },
-    {
-      "id": "cart_miu1xnki",
-      "userId": "usr_miu1xnk2",
-      "items": [],
-      "createdAt": "2025-12-06T08:48:47.250Z",
-      "updatedAt": "2025-12-06T08:48:47.250Z"
-    },
-    {
-      "id": "cart_miu1xnmj",
-      "userId": "usr_miu1xnm8",
-      "items": [
-        {
-          "itemId": "item1",
-          "qty": 2,
-          "name": "Test Item",
-          "price": 50
-        }
-      ],
-      "createdAt": "2025-12-06T08:48:47.323Z",
-      "updatedAt": "2025-12-06T08:48:47.327Z"
-    },
-    {
-      "id": "cart_miu256v5",
-      "userId": "usr_miu256uo",
-      "items": [],
-      "createdAt": "2025-12-06T08:54:38.849Z",
-      "updatedAt": "2025-12-06T08:54:38.849Z"
-    },
-    {
-      "id": "cart_miu256xm",
-      "userId": "usr_miu256xa",
-      "items": [
-        {
-          "itemId": "item1",
-          "qty": 2,
-          "name": "Test Item",
-          "price": 50
-        }
-      ],
-      "createdAt": "2025-12-06T08:54:38.938Z",
-      "updatedAt": "2025-12-06T08:54:38.942Z"
-    },
-    {
-      "id": "cart_miu28o8e",
-      "userId": "usr_miu28o82",
-      "items": [],
-      "createdAt": "2025-12-06T08:57:21.326Z",
-      "updatedAt": "2025-12-06T08:57:21.326Z"
-    },
-    {
-      "id": "cart_miu28oag",
-      "userId": "usr_miu28oa6",
-      "items": [
-        {
-          "itemId": "item1",
-          "qty": 2,
-          "name": "Test Item",
-          "price": 50
-        }
-      ],
-      "createdAt": "2025-12-06T08:57:21.400Z",
-      "updatedAt": "2025-12-06T08:57:21.405Z"
-    },
-    {
-      "id": "cart_miu2h372",
-      "userId": "usr_miu2h36r",
-      "items": [],
-      "createdAt": "2025-12-06T09:03:53.966Z",
-      "updatedAt": "2025-12-06T09:03:53.966Z"
-    },
-    {
-      "id": "cart_miu2h392",
-      "userId": "usr_miu2h38t",
-      "items": [
-        {
-          "itemId": "item1",
-          "qty": 2,
-          "name": "Test Item",
-          "price": 50
-        }
-      ],
-      "createdAt": "2025-12-06T09:03:54.038Z",
-      "updatedAt": "2025-12-06T09:03:54.041Z"
-    },
-    {
-      "id": "cart_miu2ibpy",
-      "userId": "usr_miu2ibpn",
-      "items": [],
-      "createdAt": "2025-12-06T09:04:51.670Z",
-      "updatedAt": "2025-12-06T09:04:51.670Z"
-    },
-    {
-      "id": "cart_miu2ibse",
-      "userId": "usr_miu2ibrz",
-      "items": [
-        {
-          "itemId": "item1",
-          "qty": 2,
-          "name": "Test Item",
-          "price": 50
-        }
-      ],
-      "createdAt": "2025-12-06T09:04:51.758Z",
-      "updatedAt": "2025-12-06T09:04:51.761Z"
-    },
-    {
-      "id": "cart_miu2ll1u",
-      "userId": "usr_miu2ll1i",
-      "items": [],
-      "createdAt": "2025-12-06T09:07:23.730Z",
-      "updatedAt": "2025-12-06T09:07:23.730Z"
-    },
-    {
-      "id": "cart_miu2ll3w",
-      "userId": "usr_miu2ll3k",
-      "items": [
-        {
-          "itemId": "item1",
-          "qty": 2,
-          "name": "Test Item",
-          "price": 50
-        }
-      ],
-      "createdAt": "2025-12-06T09:07:23.804Z",
-      "updatedAt": "2025-12-06T09:07:23.807Z"
     }
   ],
   "food_categories": [
@@ -3871,17 +3374,32 @@
       "iconID": 2
     },
     {
-      "name": "WithItem",
-      "iconID": 3
+      "name": "Desserts",
+      "iconID": 15
     },
     {
-      "name": "TestCat",
+      "name": "Warm Drink",
       "iconID": 4
     },
     {
-      "name": "Dup",
-      "iconID": 5
+      "name": "Cold Drinks",
+      "iconID": 2
+    },
+    {
+      "name": "Junk Foods",
+      "iconID": 7
+    },
+    {
+      "name": "Alak",
+      "iconID": 20
+    },
+    {
+      "name": "Biology Foods",
+      "iconID": 8
+    },
+    {
+      "name": "tite ni lando",
+      "iconID": 6
     }
-  ],
-  "categories": []
+  ]
 }

@@ -91,50 +91,12 @@ exports.create = async (req, res) => {
       return res.status(400).json({ error: "Insufficient balance. Please top-up first." });
     }
 
-    // Deduct wallet and stock with proper error handling and rollback
-    let balanceDeducted = false;
-    const stockDeducted = [];
-    
-    try {
-      // Deduct wallet first
-      await userRepo.decrementBalance(uid, total);
-      balanceDeducted = true;
+    // Deduct wallet
+    await userRepo.decrementBalance(uid, total);
 
-      // Deduct stock for each item
-      for (const it of normalized) {
-        await menuRepo.decrementStock(it.id, it.qty);
-        stockDeducted.push({ id: it.id, qty: it.qty });
-      }
-    } catch (error) {
-      // Rollback: restore what was deducted
-      console.error('[RESERVATION] Error during deduction, rolling back:', error.message);
-      
-      // Restore stock
-      for (const item of stockDeducted) {
-        try {
-          await menuRepo.incrementStock(item.id, item.qty);
-        } catch (e) {
-          console.error('[RESERVATION] Failed to restore stock for item', item.id, e.message);
-        }
-      }
-      
-      // Restore balance
-      if (balanceDeducted) {
-        try {
-          await userRepo.incrementBalance(uid, total);
-        } catch (e) {
-          console.error('[RESERVATION] Failed to restore balance for user', uid, e.message);
-        }
-      }
-      
-      // Return appropriate error message
-      if (error.message.includes('Insufficient stock')) {
-        return res.status(400).json({ error: error.message });
-      } else if (error.message.includes('Insufficient balance')) {
-        return res.status(400).json({ error: error.message });
-      } else {
-        return res.status(500).json({ error: "Failed to process reservation" });
-      }
+    // Deduct stock
+    for (const it of normalized) {
+      await menuRepo.decrementStock(it.id, it.qty);
     }
 
     // Create transaction
