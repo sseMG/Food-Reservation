@@ -35,7 +35,7 @@ beforeAll(async () => {
 // Cleanup after all tests
 afterAll(async () => {
   // Close mongoose connection
-  if (mongoose.connection.readyState !== 0) {
+  if (mongoose.connection.readyState === 1) {
     try {
       // Don't drop database - just close connection
       // Collections are already cleared in afterEach
