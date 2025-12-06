@@ -57,6 +57,4 @@ jobs:
         CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
         CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
       if: matrix.database == 'mongodb'
-      run: |
-        unset MONGO_URI
-        npm run test:coverage
+      run: npm run test:coverage
