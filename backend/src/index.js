@@ -193,29 +193,9 @@ if (process.env.NODE_ENV !== 'test') {
 } else {
   // In test environment, just connect to MongoDB if MONGO_URI is set
   // This allows tests to use MongoDB if needed
-  if (process.env.MONGO_URI && mongoose.connection.readyState === 0) {
-    connectMongoDB().then(async () => {
-      // Graceful shutdown handling
-      process.on('SIGTERM', () => {
-        console.log('🛑 SIGTERM received, shutting down gracefully');
-        server.close(() => {
-          mongoose.connection.close();
-          console.log('✅ Server closed');
-          process.exit(0);
-        });
-      });
-
-      process.on('SIGINT', () => {
-        console.log('🛑 SIGINT received, shutting down gracefully');
-        server.close(() => {
-          mongoose.connection.close();
-          console.log('✅ Server closed');
-          process.exit(0);
-        });
-      });
-    }).catch(() => {
+  if (process.env.MONGO_URI) {
+    connectMongoDB().catch(() => {
       // Silently fail in test environment
-      console.error('Failed to start server:', err);
     });
   }
 }
