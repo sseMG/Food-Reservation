@@ -58,6 +58,15 @@ export default function AdminHome() {
     })();
   }, [navigate]);
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (!editingItem) return;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [editingItem]);
+
   const [directories] = useState([
     { name: "Shop", to: ADMIN_ROUTES.shop, icon: <ShoppingBag /> },
     { name: "Top-Up Verify", to: ADMIN_ROUTES.topup, icon: <Wallet /> },

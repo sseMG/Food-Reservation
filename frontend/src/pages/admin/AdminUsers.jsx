@@ -224,6 +224,15 @@ export default function AdminUsers() {
 
   useEffect(() => { load(); }, []);
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (!editUser && !selectedPendingUser && !selectedRejectUser && !balanceEditUser) return;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [editUser, selectedPendingUser, selectedRejectUser, balanceEditUser]);
+
   const handleEdit = (user) => {
     setEditUser(user);
     setEditForm({
@@ -841,7 +850,58 @@ export default function AdminUsers() {
                     <span className="text-jckl-slate">Phone</span>
                     <span className="text-jckl-navy">{u.phone || "—"}</span>
                   </div>
+                  {u.status === 'pending' && (
+                    <div className="flex items-center justify-between pt-2 border-t border-gray-100 mt-2">
+                      <span className="text-jckl-slate">Status</span>
+                      <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
+                        Pending
+                      </span>
+                    </div>
+                  )}
                 </div>
+
+                {/* Approval Actions for Pending Users */}
+                {u.status === 'pending' && (
+                  <div className="flex gap-2 pt-3 border-t border-gray-100 mb-3">
+                    <button
+                      onClick={() => approveUserInline(u.id)}
+                      disabled={approvingIdInline === u.id}
+                      className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-medium hover:bg-emerald-700 transition active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      {approvingIdInline === u.id ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Approving...
+                        </>
+                      ) : (
+                        <>
+                          <Check className="w-4 h-4" />
+                          Approve
+                        </>
+                      )}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedRejectUser(u);
+                        setRejectionForm({ rejectionReason: '' });
+                      }}
+                      disabled={rejectingIdInline === u.id}
+                      className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 transition active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      {rejectingIdInline === u.id ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Rejecting...
+                        </>
+                      ) : (
+                        <>
+                          <X className="w-4 h-4" />
+                          Reject
+                        </>
+                      )}
+                    </button>
+                  </div>
+                )}
 
                 {/* Actions */}
                 <div className="flex gap-2 pt-3 border-t border-gray-100">
@@ -883,7 +943,7 @@ export default function AdminUsers() {
         {/* Edit Modal */}
         {editUser && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
-            <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200 max-h-[75vh] overflow-hidden flex flex-col mb-20 lg:mb-0">
               {/* Sticky Header */}
               <div className="sticky top-0 bg-white border-b border-jckl-gold p-4 sm:p-6 rounded-t-2xl z-10 flex-shrink-0">
                 <div className="flex justify-between items-start">

@@ -206,6 +206,15 @@ export default function Cart() {
   const openReserve = () => setOpen(true);
   const closeReserve = () => setOpen(false);
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (!open) return;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [open]);
+
   // submitReservation: prevent if insufficient (align with Shop)
   const submitReservation = async () => {
     if (!list.length) return alert("Your cart is empty.");
@@ -490,7 +499,7 @@ export default function Cart() {
                 </button>
               </div>
 
-              <div className="max-h-[85vh] sm:max-h-[80vh] flex flex-col">
+              <div className="max-h-[70vh] sm:max-h-[65vh] flex flex-col">
                 <div className="flex-1 overflow-y-auto">
                   <div className="p-3 sm:p-4 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                     {/* Left side form */}
@@ -571,7 +580,7 @@ export default function Cart() {
                           Note (optional)
                         </label>
                         <textarea
-                          rows={3}
+                          rows={2}
                           value={reserve.note}
                           onChange={(e) =>
                             setReserve((r) => ({ ...r, note: e.target.value }))
@@ -604,7 +613,7 @@ export default function Cart() {
 
                 {/* Sticky bottom section */}
                 <div className="sticky bottom-0 bg-white border-t">
-                  <div className="p-4 space-y-3">
+                  <div className="p-3 space-y-2">
                     {/* Totals */}
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">

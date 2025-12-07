@@ -347,7 +347,20 @@ export default function Shop({ publicView = false }) {
       grade: r.grade || u.grade || "",
       section: r.section || u.section || "",
     }));
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [open]);
+
+  useEffect(() => {
+    if (!mobileCartOpen) return;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileCartOpen]);
 
   const categories = useMemo(() => {
     const set = new Set(items.map((i) => i.category).filter(Boolean));
@@ -1069,9 +1082,9 @@ export default function Shop({ publicView = false }) {
                 </button>
               </div>
 
-              <div className="max-h-[80vh] flex flex-col">
+              <div className="max-h-[65vh] flex flex-col">
                 <div className="flex-1 overflow-y-auto">
-                  <div className="p-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="p-3 grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-3">
                         <div>
@@ -1122,7 +1135,7 @@ export default function Shop({ publicView = false }) {
                       <div>
                         <label className="block text-sm font-medium text-jckl-navy mb-1">Note (optional)</label>
                         <textarea
-                          rows={3}
+                          rows={2}
                           value={reserve.note}
                           onChange={(e) => setReserve((r) => ({ ...r, note: e.target.value }))}
                           placeholder="Special requests..."
@@ -1133,7 +1146,7 @@ export default function Shop({ publicView = false }) {
 
                     <div className="space-y-4">
                       <h4 className="font-medium">Order Summary</h4>
-                      <div className="border rounded-lg divide-y max-h-60 overflow-y-auto">
+                      <div className="border rounded-lg divide-y max-h-40 overflow-y-auto">
                         {list.map((it) => (
                           <div key={it.id} className="p-3 flex justify-between text-sm">
                             <div>
@@ -1148,8 +1161,8 @@ export default function Shop({ publicView = false }) {
                   </div>
                 </div>
 
-                <div className="sticky bottom-0 bg-white border-t p-4 rounded-b-xl">
-                  <div className="space-y-2 mb-4">
+                <div className="sticky bottom-0 bg-white border-t p-3 rounded-b-xl">
+                  <div className="space-y-1 mb-3">
                     <div className="flex justify-between">
                       <span className="text-sm text-jckl-slate">Total</span>
                       <span className="text-lg font-semibold">{peso.format(total)}</span>
@@ -1166,17 +1179,17 @@ export default function Shop({ publicView = false }) {
                     </div>
                   </div>
 
-                  <div className="flex gap-3">
+                  <div className="flex gap-2">
                     <button
                       onClick={closeReserve}
-                      className="px-4 py-2 border border-jckl-gold rounded-lg hover:bg-jckl-cream text-jckl-navy"
+                      className="px-3 py-2 border border-jckl-gold rounded-lg hover:bg-jckl-cream text-jckl-navy text-sm"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={submitReservation}
                       disabled={submitting || insufficient}
-                      className="flex-1 bg-jckl-navy text-white px-4 py-3 rounded-lg hover:bg-jckl-light-navy disabled:opacity-60 font-medium"
+                      className="flex-1 bg-jckl-navy text-white px-3 py-2 rounded-lg hover:bg-jckl-light-navy disabled:opacity-60 font-medium text-sm"
                     >
                       {submitting ? "Submitting..." : "Submit Reservation"}
                     </button>

@@ -335,6 +335,15 @@ export default function TxHistory() {
     if (selected && modalCloseRef.current) modalCloseRef.current.focus();
   }, [selected]);
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (!selected) return;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selected]);
+
   if (isLoading) {
     return <FullScreenLoader message="Loading transaction history..." />;
   }
@@ -347,7 +356,7 @@ export default function TxHistory() {
         {/* Header */}
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
-            <Link to="/dashboard" className="text-jckl-navy hover:underline flex items-center mb-1">← Back to home</Link>
+            <Link to="/dashboard" className="text-jckl-navy hover:underline flex items-center mb-1"></Link>
             <h1 className="text-2xl sm:text-3xl font-bold text-jckl-navy">Order History</h1>
             <p className="text-sm text-gray-500 mt-1">Food reservations and purchases only. (Top-ups live on the Top-Up History page.)</p>
           </div>
@@ -644,7 +653,7 @@ export default function TxHistory() {
                 <div className="p-3 border rounded text-sm">{selected.raw?.note || selected.raw?.notes || "—"}</div>
               </div>
 
-              <div>
+              <div className="hidden md:block">
                 <div className="text-sm text-jckl-slate mb-2">Proof</div>
                 {selected.raw?.proofUrl || selected.raw?.image || selected.raw?.proof ? (
                   // try multiple possible proof fields
@@ -674,7 +683,7 @@ export default function TxHistory() {
                     const u = selected.raw?.proofUrl || selected.raw?.image || selected.raw?.proof;
                     if (u) window.open(u, "_blank");
                   }}
-                  className="px-3 py-2 border rounded"
+                  className="hidden md:inline-flex px-3 py-2 border rounded"
                 >
                   Open Proof
                 </button>

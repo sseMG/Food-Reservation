@@ -96,6 +96,15 @@ export default function AdminShop() {
     return () => window.removeEventListener("categories:updated", handler);
   }, []);
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (!deleteConfirm && !showAddMenu) return;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [deleteConfirm, showAddMenu]);
+
   const categories = useMemo(() => {
     const set = new Set(items.map(i => i.category).filter(Boolean));
     return ["all", ...Array.from(set)];

@@ -67,8 +67,8 @@ export default function TopUp() {
   const [provider, setProvider] = useState("gcash"); // 'gcash' | 'maya'
   const [qr, setQr] = useState({ gcash: null, maya: null });
   const [meta, setMeta] = useState({
-    gcash: { accountName: "", mobile: "" },
-    maya: { accountName: "", mobile: "" },
+    gcash: { accountName: "", mobile: "", reference: "" },
+    maya: { accountName: "", mobile: "", reference: "" },
   });
 
   // user
@@ -130,14 +130,14 @@ export default function TopUp() {
           return { data: [] }
         });
         const nextQr = { gcash: null, maya: null };
-        const nextMeta = { gcash: { accountName: "", mobile: "" }, maya: { accountName: "", mobile: "" } };
+        const nextMeta = { gcash: { accountName: "", mobile: "", reference: "" }, maya: { accountName: "", mobile: "", reference: "" } };
         (list || []).forEach((w) => {
           const key = String(w.provider || "").toLowerCase();
           if (key === "gcash" || key === "maya") {
             const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:4000";
             const q = w.qrImageUrl || null;
             nextQr[key] = q && q.startsWith("/") ? API_BASE + q : q;
-            nextMeta[key] = { accountName: w.accountName || "", mobile: w.mobile || "" };
+            nextMeta[key] = { accountName: w.accountName || "", mobile: w.mobile || "", reference: w.reference || "" };
           }
         });
 
@@ -360,6 +360,13 @@ export default function TopUp() {
                 <p className="font-medium text-gray-900">{activeMeta.mobile || "—"}</p>
               </div>
             </div>
+
+            {activeMeta.reference && (
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-xs font-medium text-blue-900 mb-1">Special Instructions</p>
+                <p className="text-sm text-blue-800 whitespace-pre-wrap">{activeMeta.reference}</p>
+              </div>
+            )}
 
             <div className="mt-4 flex items-start gap-2 text-xs text-gray-600">
               <Info className="w-4 h-4 mt-0.5" />

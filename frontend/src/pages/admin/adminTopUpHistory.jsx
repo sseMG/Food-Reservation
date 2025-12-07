@@ -151,6 +151,15 @@ export default function AdminTopUpHistory() {
     return () => clearTimeout(id);
   }, [q]);
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (!selected) return;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selected]);
+
   const providerOptions = useMemo(() => {
     const s = new Set();
     for (const r of rawList) {
@@ -528,8 +537,8 @@ export default function AdminTopUpHistory() {
 
       {/* Modal - Enhanced */}
       {selected && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 p-0 sm:p-4">
-          <div className="w-full sm:max-w-4xl bg-white sm:rounded-xl overflow-hidden max-h-screen sm:max-h-[90vh] flex flex-col">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full sm:max-w-4xl max-h-[85vh] sm:max-h-[90vh] bg-white rounded-xl overflow-hidden flex flex-col">
             {/* Header */}
             <div className="p-4 sm:p-5 border-b flex items-start justify-between gap-4 flex-shrink-0">
               <div className="flex-1 min-w-0">

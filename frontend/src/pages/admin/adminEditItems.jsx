@@ -81,6 +81,14 @@ export default function AdminEditItems() {
 
   useEffect(() => { load(); }, []);
 
+  useEffect(() => {
+    if (!editing) return;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [editing]);
+
   // Create a map of category name to full category object for quick lookup
   const categoriesMap = useMemo(() => {
     const map = {};

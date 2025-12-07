@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ReactDOM from "react-dom";
 import AdminAvbar from "../../components/adminavbar";
 import AdminBottomNav from "../../components/mobile/AdminBottomNav";
@@ -13,6 +14,7 @@ const peso = new Intl.NumberFormat("en-PH", {
 const ITEMS_PER_PAGE = 10;
 
 export default function AdminNotifications() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [notifications, setNotifications] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -632,19 +634,54 @@ export default function AdminNotifications() {
             </div>
 
             {/* Footer - Sticky */}
-            <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-jckl-gold bg-jckl-cream flex gap-2 sm:gap-3 flex-shrink-0">
-              <button
-                onClick={() => setPreview(null)}
-                className="flex-1 sm:flex-none px-4 py-2.5 bg-white border border-jckl-gold text-jckl-navy rounded-lg text-sm font-medium hover:bg-jckl-cream transition-colors"
-              >
-                Close
-              </button>
-              <button
-                onClick={() => deleteSingle(preview.id)}
-                className="flex-1 sm:flex-none px-4 py-2.5 bg-jckl-accent text-white rounded-lg text-sm font-medium hover:opacity-90 transition-colors"
-              >
-                Delete
-              </button>
+            <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-jckl-gold bg-jckl-cream flex gap-2 sm:gap-3 flex-shrink-0 flex-wrap justify-between">
+              <div className="flex gap-2 sm:gap-3">
+                <button
+                  onClick={() => setPreview(null)}
+                  className="flex-1 sm:flex-none px-4 py-2.5 bg-white border border-jckl-gold text-jckl-navy rounded-lg text-sm font-medium hover:bg-jckl-cream transition-colors"
+                >
+                  Close
+                </button>
+                <button
+                  onClick={() => deleteSingle(preview.id)}
+                  className="flex-1 sm:flex-none px-4 py-2.5 bg-jckl-accent text-white rounded-lg text-sm font-medium hover:opacity-90 transition-colors"
+                >
+                  Delete
+                </button>
+              </div>
+              {preview?.data?.items && (
+                <button
+                  onClick={() => {
+                    navigate("/admin/reservations");
+                    setPreview(null);
+                  }}
+                  className="flex-1 sm:flex-none px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                >
+                  View Reservation
+                </button>
+              )}
+              {preview?.data?.amount && !preview?.data?.items && (
+                <button
+                  onClick={() => {
+                    navigate("/admin/topup");
+                    setPreview(null);
+                  }}
+                  className="flex-1 sm:flex-none px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                >
+                  View Top-up
+                </button>
+              )}
+              {preview?.data?.studentId && !preview?.data?.items && !preview?.data?.amount && (
+                <button
+                  onClick={() => {
+                    navigate("/admin/users");
+                    setPreview(null);
+                  }}
+                  className="flex-1 sm:flex-none px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                >
+                  View Registration
+                </button>
+              )}
             </div>
           </div>
         </div>,

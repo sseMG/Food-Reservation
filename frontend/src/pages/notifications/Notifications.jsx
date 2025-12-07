@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "../../lib/api";
 import FullScreenLoader from "../../components/FullScreenLoader";
 import { 
@@ -25,6 +25,7 @@ const peso = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP"
 const ITEMS_PER_PAGE = 10;
 
 export default function Notifications() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [initialLoad, setInitialLoad] = useState(true);
   const [notifications, setNotifications] = useState([]);
@@ -723,19 +724,43 @@ export default function Notifications() {
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-jckl-gold flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 flex-shrink-0 bg-jckl-cream">
-              <button 
-                onClick={() => setPreview(null)} 
-                className="w-full sm:w-auto px-4 py-2 bg-white border border-jckl-gold text-jckl-navy rounded-lg text-sm font-medium hover:bg-jckl-cream order-2 sm:order-1"
-              >
-                Close
-              </button>
-              <button 
-                onClick={() => deleteSingle(preview.id)} 
-                className="w-full sm:w-auto px-4 py-2 bg-jckl-accent text-white rounded-lg text-sm font-medium hover:opacity-90 order-1 sm:order-2"
-              >
-                Delete Notification
-              </button>
+            <div className="p-4 border-t border-jckl-gold flex flex-col sm:flex-row justify-between gap-2 sm:gap-3 flex-shrink-0 bg-jckl-cream flex-wrap">
+              <div className="flex gap-2 sm:gap-3 order-2 sm:order-1">
+                <button 
+                  onClick={() => setPreview(null)} 
+                  className="w-full sm:w-auto px-4 py-2 bg-white border border-jckl-gold text-jckl-navy rounded-lg text-sm font-medium hover:bg-jckl-cream"
+                >
+                  Close
+                </button>
+                <button 
+                  onClick={() => deleteSingle(preview.id)} 
+                  className="w-full sm:w-auto px-4 py-2 bg-jckl-accent text-white rounded-lg text-sm font-medium hover:opacity-90"
+                >
+                  Delete Notification
+                </button>
+              </div>
+              {preview?.data?.items && (
+                <button 
+                  onClick={() => {
+                    navigate("/transactions");
+                    setPreview(null);
+                  }} 
+                  className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 order-1 sm:order-2"
+                >
+                  View Reservation
+                </button>
+              )}
+              {preview?.data?.amount && !preview?.data?.items && (
+                <button 
+                  onClick={() => {
+                    navigate("/topup-history");
+                    setPreview(null);
+                  }} 
+                  className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 order-1 sm:order-2"
+                >
+                  View Top-up
+                </button>
+              )}
             </div>
           </div>
         </div>,
