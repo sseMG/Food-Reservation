@@ -14,7 +14,6 @@ import {
   CheckCircle,
   Clock,
   XCircle,
-  DollarSign,
   User,
   CreditCard,
   Phone,
@@ -204,7 +203,10 @@ export default function AdminTopUpHistory() {
   const totals = useMemo(() => {
     const totalCount = rawList.length;
     const filteredCount = filtered.length;
-    const sum = filtered.reduce((s, t) => s + (Number(t.amount) || 0), 0);
+    // Only sum approved top-ups, excluding rejected ones
+    const sum = filtered
+      .filter((t) => String(t.status).toLowerCase() === "approved")
+      .reduce((s, t) => s + (Number(t.amount) || 0), 0);
     const pending = rawList.filter((r) => String(r.status).toLowerCase() === "pending").length;
     const approved = rawList.filter((r) => String(r.status).toLowerCase() === "approved").length;
     const rejected = rawList.filter((r) => String(r.status).toLowerCase() === "rejected").length;
@@ -250,7 +252,7 @@ export default function AdminTopUpHistory() {
           <div className="bg-white rounded-xl p-3 shadow-sm border border-gray-100">
             <div className="flex items-center gap-2 mb-2">
               <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                <DollarSign className="w-4 h-4 text-jckl-navy" />
+                <span className="text-lg font-bold text-jckl-navy">₱</span>
               </div>
               <div className="text-xs text-jckl-slate">Total Amount</div>
             </div>
@@ -378,7 +380,7 @@ export default function AdminTopUpHistory() {
         ) : filtered.length === 0 ? (
           <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
             <div className="w-12 h-12 bg-jckl-cream rounded-full flex items-center justify-center mx-auto mb-3">
-              <DollarSign className="w-6 h-6 text-jckl-slate" />
+              <span className="text-2xl font-bold text-jckl-slate">₱</span>
             </div>
             <p className="text-sm text-jckl-slate">
               {q || statusFilter !== "all" || providerFilter !== "all" 
@@ -537,7 +539,7 @@ export default function AdminTopUpHistory() {
 
       {/* Modal - Enhanced */}
       {selected && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 overflow-hidden">
           <div className="w-full sm:max-w-4xl max-h-[85vh] sm:max-h-[90vh] bg-white rounded-xl overflow-hidden flex flex-col">
             {/* Header */}
             <div className="p-4 sm:p-5 border-b flex items-start justify-between gap-4 flex-shrink-0">

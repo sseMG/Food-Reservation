@@ -85,6 +85,15 @@ export default function TopUpHistory() {
   // image viewer
   const [viewer, setViewer] = useState({ open: false, src: "", details: null });
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (!viewer.open) return;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [viewer.open]);
+
   const load = async () => {
     setLoading(true);
     setError("");
@@ -521,8 +530,8 @@ export default function TopUpHistory() {
 
       {/* Proof viewer modal - Enhanced */}
       {viewer.open && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 p-0 sm:p-4">
-          <div className="w-full sm:max-w-4xl bg-white sm:rounded-xl shadow-2xl overflow-hidden max-h-screen sm:max-h-[90vh] flex flex-col">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 overflow-hidden">
+          <div className="w-full sm:max-w-2xl bg-white sm:rounded-xl shadow-2xl overflow-hidden max-h-[85vh] sm:max-h-[80vh] flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-jckl-gold bg-jckl-cream flex-shrink-0">
               <div>
