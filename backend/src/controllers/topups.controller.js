@@ -112,6 +112,19 @@ exports.mine = async (req, res) => {
   }
 };
 
+// Public: list all topups (for reference validation)
+exports.listAll = async (req, res) => {
+  try {
+    const topupRepo = RepositoryFactory.getTopupRepository();
+    const topups = await topupRepo.findAll({});
+    console.log('[TOPUP] ListAll: returning', topups.length, 'topups');
+    res.json(topups);
+  } catch (err) {
+    console.error("[TOPUP] listAll error:", err);
+    res.status(500).json({ error: "Failed to list topups" });
+  }
+};
+
 // Admin: list all topups
 exports.listAdmin = async (req, res) => {
   try {

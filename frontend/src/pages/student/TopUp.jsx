@@ -32,7 +32,12 @@ const toNumber = (v, d = 0) => {
   return Number.isFinite(n) ? n : d;
 };
 
-const normProvider = (p) => (String(p || "").toLowerCase() === "maya" ? "maya" : "gcash");
+const normProvider = (p) => {
+  const pp = String(p || "").toLowerCase();
+  if (pp.includes("pay") || pp.includes("maya")) return "paymaya";
+  if (pp.includes("gcash")) return "gcash";
+  return pp;
+};
 
 const within = (n, min, max) => n >= min && n <= max;
 
@@ -100,6 +105,7 @@ export default function TopUp() {
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [approvedReferences, setApprovedReferences] = useState({ gcash: new Set(), paymaya: new Set() });
 
   const fileRef = useRef(null);
 
@@ -175,6 +181,54 @@ export default function TopUp() {
           }));
         }
 
+        // ---- fetch approved topups to build reference list ----
+        try {
+          const tryEndpoints = ["/topups", "/admin/topups", "/topups/all", "/topups?all=1"];
+          let topupList = null;
+          for (const ep of tryEndpoints) {
+            try {
+              const res = await api.get(ep);
+              const arr = Array.isArray(res) ? res : res?.data;
+              if (Array.isArray(arr)) {
+                topupList = arr;
+                break;
+              }
+            } catch (e) {
+              // try next endpoint
+            }
+          }
+          
+          const approvedByProvider = { gcash: new Set(), paymaya: new Set() };
+          
+          if (Array.isArray(topupList)) {
+            topupList.forEach((t) => {
+              const status = String(t.status || "").toLowerCase();
+              let provider = String(t.provider || "").toLowerCase();
+              const reference = String(t.reference || "").trim().toLowerCase();
+              
+              // Normalize provider name to match admin page logic
+              if (provider.includes("pay") || provider.includes("maya")) {
+                provider = "paymaya";
+              } else if (provider.includes("gcash")) {
+                provider = "gcash";
+              }
+              
+              // Only add APPROVED references (not rejected or pending)
+              if (status.includes("approve") && reference && (provider === "gcash" || provider === "paymaya")) {
+                approvedByProvider[provider].add(reference);
+                console.log(`[TopUp] Added approved reference: ${reference} for ${provider}`);
+              }
+            });
+          }
+          console.log("[TopUp] Approved references:", approvedByProvider);
+          
+          if (alive) {
+            setApprovedReferences(approvedByProvider);
+          }
+        } catch (e) {
+          console.log("Failed to fetch approved references:", e);
+        }
+
         if (!alive) return;
         setQr(nextQr);
         setMeta(nextMeta);
@@ -243,8 +297,16 @@ export default function TopUp() {
   const sidOk = useMemo(() => studentId.trim().length >= 3, [studentId]);
   const contactOk = useMemo(() => contact.trim().length >= 7, [contact]);
   const imgOk = useMemo(() => !!file && imgMeta.w >= 300 && imgMeta.h >= 300, [file, imgMeta]);
+  
+  // Check if reference is already approved for the current provider
+  const refDuplicate = useMemo(() => {
+    if (!refNo.trim()) return false;
+    const normalizedRef = refNo.trim().toLowerCase();
+    const providerKey = normProvider(provider);
+    return approvedReferences[providerKey]?.has(normalizedRef) || false;
+  }, [refNo, provider, approvedReferences]);
 
-  const canSubmit = amountOk && refOk && nameOk && sidOk && contactOk && imgOk && agree && !submitting;
+  const canSubmit = amountOk && refOk && nameOk && sidOk && contactOk && imgOk && agree && !submitting && !refDuplicate;
 
   const onSubmit = async () => {
     if (!canSubmit) {
@@ -445,10 +507,19 @@ export default function TopUp() {
                   value={refNo}
                   onChange={(e) => setRefNo(e.target.value)}
                   placeholder="e.g., GCash/Maya reference number"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 ${
+                    refDuplicate 
+                      ? "border-rose-500 focus:ring-rose-500" 
+                      : "border-gray-300 focus:ring-blue-500"
+                  }`}
                 />
                 {!refOk && refNo !== "" && (
                   <p className="text-xs text-rose-600 mt-1">Enter at least 6 characters.</p>
+                )}
+                {refDuplicate && (
+                  <p className="text-xs text-rose-600 mt-1">
+                    This reference number has already been accepted for {provider.toUpperCase()}. Please use a different reference.
+                  </p>
                 )}
               </div>
 

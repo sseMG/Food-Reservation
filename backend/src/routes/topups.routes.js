@@ -1,5 +1,5 @@
 const express = require("express");
-const { create, mine } = require("../controllers/topups.controller");
+const { create, mine, listAll } = require("../controllers/topups.controller");
 const { requireAuth } = require("../lib/auth");
 const multer = require("multer");
 
@@ -45,6 +45,17 @@ const upload = multer({
  *         description: Uploaded file too large
  */
 router.post("/", requireAuth, upload.single('proof'), create);
+/**
+ * @swagger
+ * /topups:
+ *   get:
+ *     summary: Get all top-up requests (public - for reference validation)
+ *     tags: [Topups]
+ *     responses:
+ *       200:
+ *         description: List of all top-ups
+ */
+router.get("/", listAll);
 /**
  * @swagger
  * /topups/mine:

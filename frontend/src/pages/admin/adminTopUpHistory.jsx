@@ -540,7 +540,7 @@ export default function AdminTopUpHistory() {
       {/* Modal - Enhanced */}
       {selected && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 overflow-hidden">
-          <div className="w-full sm:max-w-4xl max-h-[85vh] sm:max-h-[90vh] bg-white rounded-xl overflow-hidden flex flex-col">
+          <div className="w-full sm:max-w-4xl max-h-[70vh] sm:max-h-[80vh] bg-white rounded-xl overflow-hidden flex flex-col">
             {/* Header */}
             <div className="p-4 sm:p-5 border-b flex items-start justify-between gap-4 flex-shrink-0">
               <div className="flex-1 min-w-0">
