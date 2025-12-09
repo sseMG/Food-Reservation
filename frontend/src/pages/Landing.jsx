@@ -173,15 +173,7 @@ const featuresRight = [
 
 const schedules = [
   {
-    key: "PK",
-    name: "Pre-Elementary",
-    times: ["9:00 - 9:15 AM", "10:30 - 11:00 AM"],
-    bg: "bg-purple-100",
-    txt: "text-jckl-purple",
-    badge: "bg-purple-50 text-jckl-purple",
-  },
-  {
-    key: "1-6",
+    key: "2-6",
     name: "Elementary",
     times: ["9:15 - 9:30 AM", "11:00 AM - 12:00 NN"],
     bg: "bg-blue-100",
@@ -477,7 +469,8 @@ export default function Landing() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mb-8">
+          <div className="flex justify-center mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl">
             {schedules.map((s) => (
               <div 
                 key={s.key} 
@@ -500,7 +493,7 @@ export default function Landing() {
               </div>
             ))}
           </div>
-
+          </div>
           <div className="text-center">
             <Link 
               to="/break-policy" 
@@ -590,11 +583,11 @@ export default function Landing() {
               <div className="text-jckl-gold">Years of Excellence</div>
             </div>
             <div>
-              <div className="text-4xl font-bold mb-2">5</div>
+              <div className="text-4xl font-bold mb-2">3</div>
               <div className="text-jckl-gold">Dedicated Canteen Staff</div>
             </div>
             <div>
-              <div className="text-4xl font-bold mb-2">4</div>
+              <div className="text-4xl font-bold mb-2">3</div>
               <div className="text-jckl-gold">Break Time Schedules</div>
             </div>
           </div>

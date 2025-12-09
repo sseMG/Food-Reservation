@@ -27,12 +27,8 @@ export default function BreakPolicy() {
         <div className="bg-jckl-cream rounded-2xl shadow-lg p-8 mb-8 border-t-4 border-jckl-gold">
           <h2 className="text-2xl font-bold text-jckl-navy mb-4">Schedule Overview</h2>
           <div className="space-y-4">
-            <div className="border-l-4 border-jckl-navy pl-4">
-              <h3 className="font-bold text-lg text-jckl-navy">Pre-Elementary (PK)</h3>
-              <p className="text-jckl-slate">Snack: 9:00 - 9:15 AM | Lunch: 10:30 - 11:00 AM</p>
-            </div>
             <div className="border-l-4 border-jckl-purple pl-4">
-              <h3 className="font-bold text-lg text-jckl-navy">Elementary (Grades 1-6)</h3>
+              <h3 className="font-bold text-lg text-jckl-navy">Elementary (Grades 2-6)</h3>
               <p className="text-jckl-slate">Recess: 9:15 - 9:30 AM | Lunch: 11:00 AM - 12:00 NN</p>
             </div>
             <div className="border-l-4 border-jckl-gold pl-4">

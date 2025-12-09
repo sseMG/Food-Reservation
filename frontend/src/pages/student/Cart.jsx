@@ -26,10 +26,39 @@ const peso = new Intl.NumberFormat("en-PH", {
 // menu will be fetched from backend (/api/menu)
 
 const SLOTS = [
-  { id: "recess", label: "Recess • 9:45–10:00 AM" },
-  { id: "lunch",  label: "Lunch • 12:00–12:30 PM" },
-  { id: "after",  label: "After Class • 4:00–4:15 PM" },
+  { id: "recess", label: "Recess" },
+  { id: "lunch",  label: "Lunch" },
+  { id: "after",  label: "After Class" },
 ];
+
+// Grade-specific pickup times
+const getPickupTimes = (grade) => {
+  if (!grade) return {};
+  
+  const gradeNum = parseInt(grade.replace('G', ''));
+  
+  if (gradeNum >= 2 && gradeNum <= 6) {
+    return {
+      recess: "9:15 AM - 9:30 AM",
+      lunch: "11:00 AM - 12:00 PM",
+      after: "After Class"
+    };
+  } else if (gradeNum >= 7 && gradeNum <= 10) {
+    return {
+      recess: "9:30 AM - 9:45 AM",
+      lunch: "1:00 PM - 1:20 PM",
+      after: "After Class"
+    };
+  } else if (gradeNum >= 11 && gradeNum <= 12) {
+    return {
+      recess: "9:45 AM - 10:00 AM",
+      lunch: "1:20 PM - 1:40 PM",
+      after: "After Class"
+    };
+  }
+  
+  return {};
+};
 
 export default function Cart() {
   const navigate = useNavigate();
@@ -516,19 +545,9 @@ export default function Cart() {
                               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
                             >
                               <option value="">Select grade</option>
-                              <option>Kindergarten</option>
-                              <option>G1</option>
-                              <option>G2</option>
-                              <option>G3</option>
-                              <option>G4</option>
-                              <option>G5</option>
-                              <option>G6</option>
-                              <option>G7</option>
-                              <option>G8</option>
-                              <option>G9</option>
-                              <option>G10</option>
-                              <option>G11</option>
-                              <option>G12</option>
+                              {[...Array(11)].map((_, i) => (
+                                <option key={i}>G{i + 2}</option>
+                              ))}
                             </select>
                             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                               <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -555,24 +574,37 @@ export default function Cart() {
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Pickup Window
                         </label>
-                        <div className="grid grid-cols-1 gap-2">
-                          {SLOTS.map((s) => (
-                            <label
-                              key={s.id}
-                              className="flex items-center gap-3 p-2 rounded-lg border border-jckl-gold hover:bg-jckl-cream cursor-pointer"
-                            >
-                              <input
-                                type="radio"
-                                name="pickup-slot"
-                                checked={reserve.slot === s.id}
-                                onChange={() =>
-                                  setReserve((r) => ({ ...r, slot: s.id }))
-                                }
-                              />
-                              <span className="text-sm">{s.label}</span>
-                            </label>
-                          ))}
-                        </div>
+                        {!reserve.grade ? (
+                          <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
+                            Please select a grade level first to see available pickup times.
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-1 gap-2">
+                            {SLOTS.map((s) => {
+                              const times = getPickupTimes(reserve.grade);
+                              const timeStr = times[s.id] || s.label;
+                              return (
+                                <label
+                                  key={s.id}
+                                  className="flex items-center gap-3 p-2 rounded-lg border border-jckl-gold hover:bg-jckl-cream cursor-pointer"
+                                >
+                                  <input
+                                    type="radio"
+                                    name="pickup-slot"
+                                    checked={reserve.slot === s.id}
+                                    onChange={() =>
+                                      setReserve((r) => ({ ...r, slot: s.id }))
+                                    }
+                                  />
+                                  <div className="flex flex-col">
+                                    <span className="text-sm font-medium">{s.label}</span>
+                                    <span className="text-xs text-jckl-slate">{timeStr}</span>
+                                  </div>
+                                </label>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
 
                       <div>

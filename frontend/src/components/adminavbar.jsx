@@ -28,6 +28,35 @@ const peso = new Intl.NumberFormat("en-PH", {
 
 const USER_PROFILE_UPDATED = 'USER_PROFILE_UPDATED';
 
+// Helper function to get pickup times based on grade
+const getPickupTimes = (grade) => {
+  if (!grade) return {};
+  
+  const gradeNum = parseInt(grade.replace('G', ''));
+  
+  if (gradeNum >= 2 && gradeNum <= 6) {
+    return {
+      recess: "Recess: 9:15 AM - 9:30 AM",
+      lunch: "Lunch: 11:00 AM - 12:00 PM",
+      after: "After Class"
+    };
+  } else if (gradeNum >= 7 && gradeNum <= 10) {
+    return {
+      recess: "Recess: 9:30 AM - 9:45 AM",
+      lunch: "Lunch: 1:00 PM - 1:20 PM",
+      after: "After Class"
+    };
+  } else if (gradeNum >= 11 && gradeNum <= 12) {
+    return {
+      recess: "Recess: 9:45 AM - 10:00 AM",
+      lunch: "Lunch: 1:20 PM - 1:40 PM",
+      after: "After Class"
+    };
+  }
+  
+  return {};
+};
+
 // Custom hook for outside click detection
 const useOutsideClick = (ref, callback) => {
   useEffect(() => {
@@ -349,38 +378,33 @@ const NotificationPreviewModal = ({ notification, onClose, onDelete, navigate })
                   {(notification.data.grade ||
                     notification.data.section ||
                     notification.data.student) && (
-                    <div className="pt-3 border-t">
-                      <div className="text-xs font-medium text-gray-500 uppercase mb-2">
-                        Student Details
-                      </div>
-                      <div className="grid grid-cols-2 gap-3 text-sm">
-                        {notification.data.student && (
-                          <div>
-                            <span className="text-gray-500">Name</span>
-                            <div className="font-medium text-gray-900">
-                              {typeof notification.data.student === "string"
-                                ? notification.data.student
-                                : notification.data.student.name || "N/A"}
-                            </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      {notification.data.student && (
+                        <div className="bg-purple-50 rounded-lg p-3 border border-purple-200">
+                          <span className="text-xs text-purple-700 uppercase font-semibold">Student</span>
+                          <div className="font-medium text-purple-900 mt-1">
+                            {typeof notification.data.student === "string"
+                              ? notification.data.student
+                              : notification.data.student.name || "N/A"}
                           </div>
-                        )}
-                        {notification.data.grade && (
-                          <div>
-                            <span className="text-gray-500">Grade</span>
-                            <div className="font-medium text-gray-900">
-                              {notification.data.grade}
-                            </div>
+                        </div>
+                      )}
+                      {notification.data.grade && (
+                        <div className="bg-green-50 rounded-lg p-3 border border-green-200">
+                          <span className="text-xs text-green-700 uppercase font-semibold">Grade</span>
+                          <div className="font-medium text-green-900 mt-1">
+                            {notification.data.grade}
                           </div>
-                        )}
-                        {notification.data.section && (
-                          <div>
-                            <span className="text-gray-500">Section</span>
-                            <div className="font-medium text-gray-900">
-                              {notification.data.section}
-                            </div>
+                        </div>
+                      )}
+                      {notification.data.section && (
+                        <div className="bg-amber-50 rounded-lg p-3 border border-amber-200">
+                          <span className="text-xs text-amber-700 uppercase font-semibold">Section</span>
+                          <div className="font-medium text-amber-900 mt-1">
+                            {notification.data.section}
                           </div>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -396,13 +420,18 @@ const NotificationPreviewModal = ({ notification, onClose, onDelete, navigate })
                   )}
 
                   {notification.data.slot && (
-                    <div className="pt-2">
-                      <div className="text-xs font-medium text-gray-500 uppercase mb-1">
-                        Pickup Time
+                    <div className="bg-indigo-50 rounded-lg p-3 border border-indigo-200">
+                      <div className="text-xs font-medium text-indigo-700 uppercase mb-1 font-semibold">
+                        Slot
                       </div>
-                      <div className="font-medium text-gray-900">
+                      <div className="font-medium text-indigo-900">
                         {notification.data.slot}
                       </div>
+                      {notification.data.grade && (
+                        <div className="text-sm text-indigo-700 mt-2">
+                          {getPickupTimes(notification.data.grade)[notification.data.slot.toLowerCase()] || ''}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

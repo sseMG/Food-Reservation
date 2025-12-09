@@ -13,6 +13,35 @@ const peso = new Intl.NumberFormat("en-PH", {
 
 const ITEMS_PER_PAGE = 10;
 
+// Helper function to get pickup times based on grade
+const getPickupTimes = (grade) => {
+  if (!grade) return {};
+  
+  const gradeNum = parseInt(grade.replace('G', ''));
+  
+  if (gradeNum >= 2 && gradeNum <= 6) {
+    return {
+      recess: "Recess: 9:15 AM - 9:30 AM",
+      lunch: "Lunch: 11:00 AM - 12:00 PM",
+      after: "After Class"
+    };
+  } else if (gradeNum >= 7 && gradeNum <= 10) {
+    return {
+      recess: "Recess: 9:30 AM - 9:45 AM",
+      lunch: "Lunch: 1:00 PM - 1:20 PM",
+      after: "After Class"
+    };
+  } else if (gradeNum >= 11 && gradeNum <= 12) {
+    return {
+      recess: "Recess: 9:45 AM - 10:00 AM",
+      lunch: "Lunch: 1:20 PM - 1:40 PM",
+      after: "After Class"
+    };
+  }
+  
+  return {};
+};
+
 export default function AdminNotifications() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -39,43 +68,48 @@ export default function AdminNotifications() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             {data.reservationid && (
               <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
-                <div className="text-xs font-semibold text-blue-700 uppercase">Reservation ID</div>
-                <div className="text-sm font-mono text-blue-900 mt-1 break-all">{data.reservationid}</div>
+                <div className="text-sm font-semibold text-blue-700 uppercase">Reservation ID</div>
+                <div className="text-base font-mono text-blue-900 mt-1 break-all">{data.reservationid}</div>
               </div>
             )}
             
             {data.student && (
               <div className="bg-purple-50 rounded-lg p-3 border border-purple-200">
-                <div className="text-xs font-semibold text-purple-700 uppercase">Student</div>
-                <div className="text-sm text-purple-900 mt-1">{data.student}</div>
+                <div className="text-sm font-semibold text-purple-700 uppercase">Student</div>
+                <div className="text-base text-purple-900 mt-1">{data.student}</div>
               </div>
             )}
 
             {data.grade && (
               <div className="bg-green-50 rounded-lg p-3 border border-green-200">
-                <div className="text-xs font-semibold text-green-700 uppercase">Grade</div>
-                <div className="text-sm text-green-900 mt-1">{data.grade}</div>
+                <div className="text-sm font-semibold text-green-700 uppercase">Grade</div>
+                <div className="text-base text-green-900 mt-1">{data.grade}</div>
               </div>
             )}
 
             {data.section && (
               <div className="bg-amber-50 rounded-lg p-3 border border-amber-200">
-                <div className="text-xs font-semibold text-amber-700 uppercase">Section</div>
-                <div className="text-sm text-amber-900 mt-1">{data.section}</div>
+                <div className="text-sm font-semibold text-amber-700 uppercase">Section</div>
+                <div className="text-base text-amber-900 mt-1">{data.section}</div>
               </div>
             )}
 
             {data.slot && (
               <div className="bg-indigo-50 rounded-lg p-3 border border-indigo-200">
-                <div className="text-xs font-semibold text-indigo-700 uppercase">Slot</div>
-                <div className="text-sm text-indigo-900 mt-1">{data.slot}</div>
+                <div className="text-sm font-semibold text-indigo-700 uppercase">Slot</div>
+                <div className="text-base text-indigo-900 mt-1">{data.slot}</div>
+                {data.grade && (
+                  <div className="text-base text-indigo-700 mt-2">
+                    {getPickupTimes(data.grade)[data.slot.toLowerCase()] || ''}
+                  </div>
+                )}
               </div>
             )}
 
             {data.note && (
               <div className="bg-gray-50 rounded-lg p-3 border border-gray-200 sm:col-span-2">
-                <div className="text-xs font-semibold text-gray-700 uppercase">Note</div>
-                <div className="text-sm text-gray-900 mt-1">{data.note}</div>
+                <div className="text-sm font-semibold text-gray-700 uppercase">Note</div>
+                <div className="text-base text-gray-900 mt-1">{data.note}</div>
               </div>
             )}
           </div>

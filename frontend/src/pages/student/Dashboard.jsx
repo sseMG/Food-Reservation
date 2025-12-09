@@ -913,20 +913,10 @@ export default function Dashboard() {
           </div>
 
           {/* Break Schedule Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-4">
-            {/* Pre-Elementary */}
-            <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-purple-500 shadow-sm">
-              <div className="text-xs sm:text-sm font-bold text-purple-600 mb-1">PK</div>
-              <div className="text-[10px] sm:text-xs font-semibold text-gray-900 mb-2">Pre-Elementary</div>
-              <div className="space-y-1">
-                <div className="text-[9px] sm:text-xs text-gray-600">9:00 - 9:15 AM</div>
-                <div className="text-[9px] sm:text-xs text-gray-600">10:30 - 11:00 AM</div>
-              </div>
-            </div>
-
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 mb-4">
             {/* Elementary */}
             <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-blue-500 shadow-sm">
-              <div className="text-xs sm:text-sm font-bold text-blue-600 mb-1">1-6</div>
+              <div className="text-xs sm:text-sm font-bold text-blue-600 mb-1">2-6</div>
               <div className="text-[10px] sm:text-xs font-semibold text-gray-900 mb-2">Elementary</div>
               <div className="space-y-1">
                 <div className="text-[9px] sm:text-xs text-gray-600">9:15 - 9:30 AM</div>
