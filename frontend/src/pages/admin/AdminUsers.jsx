@@ -318,7 +318,8 @@ export default function AdminUsers() {
     return (
       Number(u.balance || 0) === 0 &&
       String(u.role || '').toLowerCase() !== 'admin' &&
-      !u.isAdmin
+      !u.isAdmin &&
+      u.status !== 'pending'
     );
   };
 
@@ -724,7 +725,13 @@ export default function AdminUsers() {
                         <div className="flex items-center justify-end gap-2">
                           <button 
                             onClick={() => handleEdit(u)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-jckl-navy text-white rounded-lg text-xs font-medium hover:bg-jckl-navy transition"
+                            disabled={u.status === 'pending'}
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+                              u.status === 'pending'
+                                ? "bg-jckl-cream text-jckl-slate cursor-not-allowed"
+                                : "bg-jckl-navy text-white hover:bg-jckl-navy"
+                            }`}
+                            title={u.status === 'pending' ? "Cannot edit pending accounts" : "Edit user"}
                           >
                             <Pencil className="w-3.5 h-3.5" />
                             Edit
@@ -739,7 +746,9 @@ export default function AdminUsers() {
                                 : "bg-jckl-cream text-jckl-slate cursor-not-allowed"
                             }`}
                             title={
-                              String(u.role || '').toLowerCase() === 'admin' || u.isAdmin
+                              u.status === 'pending'
+                                ? "Cannot delete pending accounts"
+                                : String(u.role || '').toLowerCase() === 'admin' || u.isAdmin
                                 ? "Cannot delete administrator"
                                 : Number(u.balance || 0) !== 0
                                 ? "User must have zero balance"
@@ -886,7 +895,13 @@ export default function AdminUsers() {
                 <div className="flex gap-2 pt-3 border-t border-gray-100">
                   <button 
                     onClick={() => handleEdit(u)}
-                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-jckl-navy text-white rounded-xl text-sm font-medium hover:bg-jckl-navy transition active:scale-95"
+                    disabled={u.status === 'pending'}
+                    className={`flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition active:scale-95 ${
+                      u.status === 'pending'
+                        ? "bg-jckl-cream text-jckl-slate cursor-not-allowed"
+                        : "bg-jckl-navy text-white hover:bg-jckl-navy"
+                    }`}
+                    title={u.status === 'pending' ? "Cannot edit pending accounts" : "Edit user"}
                   >
                     <Pencil className="w-4 h-4" />
                     Edit
