@@ -421,6 +421,8 @@ export default function AdminOrders() {
       .map((o) => ({ ...o, status: normalizeStatus(o.status) }))
       .filter((o) => {
         const s = o.status;
+        // Exclude Pending and Rejected reservations
+        if (s === "Pending" || s === "Rejected") return false;
         if (tab !== "All" && s !== tab) return false;
 
         // Build searchable fields with normalized text
