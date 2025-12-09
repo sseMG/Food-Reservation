@@ -84,7 +84,7 @@ exports.generateResetToken = async (req, res) => {
 exports.updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, studentId, phone, removePhoto, note } = req.body;
+    const { name, phone, removePhoto, note } = req.body;
 
     const userRepo = RepositoryFactory.getUserRepository();
     const user = await userRepo.findById(id);
@@ -93,17 +93,8 @@ exports.updateUser = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Validate student ID uniqueness
-    if (studentId && studentId !== user.studentId) {
-      const exists = await userRepo.findOne({ studentId: String(studentId) });
-      if (exists && String(exists.id) !== String(id)) {
-        return res.status(409).json({ error: 'Student ID already in use' });
-      }
-    }
-
     const update = {};
     if (name) update.name = name;
-    if (studentId) update.studentId = studentId;
     if (phone) update.phone = phone;
 
     // Handle profile picture
@@ -159,7 +150,6 @@ exports.updateUser = async (req, res) => {
         id: updated.id,
         name: updated.name,
         email: updated.email,
-        studentId: updated.studentId,
         phone: updated.phone,
         profilePictureUrl: updated.profilePictureUrl,
         role: updated.role

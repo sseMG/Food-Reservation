@@ -34,8 +34,15 @@ const fmtDT = (v) => {
   }).format(d);
 };
 
+const normalizeProvider = (p) => {
+  const provider = String(p || "").toLowerCase().trim();
+  if (provider.includes("maya")) return "maya";
+  if (provider.includes("gcash")) return "gcash";
+  return provider;
+};
+
 const providerBadge = (p) => {
-  const provider = String(p || "").toLowerCase();
+  const provider = normalizeProvider(p);
   if (provider === "maya") {
     return "inline-flex px-2.5 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700";
   }
@@ -491,7 +498,7 @@ function VerifyQueue() {
 
   const filtered = rows.filter((r) => {
     const s = q.trim().toLowerCase();
-    const providerOk = provider === "all" || String(r.provider || "").toLowerCase() === provider;
+    const providerOk = provider === "all" || normalizeProvider(r.provider) === provider;
     if (!s) return providerOk;
     return (
       providerOk &&
@@ -602,7 +609,6 @@ function VerifyQueue() {
 
                   <td className="px-6 py-4">
                     <div className="text-sm font-medium text-jckl-navy">{r.payerName || r.student || "—"}</div>
-                    <div className="text-xs text-jckl-slate">{r.studentId ? `ID: ${r.studentId}` : "—"}</div>
                     {r.contact && <div className="text-xs text-jckl-slate">{r.contact}</div>}
                   </td>
 

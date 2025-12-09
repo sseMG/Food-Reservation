@@ -967,7 +967,6 @@ export default function AdminOrders() {
           <div className="space-y-3">
             {filtered.map((o) => {
               const studentName = getStudentName(o);
-              const studentId = getStudentId(o);
               const when = o.when || o.slot || o.slotLabel || o.pickup || o.pickupTime || "";
               const claimedAt =
                 o.claimedAt ?? o.pickedAt ?? o.picked_at ?? o.claimed_at ?? o.completedAt ?? o.completed_at ?? o.updatedAt;
@@ -983,12 +982,6 @@ export default function AdminOrders() {
                       </div>
                       <div className="mt-1 text-sm sm:text-base text-jckl-navy font-medium break-words">
                         {studentName}
-                        {studentId && (
-                          <>
-                            <br className="sm:hidden" />
-                            <span className="ml-0 sm:ml-3 text-xs sm:text-sm font-mono text-jckl-slate block sm:inline mt-0.5 sm:mt-0">{studentId}</span>
-                          </>
-                        )}
                       </div>
                       <div className="text-xs sm:text-sm text-jckl-slate mt-1">
                         <span className="font-medium">Grade:</span> {o.grade}-{o.section}

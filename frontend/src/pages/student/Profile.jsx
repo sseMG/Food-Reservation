@@ -51,7 +51,6 @@ export default function Profile() {
     name: "",
     email: "",
     balance: 0,
-    studentId: "",
     phone: "",
     createdAt: null
   });
@@ -151,7 +150,6 @@ export default function Profile() {
             email: me.email || prev.email,
             balance: Number(me.balance ?? me.wallet ?? prev.balance),
             createdAt: me.createdAt || me.registeredAt || prev.createdAt,
-            studentId: me.user,
             phone: me.phone || prev.phone
           }));
         }
@@ -196,7 +194,7 @@ export default function Profile() {
     };
 
     loadProfilePicture();
-  }, [user?.studentId]); // Reload when user changes
+  }, [user?.id]); // Reload when user changes
 
   return (
     <div className="min-h-screen bg-white pb-16 md:pb-0">
@@ -242,10 +240,6 @@ export default function Profile() {
                 <p className="text-base sm:text-lg font-medium text-jckl-navy break-words">{user?.name || "—"}</p>
               </div>
 
-              <div>
-                <p className="text-xs sm:text-sm text-jckl-slate">Student ID</p>
-                <p className="text-base sm:text-lg font-mono text-jckl-navy break-words">{user?.studentId || "—"}</p>
-              </div>
 
               <div>
                 <p className="text-xs sm:text-sm text-jckl-slate">Email Address</p>

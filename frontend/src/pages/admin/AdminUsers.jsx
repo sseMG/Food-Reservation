@@ -55,7 +55,6 @@ export default function AdminUsers() {
   const [editUser, setEditUser] = useState(null);
   const [editForm, setEditForm] = useState({
     name: '',
-    studentId: '',
     phone: '',
     note: ''
   });
@@ -152,13 +151,12 @@ export default function AdminUsers() {
       const query = searchQuery.toLowerCase().trim();
       result = result.filter(u => {
         const matchId = String(u.id || '').toLowerCase().includes(query);
-        const matchStudentId = String(u.studentId || '').toLowerCase().includes(query);
         const matchName = String(u.name || '').toLowerCase().includes(query);
         const matchEmail = String(u.email || '').toLowerCase().includes(query);
         const matchPhone = String(u.phone || '').toLowerCase().includes(query);
         const matchBalance = String(Number(u.balance || 0)).includes(query);
         
-        return matchId || matchStudentId || matchName || matchEmail || matchPhone || matchBalance;
+        return matchId || matchName || matchEmail || matchPhone || matchBalance;
       });
     }
 
@@ -173,10 +171,6 @@ export default function AdminUsers() {
         case "email":
           aVal = a.email?.toLowerCase() || "";
           bVal = b.email?.toLowerCase() || "";
-          break;
-        case "studentId":
-          aVal = String(a.studentId || '').toLowerCase();
-          bVal = String(b.studentId || '').toLowerCase();
           break;
         case "phone":
           aVal = a.phone?.toLowerCase() || "";
@@ -237,7 +231,6 @@ export default function AdminUsers() {
     setEditUser(user);
     setEditForm({
       name: user.name,
-      studentId: user.studentId,
       phone: user.phone || '',
       note: ''
     });
@@ -260,7 +253,6 @@ export default function AdminUsers() {
       setSubmitting(true);
       const formData = new FormData();
       formData.append('name', editForm.name);
-      formData.append('studentId', editForm.studentId);
       formData.append('phone', editForm.phone);
       formData.append('removePhoto', removePhoto);
       formData.append('note', editForm.note || "");
@@ -582,15 +574,6 @@ export default function AdminUsers() {
                   <th className="px-6 py-4">Profile</th>
                   <th 
                     className="px-6 py-4 cursor-pointer hover:bg-jckl-cream select-none transition"
-                    onClick={() => handleSort("studentId")}
-                  >
-                    <div className="flex items-center gap-2">
-                      ID Number
-                      <SortIcon field="studentId" />
-                    </div>
-                  </th>
-                  <th 
-                    className="px-6 py-4 cursor-pointer hover:bg-jckl-cream select-none transition"
                     onClick={() => handleSort("name")}
                   >
                     <div className="flex items-center gap-2">
@@ -658,9 +641,6 @@ export default function AdminUsers() {
                     <tr key={u.id} className="hover:bg-white transition-colors">
                       <td className="px-6 py-4">
                         <Avatar user={u} size="md" />
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="font-mono text-sm font-medium text-jckl-slate">{u.studentId}</span>
                       </td>
                       <td className="px-6 py-4">
                         <span className="font-medium text-jckl-navy">{u.name}</span>
@@ -820,7 +800,6 @@ export default function AdminUsers() {
                   <Avatar user={u} size="lg" />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-jckl-navy truncate">{u.name}</h3>
-                    <p className="text-xs font-mono text-jckl-slate">ID: {u.studentId}</p>
                     <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium mt-1 ${
                       String(u.role || '').toLowerCase() === 'admin'
                         ? 'bg-purple-100 text-purple-700'
@@ -1034,21 +1013,6 @@ export default function AdminUsers() {
                     />
                   </div>
 
-                  {/* Student ID */}
-                  <div>
-                    <label className="block text-sm font-semibold text-jckl-slate mb-2">
-                      Student ID *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={editForm.studentId}
-                      onChange={e => setEditForm({...editForm, studentId: e.target.value})}
-                      className="w-full px-4 py-3 border border-jckl-gold rounded-xl focus:outline-none focus:ring-2 focus:ring-jckl-gold focus:border-transparent transition font-mono"
-                      placeholder="e.g., 2024-001234"
-                    />
-                  </div>
-
                   {/* Phone */}
                   <div>
                     <label className="block text-sm font-semibold text-jckl-slate mb-2">
@@ -1133,10 +1097,6 @@ export default function AdminUsers() {
                   <div>
                     <p className="text-xs text-jckl-slate uppercase tracking-wide">Email</p>
                     <p className="text-sm font-medium text-jckl-navy truncate">{selectedPendingUser.email}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-jckl-slate uppercase tracking-wide">Student ID</p>
-                    <p className="text-sm font-mono font-medium text-jckl-navy">{selectedPendingUser.studentId}</p>
                   </div>
                   <div>
                     <p className="text-xs text-jckl-slate uppercase tracking-wide">Phone</p>

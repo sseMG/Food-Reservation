@@ -82,7 +82,6 @@ export default function TopUp() {
     return {
       name: u.name || u.fullName || "",
       email: u.email || u.username || "",
-      studentId: u.studentId || u.studentID || u.sid || "",
       phone: u.phone || u.contact || "",
       balance: toNumber(u.balance ?? u.wallet ?? 0, 0),
       createdAt: u.createdAt || u.memberSince || u.registeredAt || null,
@@ -93,8 +92,6 @@ export default function TopUp() {
   const [amount, setAmount] = useState("");
   const [refNo, setRefNo] = useState(""); // required
   const [payerName, setPayerName] = useState("");
-  // initialize studentId from stored user so field is populated immediately
-  const [studentId, setStudentId] = useState(user.studentId || user.studentID || user.sid || "");
   const [contact, setContact] = useState("");
   const [agree, setAgree] = useState(false);
 
@@ -148,7 +145,7 @@ export default function TopUp() {
         });
 
         // ---- user (/me) ----
-        // ensure we fetch authenticated user (so studentId is present)
+        // ensure we fetch authenticated user
         const meRes = await api.get("/wallets/me").catch((e) => {
           if (e instanceof ApiError) {
             switch (e.status) {
@@ -175,7 +172,6 @@ export default function TopUp() {
             ...u,
             name: me.name || me.fullName || u.name,
             email: me.email || u.email,
-            studentId: me.user || me.studentID || me.sid || u.studentId,
             phone: me.phone || me.contact || u.phone,
             balance: toNumber(me.balance ?? me.walletBalance ?? u.balance, u.balance),
           }));
@@ -245,15 +241,9 @@ export default function TopUp() {
     };
   }, [navigate]);
 
-  // remove local studentId state usage: keep but keep in sync with user and readonly
-  //  const [studentId, setStudentId] = useState("");
-
   // initialize form defaults once user is known
   useEffect(() => {
     if (payerName === "") setPayerName(user.name || "");
-    // force studentId from logged-in profile (readonly)
-    // normalize multiple name variants
-    setStudentId(String(user.studentId || user.studentID || user.sid || "").trim());
     if (contact === "") setContact(user.phone || "");
   }, [user]); // eslint-disable-line
 
@@ -294,7 +284,6 @@ export default function TopUp() {
   const amountOk = useMemo(() => within(numAmount, 20, 20000), [numAmount]); // sensible range
   const refOk = useMemo(() => refNo.trim().length >= 6, [refNo]);
   const nameOk = useMemo(() => payerName.trim().length >= 3, [payerName]);
-  const sidOk = useMemo(() => studentId.trim().length >= 3, [studentId]);
   const contactOk = useMemo(() => contact.trim().length >= 7, [contact]);
   const imgOk = useMemo(() => !!file && imgMeta.w >= 300 && imgMeta.h >= 300, [file, imgMeta]);
   
@@ -306,7 +295,7 @@ export default function TopUp() {
     return approvedReferences[providerKey]?.has(normalizedRef) || false;
   }, [refNo, provider, approvedReferences]);
 
-  const canSubmit = amountOk && refOk && nameOk && sidOk && contactOk && imgOk && agree && !submitting && !refDuplicate;
+  const canSubmit = amountOk && refOk && nameOk && contactOk && imgOk && agree && !submitting && !refDuplicate;
 
   const onSubmit = async () => {
     if (!canSubmit) {
@@ -321,7 +310,6 @@ export default function TopUp() {
       fd.append("amount", numAmount.toFixed(2));
       fd.append("reference", refNo.trim());
       fd.append("payerName", payerName.trim());
-      fd.append("studentId", (studentId || user.studentId || "").trim());
       fd.append("contact", contact.trim());
       if (user.email) fd.append("email", user.email);
       if (fileHash) fd.append("fileHash", fileHash);
@@ -458,16 +446,6 @@ export default function TopUp() {
 
               {/* Student ID & contact */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Student ID</label>
-                  <input
-                    value={studentId}
-                    readOnly
-                    title="Student ID is taken from your account and cannot be changed here"
-                    className="w-full bg-jckl-cream border border-jckl-gold rounded-lg px-3 py-2 text-sm text-jckl-navy"
-                  />
-                  {!studentId && <p className="text-xs text-rose-600 mt-1">No student ID found on your profile.</p>}
-                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
                   <input

@@ -180,13 +180,6 @@ export default function AdminNotifications() {
                 <div className="text-sm font-mono text-orange-900 mt-1 break-all">{data.reference}</div>
               </div>
             )}
-
-            {data.studentid && (
-              <div className="bg-indigo-50 rounded-lg p-3 border border-indigo-200">
-                <div className="text-xs font-semibold text-indigo-700 uppercase">Student ID</div>
-                <div className="text-sm font-mono text-indigo-900 mt-1">{data.studentid}</div>
-              </div>
-            )}
           </div>
 
           {/* Student Info Card */}
@@ -669,17 +662,6 @@ export default function AdminNotifications() {
                   className="flex-1 sm:flex-none px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
                 >
                   View Top-up
-                </button>
-              )}
-              {preview?.data?.studentId && !preview?.data?.items && !preview?.data?.amount && (
-                <button
-                  onClick={() => {
-                    navigate("/admin/users");
-                    setPreview(null);
-                  }}
-                  className="flex-1 sm:flex-none px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-                >
-                  View Registration
                 </button>
               )}
             </div>

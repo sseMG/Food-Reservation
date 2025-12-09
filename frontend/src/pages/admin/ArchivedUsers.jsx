@@ -93,13 +93,12 @@ export default function ArchivedUsers() {
       const query = searchQuery.toLowerCase().trim();
       result = result.filter(u => {
         const matchId = u.id?.toLowerCase().includes(query);
-        const matchStudentId = u.studentId?.toLowerCase().includes(query);
         const matchName = u.name?.toLowerCase().includes(query);
         const matchEmail = u.email?.toLowerCase().includes(query);
         const matchPhone = u.phone?.toLowerCase().includes(query);
         const matchBalance = peso.format(Number(u.balance || 0)).toLowerCase().includes(query);
         
-        return matchId || matchStudentId || matchName || matchEmail || matchPhone || matchBalance;
+        return matchId || matchName || matchEmail || matchPhone || matchBalance;
       });
     }
 
@@ -114,10 +113,6 @@ export default function ArchivedUsers() {
         case "email":
           aVal = a.email?.toLowerCase() || "";
           bVal = b.email?.toLowerCase() || "";
-          break;
-        case "studentId":
-          aVal = a.studentId?.toLowerCase() || "";
-          bVal = b.studentId?.toLowerCase() || "";
           break;
         case "phone":
           aVal = a.phone?.toLowerCase() || "";
@@ -237,15 +232,6 @@ export default function ArchivedUsers() {
                   <th className="px-6 py-4">Profile</th>
                   <th 
                     className="px-6 py-4 cursor-pointer hover:bg-gray-100 select-none transition"
-                    onClick={() => handleSort("studentId")}
-                  >
-                    <div className="flex items-center gap-2">
-                      ID Number
-                      <SortIcon field="studentId" />
-                    </div>
-                  </th>
-                  <th 
-                    className="px-6 py-4 cursor-pointer hover:bg-gray-100 select-none transition"
                     onClick={() => handleSort("name")}
                   >
                     <div className="flex items-center gap-2">
@@ -297,7 +283,6 @@ export default function ArchivedUsers() {
                   Array.from({ length: 6 }).map((_, i) => (
                     <tr key={i} className="animate-pulse">
                       <td className="px-6 py-4"><div className="h-10 w-10 bg-gray-200 rounded-full" /></td>
-                      <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-28" /></td>
                       <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-48" /></td>
                       <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-56" /></td>
                       <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-36" /></td>
@@ -308,7 +293,7 @@ export default function ArchivedUsers() {
                   ))
                 ) : filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan="8" className="px-6 py-12 text-center">
+                    <td colSpan="7" className="px-6 py-12 text-center">
                       <UserCircle2 className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                       <p className="text-sm font-medium text-gray-900">No archived users</p>
                       <p className="text-xs text-gray-500 mt-1">Users will appear here when they are archived</p>
@@ -319,9 +304,6 @@ export default function ArchivedUsers() {
                     <tr key={u.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4">
                         <Avatar user={u} size="md" />
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="font-mono text-sm font-medium text-gray-700">{u.studentId}</span>
                       </td>
                       <td className="px-6 py-4">
                         <span className="font-medium text-gray-900">{u.name}</span>
@@ -403,7 +385,6 @@ export default function ArchivedUsers() {
                   <Avatar user={u} size="lg" />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-gray-900 truncate">{u.name}</h3>
-                    <p className="text-xs font-mono text-gray-500">ID: {u.studentId}</p>
                     <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium mt-1 bg-amber-100 text-amber-700">
                       Archived
                     </span>

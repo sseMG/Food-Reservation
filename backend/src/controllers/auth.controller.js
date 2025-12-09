@@ -27,15 +27,10 @@ exports.me = async (req, res) => {
 
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, grade = "", section = "", studentId, phone } = req.body || {};
+    const { name, email, password, grade = "", section = "", phone } = req.body || {};
     
     if (!name || !email || !password) {
       return res.status(400).json({ error: "Missing fields" });
-    }
-
-    // require studentId and validate digits-only (whole number)
-    if (!studentId || !/^\d+$/.test(String(studentId).trim())) {
-      return res.status(400).json({ error: "studentId is required and must contain only digits" });
     }
 
     // require phone (basic validation: digits, +, spaces, dashes, parentheses)
@@ -44,12 +39,6 @@ exports.register = async (req, res) => {
     }
     
     const userRepo = RepositoryFactory.getUserRepository();
-    
-    // Check studentId uniqueness first
-    const existingStudentId = await userRepo.findOne({ studentId: String(studentId).trim() });
-    if (existingStudentId) {
-      return res.status(409).json({ error: "Student ID already registered" });
-    }
     
     // Check email uniqueness
     const existingEmail = await userRepo.findOne({ email: email.trim().toLowerCase() });
@@ -65,7 +54,6 @@ exports.register = async (req, res) => {
       grade,
       section,
       balance: 0,
-      studentId: String(studentId).trim(),
       phone: String(phone).trim(),
       status: "pending",
       approvalNotes: "",
@@ -79,11 +67,10 @@ exports.register = async (req, res) => {
         actor: null,
         type: "student:pending-approval",
         title: `New Student Registration Pending Approval: ${name}`,
-        body: `A new student registration requires approval.\n\nName: ${name}\nStudent ID: ${String(studentId).trim()}\nEmail: ${email}\nPhone: ${String(phone).trim()}\n\nPlease review and approve or reject this registration.`,
+        body: `A new student registration requires approval.\n\nName: ${name}\nEmail: ${email}\nPhone: ${String(phone).trim()}\n\nPlease review and approve or reject this registration.`,
         data: {
           userId: newUser.id,
           studentName: name,
-          studentId: String(studentId).trim(),
           email: email,
           phone: String(phone).trim(),
           grade: grade || "",
@@ -154,7 +141,6 @@ exports.login = async (req, res) => {
       grade: u.grade || "",
       section: u.section || "",
       balance: Number(u.balance) || 0,
-      studentId: u.studentId || null,
       phone: u.phone || null
     };
     return res.json({ status: 200, data: { token, user } });
@@ -170,7 +156,7 @@ exports.updateProfile = async (req, res) => {
     const uid = req.user && req.user.id;
     if (!uid) return res.status(401).json({ error: 'Unauthorized' });
 
-    const { name, email, studentId, phone } = req.body || {};
+    const { name, email, phone } = req.body || {};
     const userRepo = RepositoryFactory.getUserRepository();
     
     const user = await userRepo.findById(uid);
@@ -187,17 +173,6 @@ exports.updateProfile = async (req, res) => {
         return res.status(409).json({ error: 'Email already in use' });
       }
       update.email = email.trim().toLowerCase();
-    }
-    if (typeof studentId === 'string' && studentId.trim()) {
-      if (!/^\d+$/.test(studentId.trim())) {
-        return res.status(400).json({ error: 'Student ID must contain only digits' });
-      }
-      // Check studentId uniqueness (except self)
-      const existing = await userRepo.findOne({ studentId: studentId.trim() });
-      if (existing && String(existing.id) !== String(uid)) {
-        return res.status(409).json({ error: 'Student ID already in use' });
-      }
-      update.studentId = studentId.trim();
     }
     if (typeof phone === 'string' && phone.trim()) {
       if (!/^[\d+\-\s\(\)]+$/.test(phone.trim())) {
@@ -233,7 +208,6 @@ exports.updateProfile = async (req, res) => {
         id: updated.id,
         name: updated.name,
         email: updated.email,
-        studentId: updated.studentId,
         phone: updated.phone || null,
         profilePictureUrl: updated.profilePictureUrl || null,
         updatedAt: updated.updatedAt

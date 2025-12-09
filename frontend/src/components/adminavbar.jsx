@@ -234,12 +234,12 @@ const NotificationPreviewModal = ({ notification, onClose, onDelete, navigate })
                       Student Information
                     </h4>
                     <div className="grid grid-cols-2 gap-4">
-                      <div>
+                      <div className="col-span-2">
                         <span className="text-xs text-gray-500 uppercase font-semibold">
-                          Student ID
+                          Full Name
                         </span>
-                        <div className="font-mono font-medium text-gray-900 mt-1">
-                          {notification.data.studentId}
+                        <div className="font-medium text-gray-900 mt-1">
+                          {notification.data.studentName}
                         </div>
                       </div>
 
@@ -507,17 +507,6 @@ const NotificationPreviewModal = ({ notification, onClose, onDelete, navigate })
               className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
             >
               View Top-up
-            </button>
-          )}
-          {notification?.data?.studentId && !notification?.data?.items && !notification?.data?.amount && (
-            <button
-              onClick={() => {
-                navigate("/admin/users");
-                onClose();
-              }}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
-            >
-              View Registration
             </button>
           )}
         </div>

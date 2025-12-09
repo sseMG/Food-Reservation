@@ -20,6 +20,9 @@ import {
   Facebook,
   Globe,
   ExternalLink,
+  Info,
+  AlertCircle,
+  CheckCircle,
 } from "lucide-react";
 
 const peso = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" });
@@ -900,6 +903,135 @@ export default function Dashboard() {
               );
             })}
           </div>
+        </section>
+
+        {/* Break Time Policy Section */}
+        <section className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg sm:rounded-2xl shadow-sm border border-blue-200 p-4 sm:p-6">
+          <div className="mb-4">
+            <h2 className="text-base sm:text-xl font-bold text-jckl-navy mb-1">Optimized for JCKL Break Schedules</h2>
+            <p className="text-xs sm:text-sm text-gray-600">Our system works seamlessly with your existing break time intervals</p>
+          </div>
+
+          {/* Break Schedule Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-4">
+            {/* Pre-Elementary */}
+            <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-purple-500 shadow-sm">
+              <div className="text-xs sm:text-sm font-bold text-purple-600 mb-1">PK</div>
+              <div className="text-[10px] sm:text-xs font-semibold text-gray-900 mb-2">Pre-Elementary</div>
+              <div className="space-y-1">
+                <div className="text-[9px] sm:text-xs text-gray-600">9:00 - 9:15 AM</div>
+                <div className="text-[9px] sm:text-xs text-gray-600">10:30 - 11:00 AM</div>
+              </div>
+            </div>
+
+            {/* Elementary */}
+            <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-blue-500 shadow-sm">
+              <div className="text-xs sm:text-sm font-bold text-blue-600 mb-1">1-6</div>
+              <div className="text-[10px] sm:text-xs font-semibold text-gray-900 mb-2">Elementary</div>
+              <div className="space-y-1">
+                <div className="text-[9px] sm:text-xs text-gray-600">9:15 - 9:30 AM</div>
+                <div className="text-[9px] sm:text-xs text-gray-600">11:00 AM - 12:00 NN</div>
+              </div>
+            </div>
+
+            {/* Junior High */}
+            <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-green-500 shadow-sm">
+              <div className="text-xs sm:text-sm font-bold text-green-600 mb-1">JHS</div>
+              <div className="text-[10px] sm:text-xs font-semibold text-gray-900 mb-2">Junior High</div>
+              <div className="space-y-1">
+                <div className="text-[9px] sm:text-xs text-gray-600">9:30 - 9:45 AM</div>
+                <div className="text-[9px] sm:text-xs text-gray-600">1:00 - 1:20 PM</div>
+              </div>
+            </div>
+
+            {/* Senior High */}
+            <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-amber-500 shadow-sm">
+              <div className="text-xs sm:text-sm font-bold text-amber-600 mb-1">SHS</div>
+              <div className="text-[10px] sm:text-xs font-semibold text-gray-900 mb-2">Senior High</div>
+              <div className="space-y-1">
+                <div className="text-[9px] sm:text-xs text-gray-600">9:45 - 10:00 AM</div>
+                <div className="text-[9px] sm:text-xs text-gray-600">1:20 - 1:40 PM</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Info Banner */}
+          <div className="flex items-start gap-2 p-3 bg-blue-100 border border-blue-300 rounded-lg">
+            <Info className="w-4 h-4 text-blue-700 flex-shrink-0 mt-0.5" />
+            <p className="text-xs sm:text-sm text-blue-900">Orders are only claimable during your designated time slot</p>
+          </div>
+        </section>
+
+        {/* Important Pickup Rules Section */}
+        <section className="bg-jckl-cream rounded-lg sm:rounded-2xl shadow-sm border-l-4 border-jckl-gold p-4 sm:p-6">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-jckl-gold flex items-center justify-center flex-shrink-0">
+              <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-jckl-navy" />
+            </div>
+            <h2 className="text-base sm:text-lg font-bold text-jckl-navy">Important Pickup Rules</h2>
+          </div>
+          
+          <ul className="space-y-2 sm:space-y-3">
+            <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base">
+              <span className="text-jckl-gold font-bold mt-0.5">•</span>
+              <span className="text-jckl-navy">Orders can <span className="font-semibold">only be claimed during your designated time slot</span>.</span>
+            </li>
+            <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base">
+              <span className="text-jckl-gold font-bold mt-0.5">•</span>
+              <span className="text-jckl-navy">You must present your <span className="font-semibold">QR code</span> at the canteen counter for verification.</span>
+            </li>
+            <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base">
+              <span className="text-jckl-gold font-bold mt-0.5">•</span>
+              <span className="text-jckl-navy">Orders not picked up during the assigned slot may be <span className="font-semibold">forfeited</span> to prevent food waste.</span>
+            </li>
+            <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base">
+              <span className="text-jckl-gold font-bold mt-0.5">•</span>
+              <span className="text-jckl-navy">Pre order at least <span className="font-semibold">30 minutes before</span> your break time for preparation.</span>
+            </li>
+          </ul>
+        </section>
+
+        {/* Benefits of the System Section */}
+        <section className="bg-white rounded-lg sm:rounded-2xl shadow-sm border-t-4 border-jckl-navy p-4 sm:p-6">
+          <h2 className="text-base sm:text-lg font-bold text-jckl-navy mb-4">Benefits of the System</h2>
+          
+          <ul className="space-y-2 sm:space-y-3">
+            <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base">
+              <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-jckl-gold flex-shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-jckl-navy">No waiting in line</span>
+                <span className="text-gray-600"> – skip the queue and maximize your break time</span>
+              </div>
+            </li>
+            <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base">
+              <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-jckl-gold flex-shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-jckl-navy">Guaranteed meal availability</span>
+                <span className="text-gray-600"> – your food is reserved when you order</span>
+              </div>
+            </li>
+            <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base">
+              <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-jckl-gold flex-shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-jckl-navy">Cashless convenience</span>
+                <span className="text-gray-600"> – no need to bring physical money to school</span>
+              </div>
+            </li>
+            <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base">
+              <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-jckl-gold flex-shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-jckl-navy">Parental monitoring</span>
+                <span className="text-gray-600"> – parents can track spending and set limits</span>
+              </div>
+            </li>
+            <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base">
+              <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-jckl-gold flex-shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-jckl-navy">Reduced food waste</span>
+                <span className="text-gray-600"> – accurate forecasting prevents over-preparation</span>
+              </div>
+            </li>
+          </ul>
         </section>
 
         {/* Social Links Section - Polished like major apps */}

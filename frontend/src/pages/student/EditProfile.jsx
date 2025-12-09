@@ -19,7 +19,6 @@ export default function EditProfile() {
   const [form, setForm] = useState({
     name: localUser.name || "",
     email: localUser.email || "",
-    studentId: localUser.studentId || localUser.user || "", // handle both fields
     phone: localUser.phone || localUser.contact || ""
   });
 
@@ -39,7 +38,6 @@ export default function EditProfile() {
             ...prev,
             name: data.name || data.fullName || prev.name || "",
             email: data.email || prev.email || "",
-            studentId: data.user || prev.studentId || "",
             phone: data.phone || prev.phone || ""
           }));
 
@@ -62,7 +60,6 @@ export default function EditProfile() {
         // Fallback to localStorage if API fails
         setForm(prev => ({
           ...prev,
-          studentId: localUser.studentId || localUser.user || prev.studentId || "",
           phone: localUser.phone || localUser.contact || prev.phone || ""
         }));
       } finally {
@@ -92,16 +89,15 @@ export default function EditProfile() {
       const formData = new FormData();
 
       // Add user ID to ensure uniqueness
-      formData.append('userId', localUser.id || localUser.studentId || localUser.user);
+      formData.append('userId', localUser.id || localUser.user);
       formData.append('name', form.name);
       // Email is no longer editable - removed from form submission
-      formData.append('studentId', form.studentId);
       formData.append('phone', form.phone);
       
       if (imageFile) {
         // Append file with unique identifier
         const fileExt = imageFile.name.split('.').pop();
-        const uniqueFileName = `${form.studentId}_${Date.now()}.${fileExt}`;
+        const uniqueFileName = `profile_${Date.now()}.${fileExt}`;
         formData.append('profilePicture', imageFile, uniqueFileName);
       }
 
@@ -192,11 +188,10 @@ export default function EditProfile() {
             </div>
 
             {/* Form Fields */}
-            {['name', 'studentId', 'phone'].map((field) => (
+            {['name', 'phone'].map((field) => (
               <div key={field}>
                 <label className="block text-sm font-semibold text-jckl-navy mb-2">
-                  {field === 'studentId' ? 'Student ID' : 
-                   field === 'phone' ? 'Contact Number' : 'Full Name'}
+                  {field === 'phone' ? 'Contact Number' : 'Full Name'}
                 </label>
                 <input
                   name={field}
@@ -204,9 +199,8 @@ export default function EditProfile() {
                   value={form[field]}
                   onChange={handleChange}
                   className="mt-1 block w-full border border-jckl-gold rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-jckl-gold focus:border-transparent bg-white text-jckl-navy"
-                  placeholder={`Enter your ${field === 'studentId' ? 'student ID' : 
-                              field === 'phone' ? 'phone number' : field}`}
-                  disabled={loading || field === 'studentId'}
+                  placeholder={`Enter your ${field === 'phone' ? 'phone number' : field}`}
+                  disabled={loading}
                 />
               </div>
             ))}

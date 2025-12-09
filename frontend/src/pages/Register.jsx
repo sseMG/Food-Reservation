@@ -18,7 +18,6 @@ export default function Register() {
 
   const [form, setForm] = useState({
     name: "",
-    studentId: "",
     email: "",
     password: "",
     confirm: "",
@@ -39,9 +38,6 @@ export default function Register() {
   const validate = () => {
     const errs = {};
     if (!form.name.trim()) errs.name = "Name is required";
-    if (!form.studentId.trim()) errs.studentId = "Student ID is required";
-    else if (!/^\d+$/.test(String(form.studentId).trim()))
-      errs.studentId = "Student ID must contain digits only";
     if (!form.email.trim()) errs.email = "Email is required";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
       errs.email = "Invalid email";
@@ -71,7 +67,6 @@ export default function Register() {
     try {
       await api.post("/auth/register", {
         name: form.name.trim(),
-        studentId: form.studentId.trim(),
         email: form.email.trim(),
         password: form.password,
         grade: "",
@@ -96,14 +91,10 @@ export default function Register() {
           err.message ||
           "";
         if (status === ApiError.Conflict) {
-          // Handle 409 conflicts - could be email or studentId
+          // Handle 409 conflicts
           if (/email/i.test(serverMsg)) {
             setErrors({
               email: "Email already registered. Please use a different email or log in instead.",
-            });
-          } else if (/student\s*id/i.test(serverMsg)) {
-            setErrors({
-              studentId: "Student ID already registered. Please use a different ID.",
             });
           } else {
             setErrors({
@@ -113,9 +104,7 @@ export default function Register() {
           return;
         }
         if (status === 400) {
-          if (/studentid/i.test(serverMsg) || /student id/i.test(serverMsg)) {
-            setErrors({ studentId: serverMsg });
-          } else if (/phone/i.test(serverMsg) || /contact/i.test(serverMsg)) {
+          if (/phone/i.test(serverMsg) || /contact/i.test(serverMsg)) {
             setErrors({ phone: serverMsg });
           } else {
             setErrors({ email: serverMsg || "Invalid registration data" });
@@ -289,14 +278,6 @@ export default function Register() {
                 error={errors.name}
               />
               <Input
-                label="Student ID Number"
-                name="studentId"
-                value={form.studentId}
-                onChange={handleChange}
-                placeholder="202300001"
-                error={errors.studentId}
-              />
-              <Input
                 label="Contact Number"
                 name="phone"
                 value={form.phone}
@@ -407,7 +388,7 @@ export default function Register() {
                   <p className="font-semibold mb-1">Student Accounts Only</p>
                   <p className="text-jckl-slate">
                     This registration is for JCKL Academy students. Use your
-                    school email and valid student ID.
+                    school email and contact number.
                   </p>
                 </div>
               </div>

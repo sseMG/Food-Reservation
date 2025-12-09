@@ -39,12 +39,10 @@ exports.create = async (req, res) => {
     const owner = await userRepo.findById(uid) || {};
 
     const studentName = req.body.payerName || owner.name || "—";
-    const submittedStudentId = (req?.body?.studentId && String(req.body.studentId).trim()) || owner.studentId || "N/A";
 
     const topup = await topupRepo.create({
       userId: String(uid),
       student: studentName,
-      studentId: submittedStudentId,
       contact: (req?.body?.contact) ? req.body.contact : (owner.phone || 'N/A'),
       email: (req?.body?.email) ? req.body.email : (owner.email || 'N/A'),
       provider: method,
@@ -74,7 +72,6 @@ exports.create = async (req, res) => {
           topupId: topup.id,
           amount: amt,
           provider: method,
-          studentId: submittedStudentId,
           reference: reference,
           student: {
             name: studentName,
