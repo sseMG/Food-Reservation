@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import Navbar from "../../components/adminavbar";
 import AdminBottomNav from "../../components/mobile/AdminBottomNav";
 import { api } from "../../lib/api";
+import { useModal } from "../../contexts/ModalContext";
 import { Link } from "react-router-dom";
 import { 
   Pencil, X, Trash, Search, ArrowUpDown, ArrowUp, ArrowDown,
@@ -49,6 +50,7 @@ const Avatar = ({ user, size = "md" }) => {
 };
 
 export default function AdminUsers() {
+  const { showAlert, showConfirm } = useModal();
   const [users, setUsers] = useState([]);
   const [archivedCount, setArchivedCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -130,7 +132,7 @@ export default function AdminUsers() {
     } catch (e) {
       console.error("load users failed", e);
       setUsers([]);
-      alert("Failed to load users");
+      await showAlert("Failed to load users", "warning");
     } finally {
       setLoading(false);
     }
@@ -280,7 +282,7 @@ export default function AdminUsers() {
       }
     } catch (err) {
       console.error('Update failed:', err);
-      alert(err.response?.data?.error || 'Failed to update user');
+      await showAlert(err.response?.data?.error || 'Failed to update user', "warning");
     } finally {
       setSubmitting(false);
     }
@@ -291,15 +293,19 @@ export default function AdminUsers() {
     if (!u) return;
 
     if (String(u.role || '').toLowerCase() === 'admin' || u.isAdmin) {
-      alert("Administrator accounts cannot be deleted.");
+      await showAlert("Administrator accounts cannot be deleted.", "warning");
       return;
     }
 
     if ((u.balance || 0) !== 0) {
-      alert("User must have zero balance before deletion.");
+      await showAlert("User must have zero balance before deletion.", "warning");
       return;
     }
-    if (!window.confirm(`Delete user "${u.name}"? This will remove the account from the system but keep their historical records for reports.`)) return;
+    const confirmed = await showConfirm(
+      `Delete user "${u.name}"? This will remove the account from the system but keep their historical records for reports.`,
+      "Delete User"
+    );
+    if (!confirmed) return;
     setDeletingId(id);
     try {
       await api.delete(`/admin/users/${id}`);
@@ -308,7 +314,7 @@ export default function AdminUsers() {
       setArchivedCount(prev => prev + 1);
     } catch (err) {
       console.error("delete user failed", err);
-      alert(err.message || "Failed to delete user");
+      await showAlert(err.message || "Failed to delete user", "warning");
     } finally {
       setDeletingId(null);
     }
@@ -338,10 +344,10 @@ export default function AdminUsers() {
       
       setSelectedPendingUser(null);
       setApprovalForm({ approvalNotes: '' });
-      alert('User approved successfully. Confirmation email sent.');
+      await showAlert('User approved successfully. Confirmation email sent.', "success");
     } catch (err) {
       console.error('Approval failed:', err);
-      alert(err.response?.data?.error || 'Failed to approve user');
+      await showAlert(err.response?.data?.error || 'Failed to approve user', "warning");
     } finally {
       setApprovingId(null);
     }
@@ -361,10 +367,10 @@ export default function AdminUsers() {
       
       setSelectedRejectUser(null);
       setRejectionForm({ rejectionReason: '' });
-      alert('Registration rejected. User account has been deleted.');
+      await showAlert('Registration rejected. User account has been deleted.', "success");
     } catch (err) {
       console.error('Rejection failed:', err);
-      alert(err.response?.data?.error || 'Failed to reject user');
+      await showAlert(err.response?.data?.error || 'Failed to reject user', "warning");
     } finally {
       setRejectingIdInline(null);
     }
@@ -383,10 +389,10 @@ export default function AdminUsers() {
         String(u.id) === String(userId) ? { ...u, status: "approved" } : u
       ));
       
-      alert('User approved successfully. Confirmation email sent.');
+      await showAlert('User approved successfully. Confirmation email sent.', "success");
     } catch (err) {
       console.error('Approval failed:', err);
-      alert(err.response?.data?.error || 'Failed to approve user');
+      await showAlert(err.response?.data?.error || 'Failed to approve user', "warning");
     } finally {
       setApprovingIdInline(null);
     }
@@ -440,7 +446,7 @@ export default function AdminUsers() {
 
     const newBalanceNum = parseFloat(newBalance);
     if (isNaN(newBalanceNum) || newBalanceNum < 0) {
-      alert('Please enter a valid balance amount');
+      await showAlert('Please enter a valid balance amount', "warning");
       return;
     }
 
@@ -456,11 +462,11 @@ export default function AdminUsers() {
         String(u.id) === String(balanceEditUser.id) ? { ...u, balance: newBalanceNum } : u
       ));
 
-      alert('Balance updated successfully');
+      await showAlert('Balance updated successfully', "success");
       closeBalanceModal();
     } catch (err) {
       console.error('Balance update failed:', err);
-      alert(err.response?.data?.error || 'Failed to update balance');
+      await showAlert(err.response?.data?.error || 'Failed to update balance', "warning");
     } finally {
       setBalanceUpdateLoading(false);
     }

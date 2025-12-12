@@ -4,6 +4,7 @@ import Navbar from "../../components/avbar";
 import BottomNav from "../../components/mobile/BottomNav";
 import { api, ApiError } from "../../lib/api";
 import { refreshSessionForProtected } from "../../lib/auth";
+import { useModal } from "../../contexts/ModalContext";
 import {
   Upload,
   Image as ImageIcon,
@@ -67,6 +68,7 @@ function readLocalUser() {
 // ---------- component ----------
 export default function TopUp() {
   const navigate = useNavigate();
+  const { showAlert } = useModal();
 
   // wallet QR + meta
   const [provider, setProvider] = useState("gcash"); // 'gcash' | 'maya'
@@ -251,11 +253,11 @@ export default function TopUp() {
 
   const openPicker = () => fileRef.current?.click();
 
-  const onPickImage = (e) => {
+  const onPickImage = async (e) => {
     const f = e.target.files?.[0];
     if (!f) return;
     if (f.size > 5 * 1024 * 1024) {
-      alert("Max image size is 5MB.");
+      await showAlert("Max image size is 5MB.", "warning");
       return;
     }
     setFile(f);
@@ -299,7 +301,7 @@ export default function TopUp() {
 
   const onSubmit = async () => {
     if (!canSubmit) {
-      alert("Please complete all required fields correctly.");
+      await showAlert("Please complete all required fields correctly.", "warning");
       return;
     }
 
@@ -318,11 +320,11 @@ export default function TopUp() {
       fd.append("proof", file);
 
       await api.post("/topups", fd);
-      alert("Top-up submitted! Please wait for canteen approval.");
+      await showAlert("Top-up submitted! Please wait for canteen approval.", "success");
       resetForm();
     } catch (err) {
       console.error(err);
-      alert(err?.message || "Failed to submit. Please try again.");
+      await showAlert(err?.message || "Failed to submit. Please try again.", "warning");
     } finally {
       setSubmitting(false);
     }

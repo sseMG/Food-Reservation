@@ -6,10 +6,12 @@ import BottomNav from "../../components/mobile/BottomNav";
 import { api } from "../../lib/api";
 import { refreshSessionForProtected } from "../../lib/auth";
 import { getUserFromStorage, setUserToStorage } from "../../lib/storage";
+import { useModal } from "../../contexts/ModalContext";
 import { Camera } from 'lucide-react';
 
 export default function EditProfile() {
   const navigate = useNavigate();
+  const { showAlert } = useModal();
   const [loading, setLoading] = useState(false);
   
   // Get initial values from localStorage
@@ -68,11 +70,11 @@ export default function EditProfile() {
     })();
   }, []);
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        alert('Image size should be less than 5MB');
+        await showAlert('Image size should be less than 5MB', 'warning');
         return;
       }
       setImageFile(file);
@@ -124,8 +126,8 @@ export default function EditProfile() {
         };
         setUserToStorage(updatedUser);
 
+        await showAlert("Profile updated successfully", "success");
         navigate("/profile");
-        setTimeout(() => alert("Profile updated successfully"), 150);
         return;
       }
 
@@ -133,7 +135,7 @@ export default function EditProfile() {
       throw new Error((res && res.data && (res.data.error || res.data.message)) || "Update failed");
     } catch (err) {
       console.error("Update failed:", err);
-      alert(err.response?.data?.message || err.message || "Failed to update profile. Please try again.");
+      await showAlert(err.response?.data?.message || err.message || "Failed to update profile. Please try again.", "warning");
     } finally {
       setLoading(false);
     }

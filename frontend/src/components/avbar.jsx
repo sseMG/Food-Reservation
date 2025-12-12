@@ -6,6 +6,7 @@ import { Menu, X, ShoppingCart, User, Bell, LogOut, Wallet, FileText, Home } fro
 import { api } from "../lib/api";
 import NotificationItem from './NotificationItem';
 import { useCart } from "../contexts/CartContext";
+import { useModal } from "../contexts/ModalContext";
 
 const peso = new Intl.NumberFormat("en-PH", {
   style: "currency",
@@ -41,6 +42,7 @@ export default function Navbar() {
   const topupsRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
+  const { showAlert, showConfirm } = useModal();
   
   // Calculate cart count from CartContext
   const cartCount = Object.values(cart || {}).reduce((sum, qty) => sum + (qty || 0), 0);
@@ -119,7 +121,7 @@ export default function Navbar() {
   const markAllRead = async () => {
     const ids = notifications.filter(n => !n.read).map(n => n.id);
     if (!ids.length) return;
-    const ok = window.confirm("Mark all notifications as read?");
+    const ok = await showConfirm("Mark all notifications as read?", "Confirm Action");
     if (!ok) return;
     try {
       await Promise.all(ids.map(id => api.patch(`/notifications/${id}/read`).catch(() => {})));
@@ -152,7 +154,7 @@ export default function Navbar() {
       console.error("Delete notif failed", e);
       const msg = (e && e.message) || String(e);
       const details = e && e.data ? `\n\nDetails: ${JSON.stringify(e.data)}` : "";
-      alert("Failed to delete notification: " + msg + details);
+      await showAlert("Failed to delete notification: " + msg + details, "warning");
     }
   };
 

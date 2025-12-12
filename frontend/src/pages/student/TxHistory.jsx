@@ -7,21 +7,32 @@ import BottomNav from "../../components/mobile/BottomNav";
 import FullScreenLoader from "../../components/FullScreenLoader";
 import { api } from "../../lib/api";
 import { refreshSessionForProtected } from "../../lib/auth";
-import { Search, RefreshCw, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Search, RefreshCw, ChevronLeft, ChevronRight, X, Filter, CheckCircle, Clock, XCircle, DollarSign, Calendar, ShoppingBag } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useModal } from "../../contexts/ModalContext";
 
 const peso = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" });
 
 /* ---------- small UI helpers ---------- */
 function Pill({ children, tone = "gray" }) {
   const tones = {
-    gray: "bg-gray-100 text-gray-700",
-    green: "bg-green-100 text-green-700",
-    red: "bg-red-100 text-red-700",
-    yellow: "bg-yellow-100 text-yellow-700",
-    blue: "bg-jckl-cream text-jckl-navy",
+    gray: "bg-gray-100 text-gray-700 border-gray-200",
+    green: "bg-green-100 text-green-700 border-green-200",
+    red: "bg-red-100 text-red-700 border-red-200",
+    yellow: "bg-yellow-100 text-yellow-700 border-yellow-200",
+    blue: "bg-blue-100 text-blue-700 border-blue-200",
   };
-  return <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${tones[tone] || tones.gray}`}>{children}</span>;
+  const icons = {
+    green: <CheckCircle className="w-3 h-3" />,
+    yellow: <Clock className="w-3 h-3" />,
+    red: <XCircle className="w-3 h-3" />,
+  };
+  return (
+    <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full border ${tones[tone] || tones.gray}`}>
+      {icons[tone]}
+      {children}
+    </span>
+  );
 }
 
 function fmtDateTime(v) {
@@ -209,6 +220,7 @@ const fetchReservationsWithParams = async ({ signal, params }) => {
 /* ---------- main component ---------- */
 export default function TxHistory() {
   const navigate = useNavigate();
+  const { showAlert, showConfirm } = useModal();
   useEffect(() => {
     (async () => {
       await refreshSessionForProtected({ navigate, requiredRole: "student" });
@@ -223,6 +235,7 @@ export default function TxHistory() {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [sort, setSort] = useState("date-desc");
+  const [showFilters, setShowFilters] = useState(false);
 
   const debouncedQ = useDebounce(q, 300);
 
@@ -268,6 +281,21 @@ export default function TxHistory() {
   const pageSafe = Math.min(page, totalPages);
   const pageRows = rows; // already paginated by fetcher
 
+  // summary statistics
+  const summary = useMemo(() => {
+    let totalSpent = 0;
+    let success = 0, preparing = 0, pending = 0, rejected = 0;
+    for (const r of rows) {
+      totalSpent += r.amount;
+      const s = r.statusLC;
+      if (s === "success" || s === "approved" || s === "claimed" || s === "ready") success++;
+      else if (s === "preparing") preparing++;
+      else if (s === "pending") pending++;
+      else if (s === "failed" || s === "rejected") rejected++;
+    }
+    return { totalSpent, success, preparing, pending, rejected };
+  }, [rows]);
+
   // error mapping
   let friendlyError = null;
   if (queryError) {
@@ -288,16 +316,32 @@ export default function TxHistory() {
   }, [refetch]);
 
   // export CSV for current filtered results (not all server data)
-  const exportCSV = useCallback(() => {
+  const exportCSV = useCallback(async () => {
+    // ✅ Suggestion #1: Check for no data
+    if (!rows || rows.length === 0) {
+      await showAlert("No records to export. Please add some orders first.", "warning", "No Data Available");
+      return;
+    }
+
+    // ✅ Suggestion #1: Prompt user before export
+    const confirmed = await showConfirm(
+      `Export ${rows.length} order record${rows.length !== 1 ? 's' : ''} to CSV?\n\nThis will export all currently filtered orders.`,
+      "Export Order History"
+    );
+    
+    if (!confirmed) return;
+
+    // ✅ Suggestion #2: Human-readable headers matching website
     const items = rows.map((r) => ({
-      id: r.id,
-      title: r.title,
-      date: fmtDateTime(r.createdAt),
-      amount: r.amount,
-      status: r.status,
-      products: r.products,
+      "Order ID": r.id,
+      "Order Type": r.title,
+      "Date & Time": fmtDateTime(r.createdAt),
+      "Amount (₱)": peso.format(r.amount),
+      "Status": r.status,
+      "Items Ordered": r.products || "—",
     }));
-    const header = ["id", "title", "date", "amount", "status", "products"];
+    
+    const header = ["Order ID", "Order Type", "Date & Time", "Amount (₱)", "Status", "Items Ordered"];
     const csv = [header.join(",")]
       .concat(
         items.map((it) =>
@@ -310,16 +354,27 @@ export default function TxHistory() {
         )
       )
       .join("\n");
+    
+    // ✅ Suggestion #3: Professional filename with date
+    const today = new Date();
+    const dateStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
+    const timeStr = today.toTimeString().slice(0,5).replace(':', ''); // HHMM
+    
+    let filename = `Order_History_${dateStr}_${timeStr}`;
+    if (status !== "all") filename += `_${status}`;
+    if (q) filename += `_filtered`;
+    filename += `.csv`;
+    
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `orders_export_page${pageSafe}.csv`;
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
-  }, [rows, pageSafe]);
+  }, [rows, pageSafe, status, q, showAlert, showConfirm]);
 
   // modal keyboard handling (escape to close)
   useEffect(() => {
@@ -352,163 +407,251 @@ export default function TxHistory() {
     <div className="min-h-screen bg-white pb-28">
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-3 sm:py-8 space-y-3 sm:space-y-6">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8 space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <div>
-            <Link to="/dashboard" className="text-jckl-navy hover:underline flex items-center mb-1"></Link>
-            <h1 className="text-2xl sm:text-3xl font-bold text-jckl-navy">Order History</h1>
-            <p className="text-sm text-gray-500 mt-1">Food reservations and purchases only. (Top-ups live on the Top-Up History page.)</p>
+        <header className="space-y-2">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Order History</h1>
+              <p className="text-sm sm:text-base text-gray-600 mt-1">
+                Food reservations and purchases only
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleRefresh}
+                disabled={isFetching}
+                className="inline-flex items-center gap-2 border border-jckl-gold px-3 py-2 rounded-lg text-sm hover:bg-jckl-cream disabled:opacity-60 text-jckl-navy"
+                title="Refresh"
+              >
+                <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">Refresh</span>
+              </button>
+              <button
+                onClick={exportCSV}
+                className="hidden sm:inline-flex items-center gap-2 border border-gray-300 px-3 py-2 rounded-lg text-sm hover:bg-gray-50"
+                title="Export CSV"
+              >
+                Export CSV
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {/* Summary cards */}
+        <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div className="bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 bg-rose-100 rounded-lg flex items-center justify-center">
+                <DollarSign className="w-4 h-4 text-rose-600" />
+              </div>
+              <div className="text-xs sm:text-sm text-gray-600">Total Spent</div>
+            </div>
+            <div className="text-lg sm:text-2xl font-bold text-gray-900">{peso.format(summary.totalSpent)}</div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                <CheckCircle className="w-4 h-4 text-green-600" />
+              </div>
+              <div className="text-xs sm:text-sm text-gray-600">Completed</div>
+            </div>
+            <div className="text-lg sm:text-2xl font-bold text-green-600">{summary.success}</div>
+          </div>
+
+          <div className="bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                <Clock className="w-4 h-4 text-yellow-600" />
+              </div>
+              <div className="text-xs sm:text-sm text-gray-600">Preparing</div>
+            </div>
+            <div className="text-lg sm:text-2xl font-bold text-yellow-600">{summary.preparing + summary.pending}</div>
+          </div>
+
+          <div className="bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                <XCircle className="w-4 h-4 text-red-600" />
+              </div>
+              <div className="text-xs sm:text-sm text-gray-600">Failed</div>
+            </div>
+            <div className="text-lg sm:text-2xl font-bold text-red-600">{summary.rejected}</div>
+          </div>
+        </section>
+
+        {/* Filters */}
+        <section className="bg-white rounded-xl p-3 sm:p-4 shadow-sm border-t-4 border-jckl-gold space-y-3">
+          {/* Search bar - always visible */}
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <input
+                value={q}
+                onChange={(e) => {
+                  setQ(e.target.value);
+                  setPage(1);
+                }}
+                placeholder="Search by ID, product, status..."
+                className="w-full border border-jckl-gold rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold text-jckl-navy"
+              />
+              <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            </div>
+
+            {/* Mobile: Filter toggle */}
             <button
-              onClick={handleRefresh}
-              className="inline-flex items-center gap-2 border px-3 py-2 rounded-lg text-sm hover:bg-gray-50"
-              title="Refresh"
-              aria-label="Refresh orders"
+              onClick={() => setShowFilters(!showFilters)}
+              className="md:hidden inline-flex items-center gap-2 border border-jckl-gold px-3 py-2 rounded-lg text-sm hover:bg-jckl-cream text-jckl-navy"
             >
-              <RefreshCw className="w-4 h-4" />
-              Refresh
+              <Filter className="w-4 h-4" />
+              {showFilters ? <X className="w-4 h-4" /> : null}
             </button>
 
+            {/* Desktop: Export CSV */}
             <button
               onClick={exportCSV}
-              className="inline-flex items-center gap-2 border px-3 py-2 rounded-lg text-sm hover:bg-gray-50"
-              title="Export visible results to CSV"
+              className="hidden md:inline-flex items-center gap-2 border border-gray-300 px-3 py-2 rounded-lg text-sm hover:bg-gray-50"
             >
               Export CSV
             </button>
           </div>
-        </div>
 
-        {/* Filters */}
-        <section className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
-            {/* Search */}
-            <div className="lg:col-span-6">
-              <div className="relative w-full">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                  <Search className="w-4 h-4" />
-                </div>
-                <input
-                  aria-label="Search orders"
-                  value={q}
-                  onChange={(e) => { setQ(e.target.value); setPage(1); }}
-                  placeholder="Search by ID, product, status…"
-                  className="w-full min-w-0 border border-gray-300 rounded-lg pl-10 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+          {/* Filter controls */}
+          <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 ${showFilters ? 'block' : 'hidden'} md:grid`}>
+            <select
+              value={status}
+              onChange={(e) => {
+                setStatus(e.target.value);
+                setPage(1);
+              }}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">All statuses</option>
+              <option value="success">Success</option>
+              <option value="approved">Approved</option>
+              <option value="preparing">Preparing</option>
+              <option value="ready">Ready</option>
+              <option value="claimed">Claimed</option>
+              <option value="pending">Pending</option>
+              <option value="rejected">Rejected</option>
+            </select>
+
+            <div className="flex gap-2">
+              <input
+                type="date"
+                value={from}
+                onChange={(e) => {
+                  setFrom(e.target.value);
+                  setPage(1);
+                }}
+                placeholder="From"
+                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="date"
+                value={to}
+                onChange={(e) => {
+                  setTo(e.target.value);
+                  setPage(1);
+                }}
+                placeholder="To"
+                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
 
-            {/* Status */}
-            <div className="lg:col-span-2">
-              <select
-                aria-label="Filter by status"
-                value={status}
-                onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-                className="w-full min-w-0 border border-gray-300 rounded-lg px-3 py-2 text-sm"
-              >
-                <option value="all">All statuses</option>
-                <option value="approved">Approved</option>
-                <option value="preparing">Preparing</option>
-                <option value="ready">Ready</option>
-                <option value="claimed">Claimed</option>
-                <option value="pending">Pending</option>
-                <option value="success">Success</option>
-                <option value="rejected">Rejected</option>
-              </select>
-            </div>
+            <select
+              value={sort}
+              onChange={(e) => {
+                setSort(e.target.value);
+                setPage(1);
+              }}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="date-desc">Newest first</option>
+              <option value="date-asc">Oldest first</option>
+              <option value="amount-desc">Amount (high → low)</option>
+              <option value="amount-asc">Amount (low → high)</option>
+            </select>
 
-            {/* Date range */}
-            <div className="lg:col-span-2">
-              <div className="flex gap-2">
-                <input
-                  aria-label="From date"
-                  type="date"
-                  value={from}
-                  onChange={(e) => { setFrom(e.target.value); setPage(1); }}
-                  className="w-1/2 min-w-0 border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                />
-                <span className="text-gray-400 self-center">–</span>
-                <input
-                  aria-label="To date"
-                  type="date"
-                  value={to}
-                  onChange={(e) => { setTo(e.target.value); setPage(1); }}
-                  className="w-1/2 min-w-0 border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                />
-              </div>
-            </div>
-
-            {/* Sort */}
-            <div className="lg:col-span-1">
-              <select
-                aria-label="Sort"
-                value={sort}
-                onChange={(e) => { setSort(e.target.value); setPage(1); }}
-                className="w-full min-w-0 border border-gray-300 rounded-lg px-3 py-2 text-sm"
-              >
-                <option value="date-desc">Newest first</option>
-                <option value="date-asc">Oldest first</option>
-                <option value="amount-desc">Amount (high → low)</option>
-                <option value="amount-asc">Amount (low → high)</option>
-              </select>
-            </div>
-
-            {/* Per page */}
-            <div className="lg:col-span-1 flex justify-end">
-              <label className="text-sm text-jckl-slate flex items-center gap-2">
-                Per page:
-                <select
-                  aria-label="Results per page"
-                  value={perPage}
-                  onChange={(e) => { setPerPage(Number(e.target.value) || 10); setPage(1); }}
-                  className="border border-gray-300 rounded-lg px-2 py-1 text-sm"
-                >
-                  <option value={7}>7</option>
-                  <option value={10}>10</option>
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
-                </select>
-              </label>
-            </div>
+            <select
+              value={perPage}
+              onChange={(e) => {
+                setPerPage(Number(e.target.value) || 10);
+                setPage(1);
+              }}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value={7}>7 per page</option>
+              <option value={10}>10 per page</option>
+              <option value={25}>25 per page</option>
+              <option value={50}>50 per page</option>
+            </select>
           </div>
+
+          {/* Active filters indicator */}
+          {(q || status !== "all" || from || to) && (
+            <div className="flex items-center justify-between text-xs text-gray-600 pt-2 border-t">
+              <span>Showing {total} record{total !== 1 ? 's' : ''}</span>
+              <button
+                onClick={() => {
+                  setQ("");
+                  setStatus("all");
+                  setFrom("");
+                  setTo("");
+                  setSort("date-desc");
+                  setPage(1);
+                }}
+                className="text-jckl-navy hover:text-jckl-light-navy"
+              >
+                Clear filters
+              </button>
+            </div>
+          )}
         </section>
 
         {/* Error */}
         {!isLoading && friendlyError && (
-          <div role="status" aria-live="polite" className="text-sm text-red-700 bg-red-50 border border-red-100 rounded-lg px-4 py-3 flex items-start justify-between gap-4">
-            <div>{friendlyError}</div>
-            <div className="flex gap-2">
-              <button onClick={() => refetch()} className="px-3 py-1 border rounded bg-white text-sm">Retry</button>
+          <div className="bg-white rounded-xl border border-red-100 p-8 text-center">
+            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <XCircle className="w-6 h-6 text-red-600" />
             </div>
+            <p className="text-sm text-red-600 mb-3">{friendlyError}</p>
+            <button onClick={() => refetch()} className="text-sm text-red-600 hover:text-red-700 underline">
+              Try again
+            </button>
           </div>
         )}
 
         {/* Main content (mobile cards or desktop table) */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border-t-4 border-jckl-gold overflow-hidden">
           {isFetching && !isLoading && (
             <div className="px-4 py-2 text-xs text-gray-500 border-b">Updating…</div>
           )}
 
-          {isMobile ? (
+          {!friendlyError && isMobile ? (
             <div className="p-3 space-y-3">
-              {isLoading &&
-                Array.from({ length: perPage }).map((_, i) => (
-                  <div key={i} className="animate-pulse bg-white border rounded-lg p-3">
-                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-                    <div className="h-3 bg-gray-200 rounded w-1/2 mb-2" />
-                    <div className="h-3 bg-gray-200 rounded w-1/3" />
-                  </div>
-                ))}
+              {!isLoading && isFetching && (
+                <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
+                  <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-gray-400" />
+                  <p className="text-sm text-gray-500">Loading...</p>
+                </div>
+              )}
 
               {!isLoading && rows.length === 0 && (
-                <div className="p-6 text-sm text-jckl-slate text-center">No food orders found.</div>
+                <div className="p-8 text-center">
+                  <div className="w-12 h-12 bg-jckl-cream rounded-full flex items-center justify-center mx-auto mb-3">
+                    <ShoppingBag className="w-6 h-6 text-gray-400" />
+                  </div>
+                  <p className="text-sm text-gray-500">
+                    {q || status !== "all" || from || to 
+                      ? "No orders match your filters."
+                      : "No order history yet."}
+                  </p>
+                </div>
               )}
 
               {!isLoading && rows.length > 0 && pageRows.map((t) => (
-                <article key={t.id} className="bg-white border rounded-lg p-3">
+                <article key={t.id} className="bg-white border-t-4 border-jckl-gold rounded-lg shadow-sm p-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <div className="flex items-center justify-between gap-2">
@@ -546,7 +689,7 @@ export default function TxHistory() {
                 </article>
               ))}
             </div>
-          ) : (
+          ) : !friendlyError ? (
             <div className="overflow-auto">
               <table className="min-w-full">
                 <thead className="bg-jckl-cream">
@@ -582,7 +725,7 @@ export default function TxHistory() {
                   )}
 
                   {!isLoading && rows.length > 0 && pageRows.map((t) => (
-                    <tr key={t.id} className="hover:bg-jckl-cream border-b border-jckl-gold">
+                    <tr key={t.id} className="hover:bg-jckl-cream">
                       <td className="px-6 py-4 text-sm text-jckl-navy font-medium">{t.title}</td>
                       <td className="px-6 py-4 text-sm text-jckl-slate">{t.id}</td>
                       <td className="px-6 py-4 text-sm text-jckl-slate"><span className="line-clamp-2 block" title={t.productsTitle}>{t.products || "—"}</span></td>
@@ -603,19 +746,34 @@ export default function TxHistory() {
                 </tbody>
               </table>
             </div>
-          )}
+          ) : null}
         </div>
 
         {/* Pagination */}
         {!isLoading && !friendlyError && total > 0 && (
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-jckl-slate">Page {pageSafe} of {totalPages} • {total} record{total !== 1 ? "s" : ""}</div>
-            <div className="flex items-center gap-2">
-              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={pageSafe <= 1} className="inline-flex items-center gap-1 px-3 py-1.5 border rounded-lg text-sm disabled:opacity-50">
-                <ChevronLeft className="w-4 h-4" /> Prev
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="text-xs sm:text-sm text-gray-600 order-2 sm:order-1">
+              Page {pageSafe} of {totalPages} • {total} record{total !== 1 ? 's' : ''}
+            </div>
+            <div className="flex items-center gap-2 order-1 sm:order-2">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={pageSafe <= 1}
+                className="inline-flex items-center gap-1 px-3 py-2 border rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                <ChevronLeft className="w-4 h-4" /> 
+                <span className="hidden sm:inline">Prev</span>
               </button>
-              <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={pageSafe >= totalPages} className="inline-flex items-center gap-1 px-3 py-1.5 border rounded-lg text-sm disabled:opacity-50">
-                Next <ChevronRight className="w-4 h-4" />
+              <div className="px-3 py-2 text-sm font-medium text-gray-700">
+                {pageSafe}
+              </div>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={pageSafe >= totalPages}
+                className="inline-flex items-center gap-1 px-3 py-2 border rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                <span className="hidden sm:inline">Next</span>
+                <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           </div>

@@ -7,6 +7,7 @@ import BottomNav from "../../components/mobile/BottomNav";
 import { api, ApiError } from "../../lib/api";
 import { refreshSessionForProtected } from "../../lib/auth";
 import { getUserFromStorage, setUserToStorage, clearAllAuthStorage } from "../../lib/storage";
+import { useModal } from "../../contexts/ModalContext";
 import { CategoryIcon, getCategoryEmoji } from "../../lib/categories";
 import {
   ShoppingBag,
@@ -175,6 +176,7 @@ const ActivityItem = ({ activity, onClick }) => {
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { showConfirm } = useModal();
   
   // --- Ready orders notification ---
   const [dismissedReadyOrders, setDismissedReadyOrders] = useState(() => {
@@ -552,7 +554,14 @@ export default function Dashboard() {
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   // --- actions ---
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const confirmed = await showConfirm(
+      "Are you sure you want to logout?",
+      "Confirm Logout"
+    );
+    
+    if (!confirmed) return;
+    
     clearAllAuthStorage();
     navigate("/login");
   };

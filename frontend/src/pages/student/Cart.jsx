@@ -2,6 +2,7 @@
 import { api } from "../../lib/api";
 import React, { useEffect, useMemo, useState } from "react";
 import { useCart } from "../../contexts/CartContext";
+import { useModal } from "../../contexts/ModalContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import { refreshSessionForProtected } from "../../lib/auth";
 import { getUserFromStorage, setUserToStorage } from "../../lib/storage";
@@ -62,6 +63,7 @@ const getPickupTimes = (grade) => {
 
 export default function Cart() {
   const navigate = useNavigate();
+  const { showAlert, showConfirm } = useModal();
   useEffect(() => {
     (async () => {
       await refreshSessionForProtected({ navigate, requiredRole: 'student' });
@@ -172,7 +174,7 @@ export default function Cart() {
     // client-side stock check for UX only
     const currentQty = cart[String(key)] || 0;
     if (prod.stock > 0 && currentQty + qty > prod.stock) {
-      alert(`Sorry, only ${prod.stock} items available in stock.`);
+      await showAlert(`Sorry, only ${prod.stock} items available in stock.`, "warning");
       return;
     }
     // delegate to context
@@ -200,7 +202,7 @@ export default function Cart() {
     if (!item) return;
 
     if (item.stock >= 0 && qty > item.stock) {
-      alert(`Sorry, only ${item.stock} items available in stock.`);
+      await showAlert(`Sorry, only ${item.stock} items available in stock.`, "warning");
       return;
     }
 
@@ -208,7 +210,7 @@ export default function Cart() {
       await setQty(String(itemId), qty);
     } catch (err) {
       console.error("Failed to set qty:", err);
-      alert("Failed to update quantity. Please try again.");
+      await showAlert("Failed to update quantity. Please try again.", "warning");
     }
   };
 
@@ -222,8 +224,14 @@ export default function Cart() {
     remove(id);
   };
 
-  const clearCart = () => {
-    clear();
+  const clearCart = async () => {
+    const confirmed = await showConfirm(
+      "Are you sure you want to clear your cart? This action cannot be undone.",
+      "Clear Cart"
+    );
+    if (confirmed) {
+      clear();
+    }
   };
 
   // Compatibility aliases used by the JSX (sync* names expected by UI)
@@ -246,19 +254,19 @@ export default function Cart() {
 
   // submitReservation: prevent if insufficient (align with Shop)
   const submitReservation = async () => {
-    if (!list.length) return alert("Your cart is empty.");
-    if (!reserve.grade) return alert("Select grade level.");
-    if (!reserve.section.trim()) return alert("Enter section.");
-    if (!reserve.slot) return alert("Choose a pickup window.");
+    if (!list.length) return showAlert("Your cart is empty.", "warning");
+    if (!reserve.grade) return showAlert("Select grade level.", "warning");
+    if (!reserve.section.trim()) return showAlert("Enter section.", "warning");
+    if (!reserve.slot) return showAlert("Choose a pickup window.", "warning");
 
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please log in first.");
+      await showAlert("Please log in first.", "warning");
       return navigate("/login");
     }
 
     if (insufficient) {
-      return alert("Insufficient wallet balance. Please top-up first.");
+      return showAlert("Insufficient wallet balance. Please top-up first.", "warning");
     }
 
     setSubmitting(true);
@@ -295,8 +303,8 @@ export default function Cart() {
         });
       }
 
-      alert("Reservation submitted and wallet charged.");
-      clearCart();
+      await showAlert("Reservation submitted and wallet charged.", "success");
+      clear();
       setReserve({ grade: "", section: "", slot: "", note: "" });
       closeReserve();
       await fetchWallet(); // refresh wallet after charge
@@ -304,7 +312,7 @@ export default function Cart() {
     } catch (e) {
       console.error(e);
       const msg = e?.response?.data?.error || e?.message || "Failed to submit. Please try again.";
-      alert(msg);
+      await showAlert(msg, "warning");
     } finally {
       setSubmitting(false);
     }

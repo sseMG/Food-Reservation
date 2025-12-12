@@ -6,6 +6,7 @@ import "./index.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { CartProvider } from "./contexts/CartContext";
+import { ModalProvider } from "./contexts/ModalContext";
 
 // Suppress ResizeObserver loop error (non-critical browser notification issue)
 const errorHandler = window.addEventListener('error', (event) => {
@@ -36,12 +37,14 @@ const root = createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <CartProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-        <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
-      </CartProvider>
+      <ModalProvider>
+        <CartProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+          <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
+        </CartProvider>
+      </ModalProvider>
     </QueryClientProvider>
   </React.StrictMode>
 );

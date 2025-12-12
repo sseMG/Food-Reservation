@@ -8,6 +8,7 @@ import FullScreenLoader from "../../components/FullScreenLoader";
 import { api } from "../../lib/api";
 import { getCategoryEmoji } from '../../lib/categories';
 import { useCart } from "../../contexts/CartContext";
+import { useModal } from "../../contexts/ModalContext";
 import { getUserFromStorage, setUserToStorage } from "../../lib/storage";
 import {
   Plus,
@@ -209,6 +210,7 @@ function EmptyCartSuggestions({ items, onAdd, categoriesMap = {} }) {
 
 export default function Shop({ publicView = false }) {
   const navigate = useNavigate();
+  const { showAlert, showConfirm } = useModal();
   const [searchParams] = useSearchParams();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
@@ -474,7 +476,7 @@ export default function Shop({ publicView = false }) {
     if (!item) return;
     const currentQty = cart[String(id)] || 0;
     if (item.stock >= 0 && currentQty >= item.stock) {
-      alert(`Sorry, only ${item.stock} items available in stock.`);
+      showAlert(`Sorry, only ${item.stock} items available in stock.`, "warning");
       return;
     }
 
@@ -496,8 +498,12 @@ export default function Shop({ publicView = false }) {
     showToast("Item removed from cart");
   };
   
-  const clearCart = () => {
-    if (window.confirm("Clear all items from cart?")) {
+  const clearCart = async () => {
+    const confirmed = await showConfirm(
+      "Are you sure you want to clear all items from cart?",
+      "Clear Cart"
+    );
+    if (confirmed) {
       clear();
       showToast("Cart cleared");
       setMobileCartOpen(false);
@@ -514,19 +520,19 @@ export default function Shop({ publicView = false }) {
   };
 
   const submitReservation = async () => {
-    if (!list.length) return alert("Your cart is empty.");
-    if (!reserve.grade) return alert("Select grade level.");
-    if (!reserve.section.trim()) return alert("Enter section.");
-    if (!reserve.slot) return alert("Choose a pickup window.");
+    if (!list.length) return showAlert("Your cart is empty.", "warning");
+    if (!reserve.grade) return showAlert("Select grade level.", "warning");
+    if (!reserve.section.trim()) return showAlert("Enter section.", "warning");
+    if (!reserve.slot) return showAlert("Choose a pickup window.", "warning");
 
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please log in first.");
+      await showAlert("Please log in first.", "warning");
       return navigate("/login");
     }
 
     if (insufficient) {
-      return alert("Insufficient wallet balance. Please top-up first.");
+      return showAlert("Insufficient wallet balance. Please top-up first.", "warning");
     }
 
     setSubmitting(true);
@@ -557,7 +563,7 @@ export default function Shop({ publicView = false }) {
         r = created;
       }
 
-      alert("Reservation submitted and wallet charged.");
+      await showAlert("Reservation submitted and wallet charged.", "success");
       clear();
       setReserve({ grade: "", section: "", slot: "", note: "" });
       closeReserve();
@@ -566,7 +572,7 @@ export default function Shop({ publicView = false }) {
     } catch (e) {
       console.error(e);
       const msg = e?.response?.data?.error || e?.message || "Failed to reserve. Try again.";
-      alert(msg);
+      await showAlert(msg, "warning");
     } finally {
       setSubmitting(false);
     }
