@@ -419,7 +419,7 @@ export default function Landing() {
               Solving Real School Canteen Problems
             </h2>
             <p className="text-lg md:text-xl text-jckl-slate max-w-2xl mx-auto">
-              Our research identified key issues affecting 700-1000 students daily. Here's how we're addressing them.
+              Our research identified key issues affecting 425 students daily. Here's how we're addressing them.
             </p>
           </div>
 
@@ -575,7 +575,7 @@ export default function Landing() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
             <div>
-              <div className="text-4xl font-bold mb-2">700-1000</div>
+              <div className="text-4xl font-bold mb-2">425</div>
               <div className="text-jckl-gold">Students Served</div>
             </div>
             <div>

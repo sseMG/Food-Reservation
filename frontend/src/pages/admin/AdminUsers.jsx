@@ -247,6 +247,14 @@ export default function AdminUsers() {
     }
   };
 
+  const handlePhoneChange = (e) => {
+    const value = e.target.value;
+    // Only allow digits and limit to 11 characters
+    const digitsOnly = value.replace(/\D/g, '');
+    const limited = digitsOnly.slice(0, 11);
+    setEditForm({...editForm, phone: limited});
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!editUser) return;
@@ -1042,10 +1050,14 @@ export default function AdminUsers() {
                     <input
                       type="tel"
                       value={editForm.phone}
-                      onChange={e => setEditForm({...editForm, phone: e.target.value})}
+                      onChange={handlePhoneChange}
                       className="w-full px-4 py-3 border border-jckl-gold rounded-xl focus:outline-none focus:ring-2 focus:ring-jckl-gold focus:border-transparent transition"
                       placeholder="09•• ••• ••••"
+                      maxLength="11"
                     />
+                    <p className="text-xs text-jckl-slate mt-1">
+                      {editForm.phone.length}/11 digits
+                    </p>
                   </div>
 
                   {/* Admin Note */}

@@ -31,7 +31,16 @@ export default function Register() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((f) => ({ ...f, [name]: value }));
+    
+    // For phone field, only allow digits and limit to 11 characters
+    if (name === 'phone') {
+      const digitsOnly = value.replace(/\D/g, '');
+      const limited = digitsOnly.slice(0, 11);
+      setForm((f) => ({ ...f, [name]: limited }));
+    } else {
+      setForm((f) => ({ ...f, [name]: value }));
+    }
+    
     if (errors[name]) setErrors((err) => ({ ...err, [name]: "" }));
   };
 
@@ -43,8 +52,8 @@ export default function Register() {
       errs.email = "Invalid email";
 
     if (!form.phone.trim()) errs.phone = "Contact number is required";
-    else if (!/^[\d+\-\s\(\)]+$/.test(form.phone.trim()))
-      errs.phone = "Invalid contact number";
+    else if (form.phone.length !== 11)
+      errs.phone = "Contact number must be exactly 11 digits";
 
     if (!form.password) errs.password = "Password is required";
     else if (form.password.length < 8)

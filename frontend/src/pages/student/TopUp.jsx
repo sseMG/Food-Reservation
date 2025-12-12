@@ -281,6 +281,14 @@ export default function TopUp() {
     if (fileRef.current) fileRef.current.value = "";
   };
 
+  const handleContactChange = (e) => {
+    const value = e.target.value;
+    // Only allow digits and limit to 11 characters
+    const digitsOnly = value.replace(/\D/g, '');
+    const limited = digitsOnly.slice(0, 11);
+    setContact(limited);
+  };
+
   // derived flags
   const numAmount = useMemo(() => toNumber(amount, 0), [amount]);
   const amountOk = useMemo(() => within(numAmount, 20, 20000), [numAmount]); // sensible range
@@ -452,11 +460,15 @@ export default function TopUp() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
                   <input
                     value={contact}
-                    onChange={(e) => setContact(e.target.value)}
+                    onChange={handleContactChange}
                     placeholder="09xxxxxxxxx"
                     className="w-full border border-jckl-gold rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
+                    maxLength="11"
                   />
-                  {!contactOk && <p className="text-xs text-rose-600 mt-1">Provide a valid contact number.</p>}
+                  <p className="text-xs text-gray-500 mt-1">
+                    {contact.length}/11 digits
+                  </p>
+                  {!contactOk && contact !== "" && <p className="text-xs text-rose-600 mt-1">Provide a valid contact number (at least 7 digits).</p>}
                 </div>
               </div>
 

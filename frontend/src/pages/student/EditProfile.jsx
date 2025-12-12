@@ -143,10 +143,21 @@ export default function EditProfile() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    // For phone field, only allow digits and limit to 11 characters
+    if (name === 'phone') {
+      const digitsOnly = value.replace(/\D/g, '');
+      const limited = digitsOnly.slice(0, 11);
+      setForm(prev => ({
+        ...prev,
+        [name]: limited
+      }));
+    } else {
+      setForm(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   return (
@@ -203,7 +214,13 @@ export default function EditProfile() {
                   className="mt-1 block w-full border border-jckl-gold rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-jckl-gold focus:border-transparent bg-white text-jckl-navy"
                   placeholder={`Enter your ${field === 'phone' ? 'phone number' : field}`}
                   disabled={loading}
+                  maxLength={field === 'phone' ? '11' : undefined}
                 />
+                {field === 'phone' && (
+                  <p className="text-xs text-jckl-slate mt-1">
+                    {form.phone.length}/11 digits
+                  </p>
+                )}
               </div>
             ))}
 

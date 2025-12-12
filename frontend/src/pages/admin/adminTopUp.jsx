@@ -232,6 +232,14 @@ function TopUpManager() {
     setQrPreview((prev) => ({ ...prev, [provider]: null }));
   };
 
+  const handleMobileChange = (e) => {
+    const value = e.target.value;
+    // Only allow digits and limit to 11 characters
+    const digitsOnly = value.replace(/\D/g, '');
+    const limited = digitsOnly.slice(0, 11);
+    setMeta((m) => ({ ...m, [provider]: { ...m[provider], mobile: limited } }));
+  };
+
   const onSaveMeta = async () => {
     try {
       setSaving(true);
@@ -381,12 +389,16 @@ function TopUpManager() {
                 <label className="block text-sm font-medium text-jckl-slate mb-2">Mobile Number</label>
                 <input
                   value={active?.mobile}
-                  onChange={(e) => setMeta((m) => ({ ...m, [provider]: { ...m[provider], mobile: e.target.value } }))}
+                  onChange={handleMobileChange}
                   type="tel"
                   inputMode="numeric"
                   className="w-full border border-jckl-gold rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold focus:border-transparent transition"
-                  placeholder="09•• ••• ••••"
+                  placeholder="09•••••••••"
+                  maxLength="11"
                 />
+                <p className="text-xs text-jckl-slate mt-1">
+                  {active?.mobile?.length || 0}/11 digits
+                </p>
               </div>
 
               <div>
