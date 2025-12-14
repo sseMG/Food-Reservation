@@ -14,6 +14,7 @@ import {
   Upload,
   Image as ImageIcon,
   Loader2,
+  ArrowLeft,
 } from "lucide-react";
 import { getCategoryEmoji } from '../../lib/categories';
 
@@ -279,9 +280,19 @@ export default function AdminEditItems() {
       <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-3 sm:py-8 space-y-3 sm:space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <h1 className="text-3xl font-bold text-jckl-navy">Edit Items</h1>
-            <p className="text-jckl-slate">Update prices, stocks, and details. Delete items you no longer sell.</p>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate("/admin/shops")}
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border bg-white hover:bg-gray-50"
+              aria-label="Back to Shop Management"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="hidden sm:inline">Back</span>
+            </button>
+            <div>
+              <h1 className="text-3xl font-bold text-jckl-navy">Edit Items</h1>
+              <p className="text-jckl-slate">Update prices, stocks, and details. Delete items you no longer sell.</p>
+            </div>
           </div>
           <button
             onClick={load}

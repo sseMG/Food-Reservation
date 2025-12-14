@@ -79,10 +79,6 @@ export default function AdminAddItem() {
     price: "",
     stock: "",
     category: categoryParam || "Meals",
-    mealType: "Rice Meal",
-    servingGrams: "",
-    calories: "",
-    description: "",
     isActive: true,
   });
 
@@ -175,10 +171,6 @@ export default function AdminAddItem() {
       fd.append("category", form.category);
       fd.append("price", String(Number(form.price)));
       fd.append("stock", String(form.stock === "" ? 0 : Number(form.stock)));
-      if (form.mealType) fd.append("mealType", form.mealType);
-      if (form.servingGrams) fd.append("servingGrams", String(Number(form.servingGrams)));
-      if (form.calories) fd.append("calories", String(Number(form.calories)));
-      if (form.description) fd.append("description", form.description);
       fd.append("isActive", form.isActive ? "true" : "false");
 
       if (imageFile) {
@@ -196,10 +188,6 @@ export default function AdminAddItem() {
           price: "",
           stock: "",
           category: categoryParam || "Meals",
-          mealType: "Rice Meal",
-          servingGrams: "",
-          calories: "",
-          description: "",
           isActive: true,
         });
         removeImage();
@@ -420,75 +408,16 @@ export default function AdminAddItem() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  Category
-                </label>
-                <input
-                  value={form.category}
-                  disabled
-                  className="w-full border border-gray-200 bg-gray-100 rounded-xl px-4 py-3 text-sm text-gray-600 cursor-not-allowed"
-                />
-                <p className="text-xs text-gray-500 mt-1">Fixed category for this add page</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  Meal Type
-                </label>
-                <select
-                  value={form.mealType}
-                  onChange={(e) => setField("mealType", e.target.value)}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition appearance-none bg-white"
-                >
-                  <option>Rice Meal</option>
-                  <option>Combo</option>
-                  <option>Ala Carte</option>
-                  <option>Special</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  Serving (grams)
-                </label>
-                <input
-                  value={form.servingGrams}
-                  onChange={(e) => setField("servingGrams", e.target.value.replace(/[^\d]/g, ""))}
-                  inputMode="numeric"
-                  placeholder="e.g., 250"
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  Calories (kcal) <span className="text-gray-500 font-normal">(Optional)</span>
-                </label>
-                <input
-                  value={form.calories}
-                  onChange={(e) => setField("calories", e.target.value.replace(/[^\d]/g, ""))}
-                  inputMode="numeric"
-                  placeholder="e.g., 520"
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                />
-              </div>
-            </div>
-
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Description <span className="text-gray-500 font-normal">(Optional)</span>
+                Category
               </label>
-              <textarea
-                rows={3}
-                value={form.description}
-                onChange={(e) => setField("description", e.target.value)}
-                placeholder="Add details like ingredients, spice level, allergens, etc."
-                className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
+              <input
+                value={form.category}
+                disabled
+                className="w-full border border-gray-200 bg-gray-100 rounded-xl px-4 py-3 text-sm text-gray-600 cursor-not-allowed"
               />
+              <p className="text-xs text-gray-500 mt-1">Fixed category for this add page</p>
             </div>
 
             <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200">

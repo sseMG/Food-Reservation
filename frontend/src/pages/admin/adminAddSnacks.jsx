@@ -33,11 +33,6 @@ export default function AdminAddSnacks() {
     price: "",
     stock: "",
     category: "Snacks",
-    unit: "Pack",
-    sizeGrams: "",
-    flavor: "",
-    description: "",
-    allergens: "",
     isActive: true,
   });
 
@@ -83,7 +78,6 @@ export default function AdminAddSnacks() {
     if (form.price === "" || Number(form.price) <= 0) e.price = "Price must be greater than 0.";
     if (Number(form.price) > 20000) e.price = "Price cannot exceed ₱20,000.";
     if (form.stock === "" || Number(form.stock) < 0) e.stock = "Stock must be 0 or more.";
-    if (!form.category) e.category = "Category is required.";
     return e;
   };
 
@@ -106,11 +100,6 @@ export default function AdminAddSnacks() {
       fd.append("price", String(Number(form.price)));
       fd.append("stock", String(form.stock === "" ? 0 : Number(form.stock)));
       fd.append("isActive", form.isActive ? "true" : "false");
-      if (form.unit) fd.append("unit", form.unit);
-      if (form.sizeGrams) fd.append("sizeGrams", String(Number(form.sizeGrams)));
-      if (form.flavor) fd.append("flavor", form.flavor);
-      if (form.description) fd.append("description", form.description);
-      if (form.allergens) fd.append("allergens", form.allergens);
       if (imageFile) {
         fd.append("image", imageFile, imageFile.name);
       }
@@ -126,11 +115,6 @@ export default function AdminAddSnacks() {
           price: "",
           stock: "",
           category: "Snacks",
-          unit: "Pack",
-          sizeGrams: "",
-          flavor: "",
-          description: "",
-          allergens: "",
           isActive: true,
         });
         removeImage();
@@ -339,86 +323,16 @@ export default function AdminAddSnacks() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  Category
-                </label>
-                <input
-                  value={form.category}
-                  disabled
-                  className="w-full border border-gray-200 bg-gray-100 rounded-xl px-4 py-3 text-sm text-gray-600 cursor-not-allowed"
-                />
-                <p className="text-xs text-gray-500 mt-1">Fixed for snacks</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  Unit Type
-                </label>
-                <select
-                  value={form.unit}
-                  onChange={(e) => setField("unit", e.target.value)}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition appearance-none bg-white"
-                >
-                  <option>Pack</option>
-                  <option>Piece</option>
-                  <option>Cup</option>
-                  <option>Box</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  Size (grams)
-                </label>
-                <input
-                  value={form.sizeGrams}
-                  onChange={(e) => setField("sizeGrams", e.target.value.replace(/[^\d]/g, ""))}
-                  inputMode="numeric"
-                  placeholder="e.g., 45"
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  Flavor <span className="text-gray-500 font-normal">(Optional)</span>
-                </label>
-                <input
-                  value={form.flavor}
-                  onChange={(e) => setField("flavor", e.target.value)}
-                  placeholder="e.g., Chocolate, Cheese, BBQ"
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  Allergens <span className="text-gray-500 font-normal">(Optional)</span>
-                </label>
-                <input
-                  value={form.allergens}
-                  onChange={(e) => setField("allergens", e.target.value)}
-                  placeholder="e.g., Contains milk, soy"
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                />
-              </div>
-            </div>
-
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Description <span className="text-gray-500 font-normal">(Optional)</span>
+                Category
               </label>
-              <textarea
-                rows={3}
-                value={form.description}
-                onChange={(e) => setField("description", e.target.value)}
-                placeholder="Add details like brand, storage instructions, etc."
-                className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
+              <input
+                value={form.category}
+                disabled
+                className="w-full border border-gray-200 bg-gray-100 rounded-xl px-4 py-3 text-sm text-gray-600 cursor-not-allowed"
               />
+              <p className="text-xs text-gray-500 mt-1">Fixed for snacks</p>
             </div>
 
             <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200">

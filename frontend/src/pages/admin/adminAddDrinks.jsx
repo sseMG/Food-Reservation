@@ -33,9 +33,6 @@ export default function AdminAddDrinks() {
     price: "",
     stock: "",
     category: "Beverages",
-    unit: "Bottle",
-    sizeMl: "",
-    description: "",
     isActive: true,
   });
 
@@ -104,9 +101,6 @@ export default function AdminAddDrinks() {
       fd.append("price", String(Number(form.price)));
       fd.append("stock", String(form.stock === "" ? 0 : Number(form.stock)));
       fd.append("isActive", form.isActive ? "true" : "false");
-      if (form.unit) fd.append("unit", form.unit);
-      if (form.sizeMl) fd.append("sizeMl", String(Number(form.sizeMl)));
-      if (form.description) fd.append("description", form.description);
       if (imageFile) {
         fd.append("image", imageFile, imageFile.name);
       }
@@ -122,9 +116,6 @@ export default function AdminAddDrinks() {
           price: "",
           stock: "",
           category: "Beverages",
-          unit: "Bottle",
-          sizeMl: "",
-          description: "",
           isActive: true,
         });
         removeImage();
@@ -344,62 +335,17 @@ export default function AdminAddDrinks() {
               </div>
             </div>
 
-            {/* Category, Unit & Size */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  Category
-                </label>
-                <input
-                  value={form.category}
-                  disabled
-                  className="w-full border border-gray-200 bg-gray-100 rounded-xl px-4 py-3 text-sm text-gray-600 cursor-not-allowed"
-                />
-                <p className="text-xs text-gray-500 mt-1">Fixed for beverages</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  Unit Type
-                </label>
-                <select
-                  value={form.unit}
-                  onChange={(e) => setField("unit", e.target.value)}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition appearance-none bg-white"
-                >
-                  <option>Bottle</option>
-                  <option>Can</option>
-                  <option>Cup</option>
-                  <option>Pouch</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  Size (ml)
-                </label>
-                <input
-                  value={form.sizeMl}
-                  onChange={(e) => setField("sizeMl", e.target.value.replace(/[^\d]/g, ""))}
-                  inputMode="numeric"
-                  placeholder="e.g., 350"
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                />
-              </div>
-            </div>
-
-            {/* Description */}
+            {/* Category */}
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Description <span className="text-gray-500 font-normal">(Optional)</span>
+                Category
               </label>
-              <textarea
-                rows={3}
-                value={form.description}
-                onChange={(e) => setField("description", e.target.value)}
-                placeholder="Add details like brand, flavor, allergens, etc."
-                className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
+              <input
+                value={form.category}
+                disabled
+                className="w-full border border-gray-200 bg-gray-100 rounded-xl px-4 py-3 text-sm text-gray-600 cursor-not-allowed"
               />
+              <p className="text-xs text-gray-500 mt-1">Fixed for beverages</p>
             </div>
 
             {/* Active Toggle */}
