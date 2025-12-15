@@ -375,7 +375,7 @@ export default function TopUp() {
 
               <div className="p-5 space-y-3">
                 <div className="text-base sm:text-lg font-semibold text-jckl-navy">
-                  Please do not actually send any money on the QR Codes
+                  Please do not actually send any money to the QR Codes
                 </div>
                 <div className="text-sm text-jckl-slate">
                   This is only a demonstration. Please only input sample receipts or random pictures for now and try to simulate with valid details.
