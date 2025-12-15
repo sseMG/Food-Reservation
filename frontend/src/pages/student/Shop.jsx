@@ -1,6 +1,7 @@
 // src/pages/Shop.jsx - FIXED VERSION
 import React, { useEffect, useMemo, useState, useRef } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+
 import { refreshSessionForProtected } from "../../lib/auth";
 import Navbar from "../../components/avbar";
 import BottomNav from "../../components/mobile/BottomNav";
@@ -253,10 +254,13 @@ function isDateRestricted(dateStr, rules) {
 }
 
 export default function Shop({ publicView = false }) {
+  const location = useLocation();
   const navigate = useNavigate();
   const { showAlert, showConfirm } = useModal();
   const [searchParams] = useSearchParams();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const [showShopNote, setShowShopNote] = useState(false);
   
   useEffect(() => {
     if (publicView) return;
@@ -307,6 +311,24 @@ export default function Shop({ publicView = false }) {
 
   const filterBarRef = useRef(null);
   const menuGridRef = useRef(null);
+
+  useEffect(() => {
+    if (publicView) return;
+    if (location?.pathname !== "/shop") return;
+    setShowShopNote(true);
+  }, [publicView, location?.pathname]);
+
+  useEffect(() => {
+    if (!showShopNote) return;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showShopNote]);
+
+  const closeShopNote = () => {
+    setShowShopNote(false);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -670,6 +692,40 @@ export default function Shop({ publicView = false }) {
   return (
     <div className="min-h-screen bg-white pb-20 md:pb-0">
       {publicView ? <GuestHeader mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} /> : <Navbar />}
+
+      {!publicView && showShopNote && (
+        <div className="fixed inset-0 z-[70]">
+          <div className="absolute inset-0 bg-black/50" />
+          <div className="absolute inset-0 flex items-center justify-center p-4">
+            <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border-t-4 border-jckl-gold">
+              <div className="flex items-start justify-between gap-3 p-5 border-b">
+                <div className="min-w-0">
+                  <div className="text-2xl font-extrabold text-jckl-navy">NOTE</div>
+                </div>
+              </div>
+
+              <div className="p-5 space-y-3">
+                <div className="text-base sm:text-lg font-semibold text-jckl-navy">
+                  The menu for this demonstration is not the actual menu for the canteen.
+                </div>
+                <div className="text-sm text-jckl-slate">
+                  The actual menu for the canteen will be updated here once the system is in use.
+                </div>
+
+                <div className="pt-2 flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={closeShopNote}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-jckl-navy text-white text-sm font-medium hover:bg-jckl-light-navy transition"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Toast 
         message={toast.message} 

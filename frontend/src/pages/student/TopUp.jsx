@@ -14,7 +14,7 @@ import {
   Info,
   ShieldCheck,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const peso = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" });
 
@@ -67,8 +67,11 @@ function readLocalUser() {
 
 // ---------- component ----------
 export default function TopUp() {
+  const location = useLocation();
   const navigate = useNavigate();
   const { showAlert } = useModal();
+
+  const [showTopUpNote, setShowTopUpNote] = useState(false);
 
   // wallet QR + meta
   const [provider, setProvider] = useState("gcash"); // 'gcash' | 'maya'
@@ -107,6 +110,23 @@ export default function TopUp() {
   const [approvedReferences, setApprovedReferences] = useState({ gcash: new Set(), paymaya: new Set() });
 
   const fileRef = useRef(null);
+
+  useEffect(() => {
+    if (location?.pathname !== "/topup") return;
+    setShowTopUpNote(true);
+  }, [location?.pathname]);
+
+  useEffect(() => {
+    if (!showTopUpNote) return;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showTopUpNote]);
+
+  const closeTopUpNote = () => {
+    setShowTopUpNote(false);
+  };
 
   // Load wallets (QR + meta) and refresh user from /me if token is present
   useEffect(() => {
@@ -341,7 +361,42 @@ export default function TopUp() {
   return (
     <div className="min-h-screen bg-white pb-16 md:pb-0">
       <Navbar />
-            <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-3 sm:py-8 space-y-3 sm:space-y-6">
+
+      {showTopUpNote && (
+        <div className="fixed inset-0 z-[70]">
+          <div className="absolute inset-0 bg-black/50" />
+          <div className="absolute inset-0 flex items-center justify-center p-4">
+            <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border-t-4 border-jckl-gold">
+              <div className="flex items-start justify-between gap-3 p-5 border-b">
+                <div className="min-w-0">
+                  <div className="text-2xl font-extrabold text-jckl-navy">NOTE</div>
+                </div>
+              </div>
+
+              <div className="p-5 space-y-3">
+                <div className="text-base sm:text-lg font-semibold text-jckl-navy">
+                  Please do not actually send any money on the QR Codes
+                </div>
+                <div className="text-sm text-jckl-slate">
+                  This is only a demonstration. Please only input sample receipts or random pictures for now and try to simulate with valid details.
+                </div>
+
+                <div className="pt-2 flex items-center justify-end">
+                  <button
+                    type="button"
+                    onClick={closeTopUpNote}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-jckl-navy text-white text-sm font-medium hover:bg-jckl-light-navy transition"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-3 sm:py-8 space-y-3 sm:space-y-6">
         {/* Header */}
         <div className="flex items-center gap-2">
           <Wallet className="w-6 h-6 text-jckl-navy" />
@@ -573,7 +628,7 @@ export default function TopUp() {
                 </div>
                 <ul className="list-disc pl-5 text-gray-600 space-y-1">
                   <li>
-                    Name on the app matches <strong>{payerName || "your name"}</strong>.
+                    The name of the sender on the app matches: <strong>{payerName || "your name"}</strong>.
                   </li>
                   <li>Reference/Transaction ID typed correctly.</li>
                   <li>Screenshot shows the amount clearly.</li>
