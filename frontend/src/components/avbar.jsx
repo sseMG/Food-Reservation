@@ -8,6 +8,24 @@ import NotificationItem from './NotificationItem';
 import { useCart } from "../contexts/CartContext";
 import { useModal } from "../contexts/ModalContext";
 
+function fmtDate(v) {
+  if (!v) return "";
+  const d = new Date(v);
+  if (Number.isNaN(d.getTime())) return String(v);
+  return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(d);
+}
+
+function prettyPickupWindow(v) {
+  const s = String(v || "").trim().toLowerCase();
+  if (!s) return "";
+  if (s.includes("recess")) return "Recess";
+  if (s.includes("lunch")) return "Lunch";
+  if (s.includes("after")) return "After Class";
+  if (s.includes("breakfast")) return "Breakfast";
+  if (s.includes("dismissal")) return "Dismissal";
+  return String(v);
+}
+
 const peso = new Intl.NumberFormat("en-PH", {
   style: "currency",
   currency: "PHP",
@@ -679,7 +697,16 @@ export default function Navbar() {
                         {previewNotif.data.slot && (
                           <div className="pt-3 border-t">
                             <div className="text-xs font-medium text-gray-500 uppercase mb-1">Pickup</div>
-                            <div className="font-medium text-gray-900">{previewNotif.data.slot}</div>
+                            <div className="font-medium text-gray-900">
+                              {(() => {
+                                const pickupDate = previewNotif.data.pickupDate || previewNotif.data.pickup_date || previewNotif.data.claimDate || previewNotif.data.claim_date || "";
+                                const when = previewNotif.data.when || previewNotif.data.slot || previewNotif.data.slotLabel || previewNotif.data.pickup || previewNotif.data.pickupTime || "";
+                                const pickupDisplay = [pickupDate ? fmtDate(pickupDate) : "", when ? prettyPickupWindow(when) : ""]
+                                  .filter(Boolean)
+                                  .join(" • ");
+                                return pickupDisplay || previewNotif.data.slot;
+                              })()}
+                            </div>
                           </div>
                         )}
 

@@ -2,6 +2,24 @@ import React from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { ChevronRight, Clock, DollarSign, Package, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 
+function fmtDate(v) {
+  if (!v) return "";
+  const d = new Date(v);
+  if (Number.isNaN(d.getTime())) return String(v);
+  return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(d);
+}
+
+function prettyPickupWindow(v) {
+  const s = String(v || "").trim().toLowerCase();
+  if (!s) return "";
+  if (s.includes("recess")) return "Recess";
+  if (s.includes("lunch")) return "Lunch";
+  if (s.includes("after")) return "After Class";
+  if (s.includes("breakfast")) return "Breakfast";
+  if (s.includes("dismissal")) return "Dismissal";
+  return String(v);
+}
+
 export default function NotificationItem({ notification, onClick, isAdminSide }) {
   const { actor, title, body, createdAt, read, data } = notification;
 
@@ -205,6 +223,12 @@ function getPreviewContent(notification, peso, notifType) {
 
   // Order/Reservation preview
   if (data?.items) {
+    const pickupDate = data.pickupDate || data.pickup_date || data.claimDate || data.claim_date || "";
+    const when = data.when || data.slot || data.slotLabel || data.pickup || data.pickupTime || "";
+    const pickupDisplay = [pickupDate ? fmtDate(pickupDate) : "", when ? prettyPickupWindow(when) : ""]
+      .filter(Boolean)
+      .join(" • ");
+
     return (
       <div className="mt-2">
         <div className="bg-gray-50 rounded-lg p-2 sm:p-3 border border-gray-100">
@@ -219,6 +243,12 @@ function getPreviewContent(notification, peso, notifType) {
               {peso.format(data.total || 0)}
             </div>
           </div>
+
+          {pickupDisplay && (
+            <div className="mt-2 text-[10px] sm:text-xs text-gray-600">
+              Pickup: <span className="font-medium text-gray-900">{pickupDisplay}</span>
+            </div>
+          )}
 
           {/* Order status if available */}
           {data.orderStatus && (

@@ -13,6 +13,24 @@ const peso = new Intl.NumberFormat("en-PH", {
 
 const ITEMS_PER_PAGE = 10;
 
+function fmtDate(v) {
+  if (!v) return "";
+  const d = new Date(v);
+  if (Number.isNaN(d.getTime())) return String(v);
+  return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(d);
+}
+
+function prettyPickupWindow(v) {
+  const s = String(v || "").trim().toLowerCase();
+  if (!s) return "";
+  if (s.includes("recess")) return "Recess";
+  if (s.includes("lunch")) return "Lunch";
+  if (s.includes("after")) return "After Class";
+  if (s.includes("breakfast")) return "Breakfast";
+  if (s.includes("dismissal")) return "Dismissal";
+  return String(v);
+}
+
 // Helper function to get pickup times based on grade
 const getPickupTimes = (grade) => {
   if (!grade) return {};
@@ -97,7 +115,16 @@ export default function AdminNotifications() {
             {data.slot && (
               <div className="bg-indigo-50 rounded-lg p-3 border border-indigo-200">
                 <div className="text-sm font-semibold text-indigo-700 uppercase">Slot</div>
-                <div className="text-base text-indigo-900 mt-1">{data.slot}</div>
+                <div className="text-base text-indigo-900 mt-1">
+                  {(() => {
+                    const pickupDate = data.pickupDate || data.pickup_date || data.claimDate || data.claim_date || "";
+                    const when = data.when || data.slot || data.slotLabel || data.pickup || data.pickupTime || "";
+                    const pickupDisplay = [pickupDate ? fmtDate(pickupDate) : "", when ? prettyPickupWindow(when) : ""]
+                      .filter(Boolean)
+                      .join(" • ");
+                    return pickupDisplay || data.slot;
+                  })()}
+                </div>
                 {data.grade && (
                   <div className="text-base text-indigo-700 mt-2">
                     {getPickupTimes(data.grade)[data.slot.toLowerCase()] || ''}

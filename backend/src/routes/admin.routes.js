@@ -5,6 +5,7 @@ const fs = require("fs-extra");
 const M = require("../controllers/menu.controller");
 const AdminController = require("../controllers/admin.controller");
 const CategoriesController = require("../controllers/categories.controller");
+const ReservationDateRestrictions = require("../controllers/reservationDateRestrictions.controller");
 const { requireAuth, requireAdmin } = require("../lib/auth");
 const adminUsersRoutes = require("./admin.users.routes");
 
@@ -359,5 +360,8 @@ router.patch("/categories", requireAuth, requireAdmin, CategoriesController.rena
  *                     $ref: '#/components/schemas/Category'
  */
 router.delete("/categories", requireAuth, requireAdmin, CategoriesController.remove);
+
+router.get("/reservation-date-restrictions", requireAuth, requireAdmin, ReservationDateRestrictions.get);
+router.put("/reservation-date-restrictions", requireAuth, requireAdmin, ReservationDateRestrictions.updateAdmin);
 
 module.exports = router;

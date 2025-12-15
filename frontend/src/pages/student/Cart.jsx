@@ -8,6 +8,7 @@ import { refreshSessionForProtected } from "../../lib/auth";
 import { getUserFromStorage, setUserToStorage } from "../../lib/storage";
 import Navbar from "../../components/avbar";
 import BottomNav from "../../components/mobile/BottomNav";
+import RestrictedDateCalendar from "../../components/RestrictedDateCalendar";
 import {
   Plus,
   Minus,
@@ -31,6 +32,48 @@ const SLOTS = [
   { id: "lunch",  label: "Lunch" },
   { id: "after",  label: "After Class" },
 ];
+
+function normalizeDateString(v) {
+  if (!v) return "";
+  const s = String(v).trim();
+  const d = new Date(s);
+  if (Number.isNaN(d.getTime())) return "";
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function isDateRestricted(dateStr, rules) {
+  const dStr = normalizeDateString(dateStr);
+  if (!dStr) return false;
+  const d = new Date(dStr);
+  if (Number.isNaN(d.getTime())) return false;
+
+  const yyyy = d.getFullYear();
+  const mm = d.getMonth() + 1;
+  const dow = d.getDay();
+  const r = rules || { ranges: [], months: [], weekdays: [] };
+
+  if (Array.isArray(r.weekdays) && r.weekdays.includes(dow)) return true;
+
+  if (Array.isArray(r.months)) {
+    for (const m of r.months) {
+      if (Number(m?.year) === yyyy && Number(m?.month) === mm) return true;
+    }
+  }
+
+  if (Array.isArray(r.ranges)) {
+    for (const rg of r.ranges) {
+      const from = normalizeDateString(rg?.from);
+      const to = normalizeDateString(rg?.to);
+      if (!from || !to) continue;
+      if (from <= dStr && dStr <= to) return true;
+    }
+  }
+
+  return false;
+}
 
 // Grade-specific pickup times
 const getPickupTimes = (grade) => {
@@ -82,10 +125,13 @@ export default function Cart() {
   const [reserve, setReserve] = useState({
     grade: "",
     section: "",
+    pickupDate: "",
     slot: "",
     note: "",
   });
   const [submitting, setSubmitting] = useState(false);
+
+  const [dateRestrictions, setDateRestrictions] = useState({ ranges: [], months: [], weekdays: [] });
 
   const [products, setProducts] = useState([]);
   const [menuLoading, setMenuLoading] = useState(true);
@@ -127,6 +173,26 @@ export default function Cart() {
 
   useEffect(() => {
     fetchWallet();
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const r = await api.get("/reservations/date-restrictions");
+        if (!mounted) return;
+        setDateRestrictions({
+          ranges: Array.isArray(r?.ranges) ? r.ranges : [],
+          months: Array.isArray(r?.months) ? r.months : [],
+          weekdays: Array.isArray(r?.weekdays) ? r.weekdays : [],
+        });
+      } catch (e) {
+        // silent fail: backend will still enforce
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   // Cart persistence and server sync handled by CartContext
@@ -257,7 +323,14 @@ export default function Cart() {
     if (!list.length) return showAlert("Your cart is empty.", "warning");
     if (!reserve.grade) return showAlert("Select grade level.", "warning");
     if (!reserve.section.trim()) return showAlert("Enter section.", "warning");
+    if (!reserve.pickupDate) return showAlert("Select a pickup date.", "warning");
     if (!reserve.slot) return showAlert("Choose a pickup window.", "warning");
+
+    if (isDateRestricted(reserve.pickupDate, dateRestrictions)) {
+      await showAlert("That pickup date is restricted. Please choose another date.", "warning");
+      setReserve((r) => ({ ...r, pickupDate: "" }));
+      return;
+    }
 
     const token = localStorage.getItem("token");
     if (!token) {
@@ -283,6 +356,7 @@ export default function Cart() {
         items: list.map(({ id, qty }) => ({ id: String(id), qty })),
         grade: reserve.grade,
         section: reserve.section,
+        pickupDate: reserve.pickupDate,
         slot: reserve.slot,
         note: reserve.note,
         student: user.name || "",
@@ -305,7 +379,7 @@ export default function Cart() {
 
       await showAlert("Reservation submitted and wallet charged.", "success");
       clear();
-      setReserve({ grade: "", section: "", slot: "", note: "" });
+      setReserve({ grade: "", section: "", pickupDate: "", slot: "", note: "" });
       closeReserve();
       await fetchWallet(); // refresh wallet after charge
       navigate("/transactions");
@@ -333,6 +407,17 @@ export default function Cart() {
     overflow: 'auto',
     scrollbarWidth: 'thin',
     scrollbarColor: '#94A3B8 #E2E8F0'
+  };
+
+  // Helper function to get minimum date (tomorrow)
+  const getMinDate = () => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + 1);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
   };
 
   return (
@@ -552,10 +637,15 @@ export default function Cart() {
                               onChange={(e) => setReserve((r) => ({ ...r, grade: e.target.value }))}
                               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
                             >
-                              <option value="">Select grade</option>
-                              {[...Array(11)].map((_, i) => (
-                                <option key={i}>G{i + 2}</option>
-                              ))}
+                              <option value="" disabled={!!reserve.grade}>Select grade level</option>
+                              {[...Array(11)].map((_, i) => {
+                                const gradeValue = `G${i + 2}`;
+                                return (
+                                  <option key={i} value={gradeValue}>
+                                    {gradeValue}
+                                  </option>
+                                );
+                              })}
                             </select>
                             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                               <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -576,6 +666,21 @@ export default function Cart() {
                             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                           />
                         </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Pickup Date
+                        </label>
+                        <RestrictedDateCalendar
+                          value={reserve.pickupDate}
+                          onChange={(next) => setReserve((r) => ({ ...r, pickupDate: next }))}
+                          min={getMinDate()}
+                          rules={dateRestrictions}
+                        />
+                        {reserve.pickupDate && (
+                          <div className="mt-2 text-xs text-gray-500">Selected: {reserve.pickupDate}</div>
+                        )}
                       </div>
 
                       <div>

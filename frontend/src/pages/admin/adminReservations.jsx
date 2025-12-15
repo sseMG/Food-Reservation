@@ -36,6 +36,24 @@ function normalizeStatus(raw) {
   return s;
 }
 
+function fmtDate(v) {
+  if (!v) return "—";
+  const d = new Date(v);
+  if (isNaN(d)) return String(v);
+  return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(d);
+}
+
+function prettyPickupWindow(v) {
+  const s = String(v || "").trim().toLowerCase();
+  if (!s) return "";
+  if (s.includes("recess")) return "Recess";
+  if (s.includes("lunch")) return "Lunch";
+  if (s.includes("after")) return "After Class";
+  if (s.includes("breakfast")) return "Breakfast";
+  if (s.includes("dismissal")) return "Dismissal";
+  return String(v);
+}
+
 const Pill = ({ status }) => {
   const map = {
     Pending: "bg-amber-100 text-amber-700",
@@ -61,11 +79,19 @@ export default function AdminReservations() {
 
   const [rows, setRows] = useState([]);
   const [q, setQ] = useState("");
+  const [pickup, setPickup] = useState("all");
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState(null);
   const [tab, setTab] = useState("Pending");
   const [selected, setSelected] = useState({});
   const [expandedCards, setExpandedCards] = useState({}); // for mobile expand/collapse
+
+  const [restrictionsOpen, setRestrictionsOpen] = useState(false);
+  const [restrictionsLoading, setRestrictionsLoading] = useState(false);
+  const [restrictionsSaving, setRestrictionsSaving] = useState(false);
+  const [restrictions, setRestrictions] = useState({ ranges: [], months: [], weekdays: [] });
+  const [draftRange, setDraftRange] = useState({ from: "", to: "" });
+  const [draftMonth, setDraftMonth] = useState({ year: String(new Date().getFullYear()), month: String(new Date().getMonth() + 1) });
 
   // fetch
   const fetchReservations = async () => {
@@ -87,6 +113,87 @@ export default function AdminReservations() {
     fetchReservations();
   }, []);
 
+  useEffect(() => {
+    if (!restrictionsOpen) return;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [restrictionsOpen]);
+
+  useEffect(() => {
+    if (!restrictionsOpen) return;
+    (async () => {
+      setRestrictionsLoading(true);
+      try {
+        const data = await api.get("/admin/reservation-date-restrictions");
+        setRestrictions({
+          ranges: Array.isArray(data?.ranges) ? data.ranges : [],
+          months: Array.isArray(data?.months) ? data.months : [],
+          weekdays: Array.isArray(data?.weekdays) ? data.weekdays : [],
+        });
+      } catch (e) {
+        console.error("Load reservation date restrictions failed:", e);
+        alert(e?.message || "Failed to load reservation date restrictions.");
+      } finally {
+        setRestrictionsLoading(false);
+      }
+    })();
+  }, [restrictionsOpen]);
+
+  const saveRestrictions = async () => {
+    setRestrictionsSaving(true);
+    try {
+      const payload = {
+        ranges: restrictions.ranges || [],
+        months: restrictions.months || [],
+        weekdays: restrictions.weekdays || [],
+      };
+      const saved = await api.put("/admin/reservation-date-restrictions", payload);
+      setRestrictions({
+        ranges: Array.isArray(saved?.ranges) ? saved.ranges : [],
+        months: Array.isArray(saved?.months) ? saved.months : [],
+        weekdays: Array.isArray(saved?.weekdays) ? saved.weekdays : [],
+      });
+      alert("Reservation date restrictions saved.");
+      setRestrictionsOpen(false);
+    } catch (e) {
+      console.error("Save reservation date restrictions failed:", e);
+      alert(e?.message || "Failed to save reservation date restrictions.");
+    } finally {
+      setRestrictionsSaving(false);
+    }
+  };
+
+  const addRange = () => {
+    const from = String(draftRange.from || "").trim();
+    const to = String(draftRange.to || "").trim();
+    if (!from || !to) return;
+    const next = from <= to ? { from, to } : { from: to, to: from };
+    setRestrictions((r) => ({ ...r, ranges: [...(r.ranges || []), next] }));
+    setDraftRange({ from: "", to: "" });
+  };
+
+  const addMonth = () => {
+    const y = Number(draftMonth.year);
+    const m = Number(draftMonth.month);
+    if (!Number.isFinite(y) || !Number.isFinite(m) || m < 1 || m > 12) return;
+    const entry = { year: y, month: m };
+    setRestrictions((r) => {
+      const exists = (r.months || []).some((x) => Number(x?.year) === y && Number(x?.month) === m);
+      return exists ? r : { ...r, months: [...(r.months || []), entry] };
+    });
+  };
+
+  const toggleWeekday = (d) => {
+    setRestrictions((r) => {
+      const set = new Set((r.weekdays || []).map((n) => Number(n)));
+      if (set.has(d)) set.delete(d);
+      else set.add(d);
+      return { ...r, weekdays: Array.from(set).filter((n) => Number.isFinite(n)).sort((a, b) => a - b) };
+    });
+  };
+
   // normalize & sort
   const normalized = useMemo(() => {
     return (rows || [])
@@ -96,6 +203,7 @@ export default function AdminReservations() {
           : Array.isArray(r.order)
           ? r.order
           : [];
+
         const student =
           r.student ||
           r.studentName ||
@@ -106,6 +214,7 @@ export default function AdminReservations() {
         const grade = r.grade || r.gradeLevel || r.grade_level || "";
         const section = r.section || r.classSection || r.section_name || "";
         const when = r.when || r.slotLabel || r.slot || r.pickup || r.pickupTime || "";
+        const pickupDate = r.pickupDate || r.pickup_date || r.claimDate || r.claim_date || "";
         const status = normalizeStatus(r.status);
         const created =
           r.createdAt ||
@@ -115,7 +224,7 @@ export default function AdminReservations() {
           r.updatedAt ||
           null;
         const createdNum = created ? new Date(created).getTime() : 0;
-        return { ...r, items, student, grade, section, when, status, createdNum };
+        return { ...r, items, student, grade, section, when, pickupDate, status, createdNum };
       })
       .sort((a, b) => b.createdNum - a.createdNum);
   }, [rows]);
@@ -133,6 +242,10 @@ export default function AdminReservations() {
     const s = String(q || "").trim().toLowerCase();
     let list = normalized;
     if (tab !== "All") list = list.filter((r) => r.status === tab);
+    if (pickup !== "all") {
+      const p = String(pickup).toLowerCase();
+      list = list.filter((r) => String(r.when || "").toLowerCase().includes(p));
+    }
     if (!s) return list;
     return list.filter((r) =>
       (
@@ -142,12 +255,16 @@ export default function AdminReservations() {
         " " +
         String(r.grade || "") +
         " " +
-        String(r.section || "")
+        String(r.section || "") +
+        " " +
+        String(r.when || "") +
+        " " +
+        String(r.pickupDate || "")
       )
         .toLowerCase()
         .includes(s)
     );
-  }, [normalized, q, tab]);
+  }, [normalized, q, tab, pickup]);
 
   const lineTotal = (it) => {
     const price = Number(it.price ?? it.unitPrice ?? it.amount ?? 0);
@@ -232,16 +349,29 @@ export default function AdminReservations() {
           </div>
 
           {/* Search bar - full width on mobile */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
             <div className="relative flex-1">
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder="Search student, ID, grade..."
+                placeholder="Search student name, grade..."
                 className="w-full border border-gray-300 rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
             </div>
+
+            <select
+              value={pickup}
+              onChange={(e) => setPickup(e.target.value)}
+              className="w-full sm:w-48 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              aria-label="Filter by pickup window"
+            >
+              <option value="all">All pickup windows</option>
+              <option value="recess">Recess</option>
+              <option value="lunch">Lunch</option>
+              <option value="after">After Class</option>
+            </select>
+
             <button
               onClick={fetchReservations}
               disabled={loading}
@@ -254,6 +384,13 @@ export default function AdminReservations() {
                 <RefreshCw className="w-4 h-4" />
               )}
               <span className="hidden sm:inline">Refresh</span>
+            </button>
+
+            <button
+              onClick={() => setRestrictionsOpen(true)}
+              className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 text-sm whitespace-nowrap"
+            >
+              Restricted Date for Reservations
             </button>
           </div>
         </div>
@@ -370,11 +507,9 @@ export default function AdminReservations() {
                         <div className="text-xs sm:text-sm text-gray-600 mt-0.5">
                           {r.grade}{r.section ? `-${r.section}` : ""}
                         </div>
-                        {r.when && (
-                          <div className="text-xs sm:text-sm text-gray-600 mt-1">
-                            Pickup: {r.when}
-                          </div>
-                        )}
+                        <div className="text-xs sm:text-sm text-gray-600 mt-1">
+                          Pickup: {r.pickupDate ? fmtDate(r.pickupDate) : "—"} • {prettyPickupWindow(r.when) || "—"}
+                        </div>
                         {r.status === "Claimed" && (r.claimedAt || r.pickedAt || r.picked_at || r.claimed_at) && (
                           <div className="text-xs text-gray-500 mt-1">
                             Claimed: {new Date(r.claimedAt || r.pickedAt || r.picked_at || r.claimed_at).toLocaleString()}
@@ -465,6 +600,183 @@ export default function AdminReservations() {
           </div>
         )}
       </main>
+
+      {restrictionsOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 pb-24 sm:pb-4" role="dialog" aria-modal="true">
+          <div className="w-full max-w-3xl bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden max-h-[calc(100vh-7rem)] sm:max-h-[85vh] flex flex-col">
+            <div className="p-4 border-b flex items-center justify-between gap-3">
+              <div>
+                <div className="text-lg font-semibold text-gray-900">Reservation Claim Date Restrictions</div>
+                <div className="text-xs text-gray-500">Block date ranges, whole months, or all dates on selected weekdays.</div>
+              </div>
+
+              <button
+                onClick={() => setRestrictionsOpen(false)}
+                className="p-2 rounded-lg hover:bg-gray-100"
+                aria-label="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 space-y-5 overflow-y-auto flex-1">
+              {restrictionsLoading ? (
+                <div className="text-sm text-gray-600">Loading…</div>
+              ) : (
+                <>
+                  <div className="space-y-2">
+                    <div className="text-sm font-semibold text-gray-900">Restricted date range</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      <input
+                        type="date"
+                        value={draftRange.from}
+                        onChange={(e) => setDraftRange((r) => ({ ...r, from: e.target.value }))}
+                        className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                      />
+                      <input
+                        type="date"
+                        value={draftRange.to}
+                        onChange={(e) => setDraftRange((r) => ({ ...r, to: e.target.value }))}
+                        className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={addRange}
+                        className="px-3 py-2 rounded-lg text-sm bg-gray-900 text-white hover:bg-gray-800"
+                      >
+                        Add range
+                      </button>
+                    </div>
+
+                    {(restrictions.ranges || []).length > 0 && (
+                      <div className="space-y-1">
+                        {(restrictions.ranges || []).map((rg, idx) => (
+                          <div key={`rg-${idx}`} className="flex items-center justify-between gap-2 text-sm border rounded-lg px-3 py-2">
+                            <div className="text-gray-700">{rg.from} → {rg.to}</div>
+                            <button
+                              type="button"
+                              onClick={() => setRestrictions((r) => ({ ...r, ranges: (r.ranges || []).filter((_, i) => i !== idx) }))}
+                              className="text-rose-600 hover:text-rose-700"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="text-sm font-semibold text-gray-900">Restrict whole month</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      <input
+                        type="number"
+                        value={draftMonth.year}
+                        onChange={(e) => setDraftMonth((m) => ({ ...m, year: e.target.value }))}
+                        className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                        placeholder="Year"
+                      />
+                      <select
+                        value={draftMonth.month}
+                        onChange={(e) => setDraftMonth((m) => ({ ...m, month: e.target.value }))}
+                        className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                      >
+                        {Array.from({ length: 12 }).map((_, i) => (
+                          <option key={i + 1} value={String(i + 1)}>{i + 1}</option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        onClick={addMonth}
+                        className="px-3 py-2 rounded-lg text-sm bg-gray-900 text-white hover:bg-gray-800"
+                      >
+                        Add month
+                      </button>
+                    </div>
+
+                    {(restrictions.months || []).length > 0 && (
+                      <div className="space-y-1">
+                        {(restrictions.months || []).map((m, idx) => (
+                          <div key={`mo-${idx}`} className="flex items-center justify-between gap-2 text-sm border rounded-lg px-3 py-2">
+                            <div className="text-gray-700">{m.year}-{String(m.month).padStart(2, "0")}</div>
+                            <button
+                              type="button"
+                              onClick={() => setRestrictions((r) => ({ ...r, months: (r.months || []).filter((_, i) => i !== idx) }))}
+                              className="text-rose-600 hover:text-rose-700"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="text-sm font-semibold text-gray-900">Restrict by weekday (all dates)</div>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { id: 0, label: "Sun" },
+                        { id: 1, label: "Mon" },
+                        { id: 2, label: "Tue" },
+                        { id: 3, label: "Wed" },
+                        { id: 4, label: "Thu" },
+                        { id: 5, label: "Fri" },
+                        { id: 6, label: "Sat" },
+                      ].map((d) => {
+                        const checked = (restrictions.weekdays || []).includes(d.id);
+                        return (
+                          <label key={d.id} className="inline-flex items-center gap-2 border rounded-lg px-3 py-2 text-sm cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={() => toggleWeekday(d.id)}
+                            />
+                            <span className="text-gray-700">{d.label}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setRestrictions((r) => ({ ...r, weekdays: [0, 1, 2, 3, 4, 5, 6] }))}
+                        className="px-3 py-2 text-xs border rounded-lg hover:bg-gray-50"
+                      >
+                        Restrict all weekdays
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setRestrictions((r) => ({ ...r, weekdays: [] }))}
+                        className="px-3 py-2 text-xs border rounded-lg hover:bg-gray-50"
+                      >
+                        Clear weekdays
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+
+            <div className="p-4 border-t flex items-center justify-end gap-2">
+              <button
+                onClick={() => setRestrictionsOpen(false)}
+                className="px-3 py-2 rounded-lg text-sm border hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveRestrictions}
+                disabled={restrictionsLoading || restrictionsSaving}
+                className="px-3 py-2 rounded-lg text-sm bg-gray-900 text-white hover:bg-gray-800 disabled:opacity-60"
+              >
+                {restrictionsSaving ? "Saving…" : "Save"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Bottom Navigation - Mobile only */}
       <AdminBottomNav badgeCounts={badgeCounts} />

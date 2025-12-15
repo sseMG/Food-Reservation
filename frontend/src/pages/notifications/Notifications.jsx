@@ -24,6 +24,24 @@ import {
 const peso = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" });
 const ITEMS_PER_PAGE = 10;
 
+function fmtDate(v) {
+  if (!v) return "";
+  const d = new Date(v);
+  if (Number.isNaN(d.getTime())) return String(v);
+  return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(d);
+}
+
+function prettyPickupWindow(v) {
+  const s = String(v || "").trim().toLowerCase();
+  if (!s) return "";
+  if (s.includes("recess")) return "Recess";
+  if (s.includes("lunch")) return "Lunch";
+  if (s.includes("after")) return "After Class";
+  if (s.includes("breakfast")) return "Breakfast";
+  if (s.includes("dismissal")) return "Dismissal";
+  return String(v);
+}
+
 export default function Notifications() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -659,7 +677,16 @@ export default function Notifications() {
                         <div className="flex items-center gap-2 text-sm pt-3 border-t border-jckl-gold">
                           <Clock className="w-4 h-4 text-jckl-navy" />
                           <span className="text-jckl-slate">Pickup:</span>
-                          <span className="font-medium text-jckl-navy">{preview.data.slot}</span>
+                          <span className="font-medium text-jckl-navy">
+                            {(() => {
+                              const pickupDate = preview.data.pickupDate || preview.data.pickup_date || preview.data.claimDate || preview.data.claim_date || "";
+                              const when = preview.data.when || preview.data.slot || preview.data.slotLabel || preview.data.pickup || preview.data.pickupTime || "";
+                              const pickupDisplay = [pickupDate ? fmtDate(pickupDate) : "", when ? prettyPickupWindow(when) : ""]
+                                .filter(Boolean)
+                                .join(" • ");
+                              return pickupDisplay || preview.data.slot;
+                            })()}
+                          </span>
                         </div>
                       )}
 

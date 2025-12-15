@@ -28,6 +28,24 @@ const peso = new Intl.NumberFormat("en-PH", {
 
 const USER_PROFILE_UPDATED = 'USER_PROFILE_UPDATED';
 
+function fmtDate(v) {
+  if (!v) return "";
+  const d = new Date(v);
+  if (Number.isNaN(d.getTime())) return String(v);
+  return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(d);
+}
+
+function prettyPickupWindow(v) {
+  const s = String(v || "").trim().toLowerCase();
+  if (!s) return "";
+  if (s.includes("recess")) return "Recess";
+  if (s.includes("lunch")) return "Lunch";
+  if (s.includes("after")) return "After Class";
+  if (s.includes("breakfast")) return "Breakfast";
+  if (s.includes("dismissal")) return "Dismissal";
+  return String(v);
+}
+
 // Helper function to get pickup times based on grade
 const getPickupTimes = (grade) => {
   if (!grade) return {};
@@ -425,7 +443,14 @@ const NotificationPreviewModal = ({ notification, onClose, onDelete, navigate })
                         Slot
                       </div>
                       <div className="font-medium text-indigo-900">
-                        {notification.data.slot}
+                        {(() => {
+                          const pickupDate = notification.data.pickupDate || notification.data.pickup_date || notification.data.claimDate || notification.data.claim_date || "";
+                          const when = notification.data.when || notification.data.slot || notification.data.slotLabel || notification.data.pickup || notification.data.pickupTime || "";
+                          const pickupDisplay = [pickupDate ? fmtDate(pickupDate) : "", when ? prettyPickupWindow(when) : ""]
+                            .filter(Boolean)
+                            .join(" • ");
+                          return pickupDisplay || notification.data.slot;
+                        })()}
                       </div>
                       {notification.data.grade && (
                         <div className="text-sm text-indigo-700 mt-2">

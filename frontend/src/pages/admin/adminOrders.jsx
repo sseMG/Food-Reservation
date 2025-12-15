@@ -63,6 +63,24 @@ function fmtDateTime(v) {
   return d.toLocaleString();
 }
 
+function fmtDate(v) {
+  if (!v) return "—";
+  const d = new Date(v);
+  if (isNaN(d)) return String(v);
+  return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(d);
+}
+
+function prettyPickupWindow(v) {
+  const s = String(v || "").trim().toLowerCase();
+  if (!s) return "";
+  if (s.includes("recess")) return "Recess";
+  if (s.includes("lunch")) return "Lunch";
+  if (s.includes("after")) return "After Class";
+  if (s.includes("breakfast")) return "Breakfast";
+  if (s.includes("dismissal")) return "Dismissal";
+  return String(v);
+}
+
 function getStudentName(o) {
   return (
     (o && (o.student || o.studentName || o.payerName || o.customerName)) ||
@@ -112,6 +130,13 @@ const FIELD_ALIASES = {
   pickup: "pickup",
   time: "pickup",
   slot: "pickup",
+  date: "date",
+  pickupdate: "date",
+  pickup_date: "date",
+  claimdate: "date",
+  claim_date: "date",
+  "pickup date": "date",
+  "claim date": "date",
   item: "item",
   food: "item",
   status: "status",
@@ -229,6 +254,7 @@ function getActiveFilters(parsedQuery) {
     grade: "Grade",
     section: "Section",
     pickup: "Pickup Time",
+    date: "Pickup Date",
     item: "Item",
     status: "Status",
     total: "Total",
@@ -350,6 +376,7 @@ export default function AdminOrders() {
   const [tab, setTab] = useState("All");
   const [q, setQ] = useState("");
   const [debouncedQ, setDebouncedQ] = useState("");
+  const [pickupFilter, setPickupFilter] = useState("all");
   const [sortField, setSortField] = useState("pickup");
   const [sortOrder, setSortOrder] = useState("asc");
   const [showFilters, setShowFilters] = useState(false);
@@ -425,6 +452,13 @@ export default function AdminOrders() {
         if (s === "Pending" || s === "Rejected") return false;
         if (tab !== "All" && s !== tab) return false;
 
+        const pickupWindow = o.when || o.slot || o.slotLabel || o.pickup || o.pickupTime || "";
+        const pickupDate = o.pickupDate || o.pickup_date || o.claimDate || o.claim_date || "";
+        if (pickupFilter !== "all") {
+          const p = String(pickupFilter).toLowerCase();
+          if (!String(pickupWindow || "").toLowerCase().includes(p)) return false;
+        }
+
         // Build searchable fields with normalized text
         const searchableData = {
           name: normalizeText(getStudentName(o)),
@@ -434,7 +468,8 @@ export default function AdminOrders() {
           note: normalizeText(String(o?.note || "")),
           total: normalizeCurrency(peso.format(orderTotal(o))),
           item: normalizeText((o?.items || []).map((it) => String(it?.name || "")).join(" ")),
-          pickup: normalizeText(String(o?.when || o?.slot || o?.slotLabel || o?.pickup || o?.pickupTime || "")),
+          pickup: normalizeText(String(pickupWindow || "")),
+          date: normalizeText(String(pickupDate || "")),
           status: normalizeText(String(o?.status || "")),
         };
 
@@ -513,7 +548,7 @@ export default function AdminOrders() {
     });
 
     return rows;
-  }, [orders, tab, parsedQuery, sortField, sortOrder]);
+  }, [orders, tab, parsedQuery, sortField, sortOrder, pickupFilter]);
 
   const transition = async (id, next) => {
     if (!id) {
@@ -586,7 +621,7 @@ export default function AdminOrders() {
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder='Try: St. Rose, Anm or name:john, section:rose'
+                placeholder='Try: St. Rose, Anm or name:john, date:2025-12-15'
                 className="w-full border border-jckl-gold rounded-lg pl-9 pr-20 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
               />
               <Search className="w-4 h-4 text-jckl-slate absolute left-3 top-1/2 -translate-y-1/2" />
@@ -629,6 +664,7 @@ export default function AdminOrders() {
                     <div><span className="font-mono bg-blue-100 px-1 rounded">section:rose</span> → Search only in section</div>
                     <div><span className="font-mono bg-blue-100 px-1 rounded">grade:10</span> → Search only in grade</div>
                     <div><span className="font-mono bg-blue-100 px-1 rounded">pickup:lunch</span> → Search by pickup time</div>
+                    <div><span className="font-mono bg-blue-100 px-1 rounded">date:2025-12-15</span> → Search by pickup date</div>
                   </div>
                 </div>
 
@@ -642,7 +678,7 @@ export default function AdminOrders() {
                 </div>
 
                 <div className="pt-2 border-t border-blue-300 text-blue-700 text-[11px]">
-                  <strong>Aliases:</strong> name/student/payer, id/order, section/sec, pickup/time/slot, item/food, note/comment
+                  <strong>Aliases:</strong> name/student/payer, id/order, section/sec, pickup/time/slot, date/pickupdate/claimdate, item/food, note/comment
                 </div>
               </div>
             )}
@@ -682,6 +718,18 @@ export default function AdminOrders() {
           {/* Mobile Sort Dropdown (Collapsible) */}
           {showFilters && (
             <div className="p-4 bg-white border border-jckl-gold rounded-lg space-y-2">
+              <label className="block text-xs font-semibold text-jckl-slate uppercase tracking-wide">Pickup Window</label>
+              <select
+                value={pickupFilter}
+                onChange={(e) => setPickupFilter(e.target.value)}
+                className="w-full border border-jckl-gold rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
+              >
+                <option value="all">All pickup windows</option>
+                <option value="recess">Recess</option>
+                <option value="lunch">Lunch</option>
+                <option value="after">After Class</option>
+              </select>
+
               <label className="block text-xs font-semibold text-jckl-slate uppercase tracking-wide">Sort By</label>
               <select
                 value={`${sortField}|${sortOrder}`}
@@ -740,7 +788,7 @@ export default function AdminOrders() {
                 <input
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
-                  placeholder='Search: St. Rose, Anm  |  name:john, section:rose  |  grade:10 pickup:lunch'
+                  placeholder='Search: St. Rose, Anm  |  name:john, date:2025-12-15  |  grade:10 pickup:lunch'
                   className="w-full border border-jckl-gold rounded-lg pl-9 pr-20 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
                 />
                 <Search className="w-4 h-4 text-jckl-slate absolute left-3 top-1/2 -translate-y-1/2" />
@@ -793,6 +841,7 @@ export default function AdminOrders() {
                       <div className="font-semibold text-blue-800 text-xs uppercase tracking-wide">More Fields</div>
                       <div className="text-blue-800 space-y-1.5 text-sm">
                         <div><span className="font-mono bg-blue-100 px-1.5 py-0.5 rounded">pickup:lunch</span> → By pickup time</div>
+                        <div><span className="font-mono bg-blue-100 px-1.5 py-0.5 rounded">date:2025-12-15</span> → By pickup date</div>
                         <div><span className="font-mono bg-blue-100 px-1.5 py-0.5 rounded">item:burger</span> → By item name</div>
                         <div><span className="font-mono bg-blue-100 px-1.5 py-0.5 rounded">id:12345</span> → By order ID</div>
                       </div>
@@ -818,7 +867,7 @@ export default function AdminOrders() {
                   </div>
 
                   <div className="pt-2 border-t border-blue-300 text-blue-700 text-xs">
-                    <strong>Field Aliases:</strong> name/student/payer/customer · id/order/orderid · section/sec · pickup/time/slot · item/food · note/notes/comment · status/state · total/price/amount
+                    <strong>Field Aliases:</strong> name/student/payer/customer · id/order/orderid · section/sec · pickup/time/slot · date/pickupdate/claimdate · item/food · note/notes/comment · status/state · total/price/amount
                   </div>
                 </div>
               )}
@@ -845,6 +894,18 @@ export default function AdminOrders() {
                 </div>
               )}
             </div>
+
+            <select
+              value={pickupFilter}
+              onChange={(e) => setPickupFilter(e.target.value)}
+              className="border border-jckl-gold rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold flex-shrink-0"
+              aria-label="Filter by pickup window"
+            >
+              <option value="all">All pickup windows</option>
+              <option value="recess">Recess</option>
+              <option value="lunch">Lunch</option>
+              <option value="after">After Class</option>
+            </select>
 
             <select
               value={`${sortField}|${sortOrder}`}
@@ -970,6 +1031,8 @@ export default function AdminOrders() {
             {filtered.map((o) => {
               const studentName = getStudentName(o);
               const when = o.when || o.slot || o.slotLabel || o.pickup || o.pickupTime || "";
+              const pickupDate = o.pickupDate || o.pickup_date || o.claimDate || o.claim_date || "";
+              const whenLabel = prettyPickupWindow(when);
               const claimedAt =
                 o.claimedAt ?? o.pickedAt ?? o.picked_at ?? o.claimed_at ?? o.completedAt ?? o.completed_at ?? o.updatedAt;
 
@@ -992,7 +1055,7 @@ export default function AdminOrders() {
                         <span className="inline-flex items-center gap-1">
                           <span className="font-medium">Pickup:</span>
                           <span className="px-2 py-0.5 bg-jckl-cream rounded text-xs font-medium">
-                            {when || "—"}
+                            {(pickupDate ? fmtDate(pickupDate) : "—") + (whenLabel ? ` • ${whenLabel}` : when ? ` • ${when}` : "")}
                           </span>
                         </span>
                       </div>

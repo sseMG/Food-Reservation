@@ -1,6 +1,7 @@
 ﻿// backend/src/routes/reservations.routes.js
 const express = require("express");
 const R = require("../controllers/reservations.controller");
+const ReservationDateRestrictions = require("../controllers/reservationDateRestrictions.controller");
 const { requireAuth, requireAdmin } = require("../lib/auth");
 
 const router = express.Router();
@@ -59,6 +60,8 @@ router.post("/", requireAuth, R.create);
  *         description: Invalid input
  */
 router.post("/checkout", requireAuth, R.create);
+
+router.get("/date-restrictions", requireAuth, ReservationDateRestrictions.get);
 
 /**
  * @swagger

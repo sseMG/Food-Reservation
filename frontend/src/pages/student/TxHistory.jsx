@@ -42,6 +42,24 @@ function fmtDateTime(v) {
   return new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(d);
 }
 
+ function fmtDate(v) {
+   if (!v) return "—";
+   const d = new Date(v);
+   if (Number.isNaN(d.getTime())) return String(v || "");
+   return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(d);
+ }
+
+function prettyPickupWindow(v) {
+  const s = String(v || "").trim().toLowerCase();
+  if (!s) return "";
+  if (s.includes("recess")) return "Recess";
+  if (s.includes("lunch")) return "Lunch";
+  if (s.includes("after")) return "After Class";
+  if (s.includes("breakfast")) return "Breakfast";
+  if (s.includes("dismissal")) return "Dismissal";
+  return String(v);
+}
+
 /* ---------- data normalization helpers (kept intact + robust) ---------- */
 function computeReservationTotal(r) {
   if (!r) return 0;
@@ -83,12 +101,24 @@ function looksLikeFood(raw) {
 
 function mapFoodToRow(raw) {
   const id = raw.id || raw.orderId || raw.reservationId || raw.ref || raw.reference || raw._id || Math.random().toString(36).slice(2);
-  const createdAt = raw.createdAt || raw.created || raw.time || raw.date || raw.when || raw.submittedAt || raw.updatedAt || null;
+  const createdAt = [raw.createdAt, raw.created, raw.time, raw.date, raw.submittedAt, raw.updatedAt]
+    .find((v) => {
+      if (!v) return false;
+      const d = new Date(v);
+      return !Number.isNaN(d.getTime());
+    }) || null;
+  const pickupWindow = raw.when || raw.slot || raw.slotLabel || raw.pickup || raw.pickupTime || "";
+  const pickupWindowLabel = pickupWindow ? prettyPickupWindow(pickupWindow) : "";
+  const pickupDate = raw.pickupDate || raw.pickup_date || raw.claimDate || raw.claim_date || "";
   const items = extractItemsArray(raw);
   const amount = computeReservationTotal(raw);
   const products = items.map(({ name, qty }) => `${name} ×${qty}`).join(" • ");
   const status = String(raw.status || raw.result || raw.state || "Success");
   const statusLC = status.toLowerCase();
+
+  const pickupDisplay = [pickupDate ? fmtDate(pickupDate) : "", pickupWindowLabel ? String(pickupWindowLabel) : ""]
+    .filter(Boolean)
+    .join(" • ");
 
   return {
     id,
@@ -99,6 +129,10 @@ function mapFoodToRow(raw) {
     amount: Math.abs(amount || 0),
     status,
     statusLC,
+    pickupWindow,
+    pickupWindowLabel,
+    pickupDate,
+    pickupDisplay,
     sign: -1,
     raw,
   };
@@ -108,9 +142,11 @@ function mapFoodToRow(raw) {
 function useDebounce(value, ms = 300) {
   const [v, setV] = useState(value);
   useEffect(() => {
-    const id = setTimeout(() => setV(value), ms);
-    return () => clearTimeout(id);
-  }, [value, ms]);
+    const timer = setTimeout(() => {
+      setV(value);
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [value]);
   return v;
 }
 
@@ -119,6 +155,7 @@ const fetchReservationsWithParams = async ({ signal, params }) => {
   const qs = new URLSearchParams();
   if (params.q) qs.set("q", params.q);
   if (params.status && params.status !== "all") qs.set("status", params.status);
+  if (params.pickup && params.pickup !== "all") qs.set("pickup", params.pickup);
   if (params.from) qs.set("from", params.from);
   if (params.to) qs.set("to", params.to);
   if (params.sort) qs.set("sort", params.sort);
@@ -173,12 +210,16 @@ const fetchReservationsWithParams = async ({ signal, params }) => {
   if (qLower) {
     const toks = qLower.split(/\s+/).filter(Boolean);
     filtered = filtered.filter((r) => {
-      const hay = [String(r.id), r.title, r.status, r.products].join(" ").toLowerCase();
+      const hay = [String(r.id), r.title, r.status, r.products, r.pickupDisplay, r.pickupDate, r.pickupWindow].join(" ").toLowerCase();
       return toks.every((t) => hay.includes(t));
     });
   }
   if (params.status && params.status !== "all") {
     filtered = filtered.filter((r) => r.statusLC === (params.status || "").toLowerCase());
+  }
+  if (params.pickup && params.pickup !== "all") {
+    const p = String(params.pickup || "").toLowerCase();
+    filtered = filtered.filter((r) => String(r.pickupWindow || "").toLowerCase().includes(p));
   }
   if (params.from || params.to) {
     const fromD = params.from ? new Date(params.from) : null;
@@ -232,10 +273,32 @@ export default function TxHistory() {
   const [perPage, setPerPage] = useState(10);
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("all");
+  const [pickup, setPickup] = useState("all");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
+  const [rangeOpen, setRangeOpen] = useState(false);
+  const [draftFrom, setDraftFrom] = useState("");
+  const [draftTo, setDraftTo] = useState("");
   const [sort, setSort] = useState("date-desc");
   const [showFilters, setShowFilters] = useState(false);
+  const rangeRef = useRef(null);
+
+  useEffect(() => {
+    if (!rangeOpen) return;
+    const onDown = (e) => {
+      if (!rangeRef.current) return;
+      if (!rangeRef.current.contains(e.target)) setRangeOpen(false);
+    };
+    const onKey = (e) => {
+      if (e.key === "Escape") setRangeOpen(false);
+    };
+    window.addEventListener("mousedown", onDown);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("mousedown", onDown);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [rangeOpen]);
 
   const debouncedQ = useDebounce(q, 300);
 
@@ -255,7 +318,7 @@ export default function TxHistory() {
   }, []);
 
   // query key and fetching
-  const queryKey = ["txHistory", { q: debouncedQ, status, from, to, sort, page, perPage }];
+  const queryKey = ["txHistory", { q: debouncedQ, status, pickup, from, to, sort, page, perPage }];
 
   const {
     data,
@@ -266,7 +329,7 @@ export default function TxHistory() {
   } = useQuery({
     queryKey,
     queryFn: async ({ signal }) => {
-      const res = await fetchReservationsWithParams({ signal, params: { q: debouncedQ, status, from, to, sort, page, perPage } });
+      const res = await fetchReservationsWithParams({ signal, params: { q: debouncedQ, status, pickup, from, to, sort, page, perPage } });
       return res;
     },
     keepPreviousData: true,
@@ -331,29 +394,38 @@ export default function TxHistory() {
     
     if (!confirmed) return;
 
-    // ✅ Suggestion #2: Human-readable headers matching website
+    const csvEscape = (value) => {
+      const v = value == null ? "" : String(value);
+      return `"${v.replace(/"/g, '""')}"`;
+    };
+
+    // Human-readable headers matching website
+    const header = [
+      "Order ID",
+      "Order Type",
+      "Date & Time",
+      "Pickup",
+      "Amount (PHP)",
+      "Status",
+      "Items Ordered",
+    ];
+
     const items = rows.map((r) => ({
       "Order ID": r.id,
       "Order Type": r.title,
       "Date & Time": fmtDateTime(r.createdAt),
-      "Amount (₱)": peso.format(r.amount),
+      "Pickup": r.pickupDisplay || "—",
+      "Amount (PHP)": peso.format(r.amount),
       "Status": r.status,
       "Items Ordered": r.products || "—",
     }));
-    
-    const header = ["Order ID", "Order Type", "Date & Time", "Amount (₱)", "Status", "Items Ordered"];
-    const csv = [header.join(",")]
-      .concat(
-        items.map((it) =>
-          header
-            .map((h) => {
-              const v = String(it[h] ?? "");
-              return `"${v.replace(/"/g, '""')}"`;
-            })
-            .join(",")
-        )
-      )
-      .join("\n");
+
+    const lines = [header.map(csvEscape).join(",")].concat(
+      items.map((it) => header.map((h) => csvEscape(it[h])).join(","))
+    );
+
+    // Use CRLF for better Excel compatibility + prepend UTF-8 BOM to avoid garbled chars (₱, ×)
+    const csv = `\uFEFF${lines.join("\r\n")}`;
     
     // ✅ Suggestion #3: Professional filename with date
     const today = new Date();
@@ -517,7 +589,7 @@ export default function TxHistory() {
           </div>
 
           {/* Filter controls */}
-          <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 ${showFilters ? 'block' : 'hidden'} md:grid`}>
+          <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 ${showFilters ? 'block' : 'hidden'} md:grid`}>
             <select
               value={status}
               onChange={(e) => {
@@ -536,27 +608,85 @@ export default function TxHistory() {
               <option value="rejected">Rejected</option>
             </select>
 
-            <div className="flex gap-2">
-              <input
-                type="date"
-                value={from}
-                onChange={(e) => {
-                  setFrom(e.target.value);
-                  setPage(1);
+            <select
+              value={pickup}
+              onChange={(e) => {
+                setPickup(e.target.value);
+                setPage(1);
+              }}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">All pickup windows</option>
+              <option value="recess">Recess</option>
+              <option value="lunch">Lunch</option>
+              <option value="after">After Class</option>
+            </select>
+
+            <div className="relative" ref={rangeRef}>
+              <button
+                type="button"
+                onClick={() => {
+                  setDraftFrom(from);
+                  setDraftTo(to);
+                  setRangeOpen((v) => !v);
                 }}
-                placeholder="From"
-                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <input
-                type="date"
-                value={to}
-                onChange={(e) => {
-                  setTo(e.target.value);
-                  setPage(1);
-                }}
-                placeholder="To"
-                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <span className="inline-flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-gray-500" />
+                  <span className="text-jckl-navy">
+                    {from || to ? `${from || "…"} → ${to || "…"}` : "Date of Request Range"}
+                  </span>
+                </span>
+              </button>
+
+              {rangeOpen && (
+                <div className="absolute z-50 mt-2 w-full min-w-[260px] rounded-lg border border-gray-200 bg-white shadow-lg p-3">
+                  <div className="grid grid-cols-1 gap-2">
+                    <input
+                      type="date"
+                      value={draftFrom}
+                      onChange={(e) => setDraftFrom(e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <input
+                      type="date"
+                      value={draftTo}
+                      onChange={(e) => setDraftTo(e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div className="mt-3 flex items-center justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDraftFrom("");
+                        setDraftTo("");
+                        setFrom("");
+                        setTo("");
+                        setPage(1);
+                        setRangeOpen(false);
+                      }}
+                      className="px-3 py-1.5 text-xs border rounded-lg hover:bg-gray-50"
+                    >
+                      Clear
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFrom(draftFrom);
+                        setTo(draftTo);
+                        setPage(1);
+                        setRangeOpen(false);
+                      }}
+                      className="px-3 py-1.5 text-xs rounded-lg bg-jckl-navy text-white hover:bg-jckl-light-navy"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             <select
@@ -589,15 +719,19 @@ export default function TxHistory() {
           </div>
 
           {/* Active filters indicator */}
-          {(q || status !== "all" || from || to) && (
+          {(q || status !== "all" || pickup !== "all" || from || to) && (
             <div className="flex items-center justify-between text-xs text-gray-600 pt-2 border-t">
               <span>Showing {total} record{total !== 1 ? 's' : ''}</span>
               <button
                 onClick={() => {
                   setQ("");
                   setStatus("all");
+                  setPickup("all");
                   setFrom("");
                   setTo("");
+                  setDraftFrom("");
+                  setDraftTo("");
+                  setRangeOpen(false);
                   setSort("date-desc");
                   setPage(1);
                 }}
@@ -643,7 +777,7 @@ export default function TxHistory() {
                     <ShoppingBag className="w-6 h-6 text-gray-400" />
                   </div>
                   <p className="text-sm text-gray-500">
-                    {q || status !== "all" || from || to 
+                    {q || status !== "all" || pickup !== "all" || from || to 
                       ? "No orders match your filters."
                       : "No order history yet."}
                   </p>
@@ -678,6 +812,11 @@ export default function TxHistory() {
                       <div className="mt-3 text-sm text-gray-700">
                         <div className="line-clamp-2" title={t.productsTitle}>{t.products || "—"}</div>
                       </div>
+
+                      <div className="mt-2 text-xs text-gray-600">
+                        <span className="font-medium">Pickup:</span>{" "}
+                        {t.pickupDisplay || "—"}
+                      </div>
                     </div>
                   </div>
 
@@ -697,7 +836,8 @@ export default function TxHistory() {
                     <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-navy uppercase tracking-wider">Title</th>
                     <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-navy uppercase tracking-wider">Ref</th>
                     <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-navy uppercase tracking-wider">Products</th>
-                    <th className="px-6 py-3 text-center text-xs font-semibold text-jckl-navy uppercase tracking-wider">Date</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-navy uppercase tracking-wider">Pickup</th>
+                    <th className="px-6 py-3 text-center text-xs font-semibold text-jckl-navy uppercase tracking-wider">Date of request</th>
                     <th className="px-6 py-3 text-right text-xs font-semibold text-jckl-navy uppercase tracking-wider">Amount</th>
                     <th className="px-6 py-3 text-center text-xs font-semibold text-jckl-navy uppercase tracking-wider">Status</th>
                   </tr>
@@ -709,6 +849,7 @@ export default function TxHistory() {
                         <td className="px-6 py-4"><div className="h-4 w-40 bg-gray-200 rounded" /></td>
                         <td className="px-6 py-4"><div className="h-4 w-24 bg-gray-200 rounded" /></td>
                         <td className="px-6 py-4"><div className="h-4 w-64 bg-gray-200 rounded" /></td>
+                        <td className="px-6 py-4"><div className="h-4 w-28 bg-gray-200 rounded" /></td>
                         <td className="px-6 py-4 text-center"><div className="h-4 w-28 bg-gray-200 rounded inline-block" /></td>
                         <td className="px-6 py-4 text-right"><div className="h-4 w-20 bg-gray-200 rounded inline-block" /></td>
                         <td className="px-6 py-4 text-center"><div className="h-5 w-20 bg-gray-200 rounded inline-block" /></td>
@@ -717,7 +858,7 @@ export default function TxHistory() {
 
                   {!isLoading && rows.length === 0 && (
                     <tr>
-                      <td colSpan={6} className="px-6 py-6 text-center text-sm text-jckl-slate">
+                      <td colSpan={7} className="px-6 py-6 text-center text-sm text-jckl-slate">
                         No food orders found.
                         <div className="text-xs text-gray-400 mt-1">Tip: make a reservation in the Shop, then check back here.</div>
                       </td>
@@ -729,6 +870,12 @@ export default function TxHistory() {
                       <td className="px-6 py-4 text-sm text-jckl-navy font-medium">{t.title}</td>
                       <td className="px-6 py-4 text-sm text-jckl-slate">{t.id}</td>
                       <td className="px-6 py-4 text-sm text-jckl-slate"><span className="line-clamp-2 block" title={t.productsTitle}>{t.products || "—"}</span></td>
+                      <td className="px-6 py-4 text-sm text-jckl-slate">
+                        <div className="flex flex-col">
+                          <span className="text-xs text-gray-500">{t.pickupDate ? fmtDate(t.pickupDate) : "—"}</span>
+                          <span className="text-sm text-jckl-navy">{t.pickupWindowLabel || t.pickupWindow || "—"}</span>
+                        </div>
+                      </td>
                       <td className="px-6 py-4 text-sm text-jckl-slate text-center">{fmtDateTime(t.createdAt)}</td>
                       <td className="px-6 py-4 text-sm text-right font-semibold text-rose-700">−{peso.format(t.amount)}</td>
                       <td className="px-6 py-4 text-sm text-center">

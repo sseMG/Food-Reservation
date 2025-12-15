@@ -5,11 +5,13 @@ import { refreshSessionForProtected } from "../../lib/auth";
 import Navbar from "../../components/avbar";
 import BottomNav from "../../components/mobile/BottomNav";
 import FullScreenLoader from "../../components/FullScreenLoader";
+import RestrictedDateCalendar from "../../components/RestrictedDateCalendar";
 import { api } from "../../lib/api";
 import { getCategoryEmoji } from '../../lib/categories';
 import { useCart } from "../../contexts/CartContext";
 import { useModal } from "../../contexts/ModalContext";
 import { getUserFromStorage, setUserToStorage } from "../../lib/storage";
+
 import {
   Plus,
   Minus,
@@ -208,6 +210,48 @@ function EmptyCartSuggestions({ items, onAdd, categoriesMap = {} }) {
   );
 }
 
+function normalizeDateString(v) {
+  if (!v) return "";
+  const s = String(v).trim();
+  const d = new Date(s);
+  if (Number.isNaN(d.getTime())) return "";
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function isDateRestricted(dateStr, rules) {
+  const dStr = normalizeDateString(dateStr);
+  if (!dStr) return false;
+  const d = new Date(dStr);
+  if (Number.isNaN(d.getTime())) return false;
+
+  const yyyy = d.getFullYear();
+  const mm = d.getMonth() + 1;
+  const dow = d.getDay();
+  const r = rules || { ranges: [], months: [], weekdays: [] };
+
+  if (Array.isArray(r.weekdays) && r.weekdays.includes(dow)) return true;
+
+  if (Array.isArray(r.months)) {
+    for (const m of r.months) {
+      if (Number(m?.year) === yyyy && Number(m?.month) === mm) return true;
+    }
+  }
+
+  if (Array.isArray(r.ranges)) {
+    for (const rg of r.ranges) {
+      const from = normalizeDateString(rg?.from);
+      const to = normalizeDateString(rg?.to);
+      if (!from || !to) continue;
+      if (from <= dStr && dStr <= to) return true;
+    }
+  }
+
+  return false;
+}
+
 export default function Shop({ publicView = false }) {
   const navigate = useNavigate();
   const { showAlert, showConfirm } = useModal();
@@ -254,8 +298,10 @@ export default function Shop({ publicView = false }) {
   const { cart, add, setQty, remove, clear } = useCart();
 
   const [open, setOpen] = useState(false);
-  const [reserve, setReserve] = useState({ grade: "", section: "", slot: "", note: "" });
+  const [reserve, setReserve] = useState({ grade: "", section: "", pickupDate: "", slot: "", note: "" });
   const [submitting, setSubmitting] = useState(false);
+
+  const [dateRestrictions, setDateRestrictions] = useState({ ranges: [], months: [], weekdays: [] });
 
   const [preview, setPreview] = useState(null);
 
@@ -269,6 +315,27 @@ export default function Shop({ publicView = false }) {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (publicView) return;
+    let mounted = true;
+    (async () => {
+      try {
+        const r = await api.get("/reservations/date-restrictions");
+        if (!mounted) return;
+        setDateRestrictions({
+          ranges: Array.isArray(r?.ranges) ? r.ranges : [],
+          months: Array.isArray(r?.months) ? r.months : [],
+          weekdays: Array.isArray(r?.weekdays) ? r.weekdays : [],
+        });
+      } catch (e) {
+        // silent fail: backend will still enforce
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [publicView]);
 
   useEffect(() => {
     const viewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
@@ -519,11 +586,28 @@ export default function Shop({ publicView = false }) {
     addToRecentlyViewed(item.id);
   };
 
+  const getMinDate = () => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + 1);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
   const submitReservation = async () => {
     if (!list.length) return showAlert("Your cart is empty.", "warning");
     if (!reserve.grade) return showAlert("Select grade level.", "warning");
     if (!reserve.section.trim()) return showAlert("Enter section.", "warning");
+    if (!reserve.pickupDate) return showAlert("Select a pickup date.", "warning");
     if (!reserve.slot) return showAlert("Choose a pickup window.", "warning");
+
+    if (isDateRestricted(reserve.pickupDate, dateRestrictions)) {
+      await showAlert("That pickup date is restricted. Please choose another date.", "warning");
+      setReserve((r) => ({ ...r, pickupDate: "" }));
+      return;
+    }
 
     const token = localStorage.getItem("token");
     if (!token) {
@@ -541,6 +625,7 @@ export default function Shop({ publicView = false }) {
         items: list.map(({ id, qty }) => ({ id, qty })),
         grade: reserve.grade,
         section: reserve.section.trim(),
+        pickupDate: reserve.pickupDate,
         slot: reserve.slot,
         note: reserve.note || "",
       };
@@ -565,7 +650,7 @@ export default function Shop({ publicView = false }) {
 
       await showAlert("Reservation submitted and wallet charged.", "success");
       clear();
-      setReserve({ grade: "", section: "", slot: "", note: "" });
+      setReserve({ grade: "", section: "", pickupDate: "", slot: "", note: "" });
       closeReserve();
 
       await Promise.all([fetchMenu(), fetchWallet()]);
@@ -789,7 +874,7 @@ export default function Shop({ publicView = false }) {
                             Out of stock
                           </span>
                         ) : lowStock ? (
-                          <span className="text-xs px-2 py-1 rounded-full bg-orange-100 text-orange-700 font-medium animate-pulse">
+                          <span className="text-xs px-2 py-1 rounded-full bg-orange-100 text-orange-700 animate-pulse">
                             ⚠️ Only {it.stock} left!
                           </span>
                         ) : (
@@ -821,7 +906,7 @@ export default function Shop({ publicView = false }) {
                             <button
                               onClick={() => inc(it.id)}
                               disabled={soldOut}
-                              className="inline-flex items-center gap-2 bg-jckl-navy text-white px-3 py-2 rounded-lg hover:bg-jckl-light-navy text-sm disabled:opacity-60 transition-all duration-200 transform hover:scale-105"
+                              className="inline-flex items-center gap-2 bg-jckl-navy text-white px-3 py-2 rounded-lg hover:bg-jckl-light-navy disabled:opacity-60 font-medium text-sm"
                             >
                               <ShoppingCart className="w-4 h-4" />
                               Add
@@ -839,7 +924,7 @@ export default function Shop({ publicView = false }) {
               <div className="bg-white rounded-lg shadow-sm border-t-4 border-jckl-gold p-4">
                 <div className="flex items-center gap-2 mb-4">
                   <Eye className="w-5 h-5 text-jckl-navy" />
-                  <h3 className="font-semibold text-jckl-navy">Recently Viewed</h3>
+                  <h3 className="font-semibold">Recently Viewed</h3>
                 </div>
                 <div className="flex gap-4 overflow-x-auto pb-2">
                   {recentlyViewedItems.map(it => (
@@ -916,9 +1001,7 @@ export default function Shop({ publicView = false }) {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="text-sm font-medium text-jckl-navy truncate">{it.name}</div>
-                        <div className="text-xs text-jckl-slate">
-                          {peso.format(Number(it.price) || 0)}
-                        </div>
+                        <div className="text-xs text-jckl-slate">{peso.format(it.price)}</div>
                         <div className="flex items-center gap-2 mt-2">
                           <div className="inline-flex items-center border rounded">
                             <button 
@@ -1129,7 +1212,7 @@ export default function Shop({ publicView = false }) {
                             onChange={(e) => setReserve((r) => ({ ...r, grade: e.target.value }))}
                             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
                           >
-                            <option value="">Select grade</option>
+                            <option value="" disabled={!!reserve.grade}>Select grade level</option>
                             {[...Array(11)].map((_, i) => (
                               <option key={i}>G{i + 2}</option>
                             ))}
@@ -1144,6 +1227,19 @@ export default function Shop({ publicView = false }) {
                             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
                           />
                         </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-jckl-navy mb-1">Pickup Date</label>
+                        <RestrictedDateCalendar
+                          value={reserve.pickupDate}
+                          onChange={(next) => setReserve((r) => ({ ...r, pickupDate: next }))}
+                          min={getMinDate()}
+                          rules={dateRestrictions}
+                        />
+                        {reserve.pickupDate && (
+                          <div className="mt-2 text-xs text-jckl-slate">Selected: {reserve.pickupDate}</div>
+                        )}
                       </div>
 
                       <div>

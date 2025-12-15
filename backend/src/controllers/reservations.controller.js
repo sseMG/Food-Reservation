@@ -1,6 +1,7 @@
 ﻿// backend/src/controllers/reservations.controller.js
 const Notifications = require("./notifications.controller");
 const RepositoryFactory = require("../repositories/repository.factory");
+const ReservationDateRestrictions = require("./reservationDateRestrictions.controller");
 
 /**
  * POST /api/reservations
@@ -13,6 +14,7 @@ exports.create = async (req, res) => {
       items = [],
       grade = "",
       section = "",
+      pickupDate = "",
       slot = "",
       note = "",
       student = "",
@@ -27,9 +29,23 @@ exports.create = async (req, res) => {
       return res.status(400).json({ error: "Missing pickup slot" });
     }
 
+    if (!pickupDate) {
+      console.log('[RESERVATION] Create: missing pickup date');
+      return res.status(400).json({ error: "Missing pickup date" });
+    }
+
     const uid = req?.user?.id || req?.user?._id;
     if (!uid) {
       return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    try {
+      const rules = await ReservationDateRestrictions._readRules();
+      if (ReservationDateRestrictions._isDateRestricted(pickupDate, rules)) {
+        return res.status(400).json({ error: "Selected pickup date is restricted. Please choose another date." });
+      }
+    } catch (e) {
+      console.error('[RESERVATION] Create: restriction check failed', e && e.message);
     }
 
     const userRepo = RepositoryFactory.getUserRepository();
@@ -158,6 +174,7 @@ exports.create = async (req, res) => {
       grade,
       section,
       when: slot,
+      pickupDate,
       note,
       items: normalized,
       total,
@@ -188,6 +205,7 @@ exports.create = async (req, res) => {
           total: reservation.total,
           note: reservation.note || "",
           slot: reservation.when || reservation.slot || "",
+          pickupDate: reservation.pickupDate || "",
           grade: reservation.grade || "",
           section: reservation.section || "",
           student: reservation.student || ""
