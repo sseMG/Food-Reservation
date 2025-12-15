@@ -306,6 +306,18 @@ export default function TxHistory() {
   const [selected, setSelected] = useState(null);
   const modalCloseRef = useRef(null);
 
+  const scrollLockPrevRef = useRef({
+    bodyOverflow: "",
+    htmlOverflow: "",
+    locked: false,
+  });
+
+  // cancel modal
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [cancelTarget, setCancelTarget] = useState(null);
+  const [cancelReason, setCancelReason] = useState("");
+  const cancelCloseRef = useRef(null);
+
   // mobile detection
   const [isMobile, setIsMobile] = useState(typeof window !== "undefined" ? window.innerWidth <= 820 : false);
   useEffect(() => {
@@ -462,14 +474,69 @@ export default function TxHistory() {
     if (selected && modalCloseRef.current) modalCloseRef.current.focus();
   }, [selected]);
 
-  // Prevent body scroll when modal is open
+  // Prevent background scroll when any modal is open
   useEffect(() => {
-    if (!selected) return;
-    document.body.style.overflow = 'hidden';
+    const shouldLock = !!selected || !!cancelOpen;
+    const prev = scrollLockPrevRef.current;
+
+    if (!shouldLock) {
+      if (prev.locked) {
+        document.body.style.overflow = prev.bodyOverflow;
+        document.documentElement.style.overflow = prev.htmlOverflow;
+        prev.locked = false;
+      }
+      return;
+    }
+
+    if (!prev.locked) {
+      prev.bodyOverflow = document.body.style.overflow;
+      prev.htmlOverflow = document.documentElement.style.overflow;
+      prev.locked = true;
+    }
+
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+
     return () => {
-      document.body.style.overflow = '';
+      const stillLocked = !!selected || !!cancelOpen;
+      if (!stillLocked && prev.locked) {
+        document.body.style.overflow = prev.bodyOverflow;
+        document.documentElement.style.overflow = prev.htmlOverflow;
+        prev.locked = false;
+      }
     };
-  }, [selected]);
+  }, [selected, cancelOpen]);
+
+  useEffect(() => {
+    if (cancelOpen && cancelCloseRef.current) cancelCloseRef.current.focus();
+  }, [cancelOpen]);
+
+  const openCancel = useCallback((row) => {
+    setCancelTarget(row);
+    setCancelReason("");
+    setCancelOpen(true);
+  }, []);
+
+  const submitCancel = useCallback(async () => {
+    if (!cancelTarget?.id) return;
+    const reason = String(cancelReason || "").trim();
+    if (!reason) {
+      await showAlert("Please enter a reason for cancellation.", "warning", "Reason Required");
+      return;
+    }
+
+    try {
+      await api.patch(`/reservations/${cancelTarget.id}/cancel`, { reason });
+      setCancelOpen(false);
+      setCancelTarget(null);
+      setCancelReason("");
+      await showAlert("Your order has been cancelled.", "success", "Cancelled");
+      await refetch();
+    } catch (e) {
+      const msg = String(e?.message || e || "");
+      await showAlert(msg || "Failed to cancel this order. Please try again.", "error", "Cancel Failed");
+    }
+  }, [cancelTarget, cancelReason, refetch, showAlert]);
 
   if (isLoading) {
     return <FullScreenLoader message="Loading transaction history..." />;
@@ -605,7 +672,9 @@ export default function TxHistory() {
               <option value="ready">Ready</option>
               <option value="claimed">Claimed</option>
               <option value="pending">Pending</option>
+              <option value="pending cancellation">Pending Cancellation</option>
               <option value="rejected">Rejected</option>
+              <option value="cancelled">Cancelled</option>
             </select>
 
             <select
@@ -800,12 +869,21 @@ export default function TxHistory() {
                             {(() => {
                               const s = t.statusLC;
                               if (s === "success" || s === "approved" || s === "claimed" || s === "ready") return <Pill tone="green">{t.status}</Pill>;
-                              if (s === "preparing" || s === "pending") return <Pill tone="yellow">{t.status}</Pill>;
-                              if (s === "failed" || s === "rejected") return <Pill tone="red">{t.status}</Pill>;
+                              if (s === "preparing" || s === "pending" || s === "pending cancellation") return <Pill tone="yellow">{t.status}</Pill>;
+                              if (s === "failed" || s === "rejected" || s === "cancelled") return <Pill tone="red">{t.status}</Pill>;
                               if (s === "refunded") return <Pill tone="blue">{t.status}</Pill>;
                               return <Pill>{t.status}</Pill>;
                             })()}
                           </div>
+
+                          {t.statusLC === "pending" && (
+                            <button
+                              onClick={() => openCancel(t)}
+                              className="mt-2 w-full text-xs px-3 py-1.5 border border-red-300 text-red-700 rounded-md hover:bg-red-50"
+                            >
+                              Cancel
+                            </button>
+                          )}
                         </div>
                       </div>
 
@@ -877,16 +955,28 @@ export default function TxHistory() {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-sm text-jckl-slate text-center">{fmtDateTime(t.createdAt)}</td>
-                      <td className="px-6 py-4 text-sm text-right font-semibold text-rose-700">−{peso.format(t.amount)}</td>
+                      <td className={`px-6 py-4 text-sm text-right font-semibold ${t.statusLC === "rejected" || t.statusLC === "cancelled" ? "text-gray-900" : "text-rose-700"}`}>
+                        {(t.statusLC === "rejected" || t.statusLC === "cancelled") ? peso.format(t.amount) : `−${peso.format(t.amount)}`}
+                      </td>
                       <td className="px-6 py-4 text-sm text-center">
                         {(() => {
                           const s = t.statusLC;
                           if (s === "success" || s === "approved" || s === "claimed" || s === "ready") return <Pill tone="green">{t.status}</Pill>;
-                          if (s === "preparing" || s === "pending") return <Pill tone="yellow">{t.status}</Pill>;
-                          if (s === "failed" || s === "rejected") return <Pill tone="red">{t.status}</Pill>;
+                          if (s === "preparing" || s === "pending" || s === "pending cancellation") return <Pill tone="yellow">{t.status}</Pill>;
+                          if (s === "failed" || s === "rejected" || s === "cancelled") return <Pill tone="red">{t.status}</Pill>;
                           if (s === "refunded") return <Pill tone="blue">{t.status}</Pill>;
                           return <Pill>{t.status}</Pill>;
                         })()}
+                        {t.statusLC === "pending" && (
+                          <div className="mt-2">
+                            <button
+                              onClick={() => openCancel(t)}
+                              className="text-xs px-3 py-1.5 border border-red-300 text-red-700 rounded-md hover:bg-red-50"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -1001,6 +1091,61 @@ export default function TxHistory() {
                 >
                   <X className="w-4 h-4" />
                   Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cancel modal */}
+      {cancelOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" aria-label="Cancel order">
+          <div className="max-w-lg w-full bg-white rounded-lg overflow-hidden shadow-lg">
+            <div className="p-4 border-b flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="text-lg font-semibold text-gray-900">Cancel Order</div>
+                <div className="text-xs text-gray-500 truncate">{cancelTarget?.id}</div>
+              </div>
+              <button
+                ref={cancelCloseRef}
+                onClick={() => {
+                  setCancelOpen(false);
+                  setCancelTarget(null);
+                  setCancelReason("");
+                }}
+                className="inline-flex items-center gap-2 px-3 py-2 border rounded"
+              >
+                <X className="w-4 h-4" />
+                Close
+              </button>
+            </div>
+
+            <div className="p-4">
+              <div className="text-sm text-gray-700 mb-2">Please tell us why you want to cancel.</div>
+              <textarea
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                rows={4}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Reason for cancellation"
+              />
+              <div className="mt-4 flex items-center justify-end gap-2">
+                <button
+                  onClick={() => {
+                    setCancelOpen(false);
+                    setCancelTarget(null);
+                    setCancelReason("");
+                  }}
+                  className="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={submitCancel}
+                  className="px-4 py-2 text-sm rounded-lg bg-red-600 text-white hover:bg-red-700"
+                >
+                  Confirm Cancel
                 </button>
               </div>
             </div>

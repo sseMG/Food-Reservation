@@ -437,10 +437,21 @@ const NotificationPreviewModal = ({ notification, onClose, onDelete, navigate })
                     </div>
                   )}
 
+                  {(notification.data.cancellationReason || notification.data.reason) && (
+                    <div className="pt-3 border-t">
+                      <div className="text-xs font-medium text-gray-500 uppercase mb-1">
+                        Cancellation Reason
+                      </div>
+                      <div className="bg-yellow-50 border border-yellow-200 rounded p-3 text-sm text-gray-900">
+                        {notification.data.cancellationReason || notification.data.reason}
+                      </div>
+                    </div>
+                  )}
+
                   {notification.data.slot && (
-                    <div className="bg-indigo-50 rounded-lg p-3 border border-indigo-200">
-                      <div className="text-xs font-medium text-indigo-700 uppercase mb-1 font-semibold">
-                        Slot
+                    <div className="pt-3 border-t">
+                      <div className="text-xs font-medium text-gray-500 uppercase mb-1">
+                        Pickup Time
                       </div>
                       <div className="font-medium text-indigo-900">
                         {(() => {

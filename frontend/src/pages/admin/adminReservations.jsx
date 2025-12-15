@@ -23,15 +23,17 @@ const peso = new Intl.NumberFormat("en-PH", {
 });
 
 // ---- helpers ---------------------------------------------------------------
-const CANON = ["Pending", "Approved", "Rejected", "Claimed"];
+const CANON = ["Pending", "Pending Cancellation", "Approved", "Rejected", "Cancelled", "Claimed"];
 
 function normalizeStatus(raw) {
   const s = String(raw || "").trim();
   if (!s) return "Pending";
   const lower = s.toLowerCase();
   if (["pending"].includes(lower)) return "Pending";
+  if (["pending cancellation", "pending_cancellation", "pending-cancellation", "cancellation pending", "cancellation_pending"].includes(lower)) return "Pending Cancellation";
   if (["approved", "approve"].includes(lower)) return "Approved";
-  if (["rejected", "declined", "cancelled"].includes(lower)) return "Rejected";
+  if (["rejected", "declined"].includes(lower)) return "Rejected";
+  if (["cancelled", "canceled", "cancel"].includes(lower)) return "Cancelled";
   if (["claimed", "pickedup", "picked_up", "picked-up"].includes(lower)) return "Claimed";
   return s;
 }
@@ -54,11 +56,13 @@ function prettyPickupWindow(v) {
   return String(v);
 }
 
-const Pill = ({ status }) => {
+function StatusPill({ status }) {
   const map = {
     Pending: "bg-amber-100 text-amber-700",
+    "Pending Cancellation": "bg-amber-100 text-amber-700",
     Approved: "bg-emerald-100 text-emerald-700",
     Rejected: "bg-rose-100 text-rose-700",
+    Cancelled: "bg-rose-100 text-rose-700",
     Claimed: "bg-gray-100 text-gray-700",
   };
   return (
@@ -470,6 +474,7 @@ export default function AdminReservations() {
           <div className="space-y-3">
             {filtered.map((r) => {
               const isPending = r.status === "Pending";
+              const isPendingCancellation = r.status === "Pending Cancellation";
               const isChecked = !!selected[r.id];
               const isExpanded = !!expandedCards[r.id];
 
@@ -494,7 +499,7 @@ export default function AdminReservations() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-xs sm:text-sm text-gray-500 font-mono">RES-{r.id}</span>
-                          <Pill status={r.status} />
+                          <StatusPill status={r.status} />
                         </div>
                         <div className="mt-1 text-sm sm:text-base text-gray-900 font-medium">
                           {r.student}
@@ -510,6 +515,12 @@ export default function AdminReservations() {
                         <div className="text-xs sm:text-sm text-gray-600 mt-1">
                           Pickup: {r.pickupDate ? fmtDate(r.pickupDate) : "—"} • {prettyPickupWindow(r.when) || "—"}
                         </div>
+
+                        {r.status === "Pending Cancellation" && (r.cancellationReason || r.cancelledReason) && (
+                          <div className="text-xs sm:text-sm text-rose-700 mt-2">
+                            <span className="font-semibold">Cancellation reason:</span> {String(r.cancellationReason || r.cancelledReason)}
+                          </div>
+                        )}
                         {r.status === "Claimed" && (r.claimedAt || r.pickedAt || r.picked_at || r.claimed_at) && (
                           <div className="text-xs text-gray-500 mt-1">
                             Claimed: {new Date(r.claimedAt || r.pickedAt || r.picked_at || r.claimed_at).toLocaleString()}
@@ -565,7 +576,34 @@ export default function AdminReservations() {
                     </div>
 
                     {/* Actions - only for Pending */}
-                    {isPending && (
+                    {isPendingCancellation ? (
+                      <div className="p-3 sm:p-4 bg-gray-50 border-t flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => updateStatus(r.id, "Cancelled")}
+                          disabled={busyId === r.id}
+                          className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs sm:text-sm bg-gray-900 text-white hover:bg-gray-800 disabled:opacity-60"
+                        >
+                          {busyId === r.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Check className="w-4 h-4" />
+                          )}
+                          Approve Cancellation
+                        </button>
+                        <button
+                          onClick={() => updateStatus(r.id, "Pending")}
+                          disabled={busyId === r.id}
+                          className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs sm:text-sm bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-60"
+                        >
+                          {busyId === r.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <X className="w-4 h-4" />
+                          )}
+                          Reject Cancellation
+                        </button>
+                      </div>
+                    ) : isPending ? (
                       <div className="p-3 sm:p-4 bg-gray-50 border-t flex items-center justify-end gap-2">
                         <button
                           onClick={() => updateStatus(r.id, "Approved")}
@@ -592,7 +630,7 @@ export default function AdminReservations() {
                           Reject
                         </button>
                       </div>
-                    )}
+                    ) : null}
                   </div>
                 </div>
               );

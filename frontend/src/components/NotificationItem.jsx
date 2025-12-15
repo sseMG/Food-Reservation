@@ -53,7 +53,7 @@ export default function NotificationItem({ notification, onClick, isAdminSide })
       const status = String(data.status).toLowerCase();
       if (status === 'approved') return 'success';
       if (status === 'rejected' || status === 'cancelled') return 'error';
-      if (status === 'pending') return 'warning';
+      if (status === 'pending' || status === 'pending cancellation') return 'warning';
     }
     return 'default';
   };
@@ -151,7 +151,7 @@ function getPreviewContent(notification, peso, notifType) {
     const statusLower = String(status).toLowerCase();
     if (statusLower === 'approved') return <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />;
     if (statusLower === 'rejected' || statusLower === 'cancelled') return <XCircle className="w-3 h-3 sm:w-4 sm:h-4" />;
-    if (statusLower === 'pending') return <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4" />;
+    if (statusLower === 'pending' || statusLower === 'pending cancellation') return <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4" />;
     return null;
   };
 
@@ -160,7 +160,7 @@ function getPreviewContent(notification, peso, notifType) {
     const statusLower = String(status).toLowerCase();
     if (statusLower === 'approved') return 'bg-green-50 border-green-200 text-green-700';
     if (statusLower === 'rejected' || statusLower === 'cancelled') return 'bg-red-50 border-red-200 text-red-700';
-    if (statusLower === 'pending') return 'bg-yellow-50 border-yellow-200 text-yellow-700';
+    if (statusLower === 'pending' || statusLower === 'pending cancellation') return 'bg-yellow-50 border-yellow-200 text-yellow-700';
     return 'bg-gray-50 border-gray-200 text-gray-700';
   };
 

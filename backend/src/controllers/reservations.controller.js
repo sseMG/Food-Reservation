@@ -225,6 +225,110 @@ exports.create = async (req, res) => {
 };
 
 /**
+ * PATCH /api/reservations/:id/cancel
+ * body: { reason }
+ *
+ * Allows the authenticated user to request cancellation of their own reservation when it's still Pending.
+ * Sets status to "Pending Cancellation" and stores the reason. Admin will approve/reject.
+ */
+exports.cancelMine = async (req, res) => {
+  try {
+    const uid = req.user?.id || req.user?._id;
+    const { id } = req.params || {};
+    const { reason } = req.body || {};
+
+    if (!uid) return res.status(401).json({ error: "Unauthorized" });
+    if (!id) return res.status(400).json({ error: "Missing id" });
+    if (!String(reason || "").trim()) return res.status(400).json({ error: "Missing reason" });
+
+    const reservationRepo = RepositoryFactory.getReservationRepository();
+
+    const row = await reservationRepo.findById(id);
+    if (!row) return res.status(404).json({ error: "Not found" });
+
+    // must be the owner
+    if (String(row.userId || "") !== String(uid)) {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+    const prev = row.status || "Pending";
+    if (prev !== "Pending") {
+      return res.status(400).json({ error: "Only pending orders can be cancelled" });
+    }
+
+    const updated = await reservationRepo.update(id, {
+      status: "Pending Cancellation",
+      cancelRequestedAt: new Date().toISOString(),
+      cancellationReason: String(reason || "").trim(),
+    });
+    if (!updated) return res.status(404).json({ error: "Not found" });
+
+    // notify admins
+    try {
+      const userRepo = RepositoryFactory.getUserRepository();
+      const user = uid ? await userRepo.findById(uid) : null;
+
+      Notifications.addNotification({
+        id: "notif_" + Date.now().toString(36),
+        for: "admin",
+        actor: user
+          ? {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              profilePictureUrl: user.profilePictureUrl,
+            }
+          : uid,
+        type: "reservation:cancel_requested",
+        title: `Cancellation requested for ${row.id}`,
+        body: `${user?.name || row.student || req.user?.email || uid} requested to cancel reservation ${row.id}`,
+        data: {
+          reservationid: row.id,
+          reservationId: row.id,
+          status: "Pending Cancellation",
+          reason: String(reason || "").trim(),
+          cancellationReason: String(reason || "").trim(),
+          items: row.items,
+          total: row.total,
+          note: row.note || "",
+          slot: row.when || row.slot || "",
+          pickupDate: row.pickupDate || "",
+          grade: row.grade || "",
+          section: row.section || "",
+          student: row.student || "",
+        },
+        read: false,
+        createdAt: new Date().toISOString(),
+      });
+    } catch (e) {
+      console.error("Notification publish failed", e && e.message);
+    }
+
+    // notify user
+    try {
+      Notifications.addNotification({
+        id: "notif_" + Date.now().toString(36),
+        for: row.userId,
+        actor: uid,
+        type: "reservation:status",
+        title: `Cancellation Requested for ${row.id}`,
+        body: `Your cancellation request for ${row.id} has been submitted.`,
+        data: { reservationId: row.id, status: "Pending Cancellation", reason: String(reason || "").trim() },
+        read: false,
+        createdAt: new Date().toISOString(),
+      });
+    } catch (e) {
+      console.error("Notification publish failed", e && e.message);
+    }
+
+    return res.json({ status: 200, data: { reservation: updated } });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Failed to cancel reservation" });
+  }
+};
+
+/**
  * GET /api/reservations/mine
  */
 exports.mine = async (req, res) => {
@@ -310,9 +414,7 @@ exports.setStatus = async (req, res) => {
     if (!id) return res.status(400).json({ error: "Missing id" });
     if (!status) return res.status(400).json({ error: "Missing status" });
 
-    // Normalize Cancelled -> Rejected
     let newStatus = status;
-    if (String(newStatus).toLowerCase() === "cancelled") newStatus = "Rejected";
 
     const reservationRepo = RepositoryFactory.getReservationRepository();
     const userRepo = RepositoryFactory.getUserRepository();
@@ -323,6 +425,91 @@ exports.setStatus = async (req, res) => {
     if (!row) return res.status(404).json({ error: "Not found" });
 
     const prev = row.status || "Pending";
+
+    // Cancellation request decisions (admin)
+    if (prev === "Pending Cancellation" && newStatus === "Pending") {
+      const updated = await reservationRepo.update(id, {
+        status: "Pending",
+        cancellationRejectedAt: new Date().toISOString(),
+      });
+      if (!updated) return res.status(404).json({ error: "Not found" });
+
+      try {
+        if (row.userId) {
+          Notifications.addNotification({
+            id: "notif_" + Date.now().toString(36),
+            for: row.userId,
+            actor: req.user && req.user.id,
+            type: "reservation:status",
+            title: `Cancellation Rejected for ${row.id}`,
+            body: `Your cancellation request for ${row.id} was rejected.`,
+            data: { reservationId: row.id, status: "Pending" },
+            read: false,
+            createdAt: new Date().toISOString(),
+          });
+        }
+      } catch (e) {
+        console.error("Notification publish failed", e && e.message);
+      }
+
+      return res.json({ status: 200, data: { reservation: updated } });
+    }
+
+    if (prev === "Pending Cancellation" && newStatus === "Cancelled") {
+      const total = Number(row.total || 0);
+      let refundTx = null;
+
+      if (!row.refunded && row.charged && total > 0) {
+        if (row.userId) {
+          await userRepo.incrementBalance(row.userId, total);
+        }
+
+        if (row.stockDeducted && row.items) {
+          for (const it of row.items) {
+            await menuRepo.incrementStock(it.id, it.qty);
+          }
+        }
+
+        refundTx = await transactionRepo.create({
+          userId: row.userId,
+          title: "Refund",
+          ref: row.id,
+          amount: total,
+          direction: "credit",
+          status: "Success",
+        });
+      }
+
+      const updated = await reservationRepo.update(id, {
+        status: "Cancelled",
+        cancelledAt: new Date().toISOString(),
+        cancelledReason: String(row.cancellationReason || row.cancelledReason || "").trim(),
+        refunded: refundTx ? true : row.refunded,
+        refundTransactionId: refundTx ? refundTx.id : row.refundTransactionId,
+        cancellationApprovedAt: new Date().toISOString(),
+      });
+      if (!updated) return res.status(404).json({ error: "Not found" });
+
+      try {
+        if (row.userId) {
+          Notifications.addNotification({
+            id: "notif_" + Date.now().toString(36),
+            for: row.userId,
+            actor: req.user && req.user.id,
+            type: "reservation:status",
+            title: `Reservation ${row.id} Cancelled`,
+            body: `Your reservation ${row.id} has been cancelled. Refund has been applied.`,
+            data: { reservationId: row.id, status: "Cancelled" },
+            read: false,
+            createdAt: new Date().toISOString(),
+          });
+        }
+      } catch (e) {
+        console.error("Notification publish failed", e && e.message);
+      }
+
+      return res.json({ status: 200, data: { reservation: updated, refundTransaction: refundTx } });
+    }
 
     // Approve flow
     if (newStatus === "Approved") {

@@ -63,6 +63,8 @@ router.post("/checkout", requireAuth, R.create);
 
 router.get("/date-restrictions", requireAuth, ReservationDateRestrictions.get);
 
+router.patch("/:id/cancel", requireAuth, R.cancelMine);
+
 /**
  * @swagger
  * /reservations/mine:
