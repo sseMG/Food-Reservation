@@ -26,6 +26,10 @@ exports.create = async (req, res) => {
     }
     if (!slot) {
       console.log('[RESERVATION] Create: missing pickup slot');
+      console.log('--------------------- temp logs -----------------')
+      console.log('req.body = ')
+      console.log(req.body)
+      console.log('--------------------- temp logs -----------------')
       return res.status(400).json({ error: "Missing pickup slot" });
     }
 
