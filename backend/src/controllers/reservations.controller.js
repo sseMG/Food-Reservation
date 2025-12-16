@@ -35,6 +35,10 @@ exports.create = async (req, res) => {
 
     if (!pickupDate) {
       console.log('[RESERVATION] Create: missing pickup date');
+      console.log('--------------------- temp logs for missing pickup date -----------------')
+      console.log('req.body = ')
+      console.log(req.body)
+      console.log('--------------------- temp logs for missing pickup date -----------------')
       return res.status(400).json({ error: "Missing pickup date" });
     }
 
