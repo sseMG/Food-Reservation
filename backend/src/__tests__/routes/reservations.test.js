@@ -19,10 +19,13 @@ describe('Reservation Routes', () => {
         .post('/api/reservations')
         .set(headers)
         .send({
-          items: [{ id: menuItem.id, qty: 2 }],
-          slot: '12:00 PM',
           grade: '12',
+          items: [{ id: menuItem.id, qty: 2 }],
+          note: 'example note',
+          pickupDate : "2025-12-25",
           section: 'A',
+          slot: '12:00 PM',
+          student: 'Sample Student Name'
         });
       
       expect(response.status).toBe(200);
@@ -59,10 +62,13 @@ describe('Reservation Routes', () => {
         .post('/api/reservations')
         .set(headers)
         .send({
-          items: [{ id: menuItem.id, qty: 2 }],
-          slot: '12:00 PM',
           grade: '12',
+          items: [{ id: menuItem.id, qty: 2 }],
+          note: 'example note',
+          pickupDate : "2025-12-25",
           section: 'A',
+          slot: '12:00 PM',
+          student: 'Sample Student Name'
         });
       
       expect(response.status).toBe(200);
