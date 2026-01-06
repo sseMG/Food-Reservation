@@ -12,6 +12,7 @@ export default function Button({
   fullWidth = false,
   className = "",
   children,
+  disabled,
   ...props
 }) {
   const base = "px-4 py-2 rounded-lg font-medium focus:outline-none";
@@ -21,14 +22,21 @@ export default function Button({
     ghost: "bg-transparent text-gray-800 hover:bg-gray-100"
   };
 
+  const disabledClasses = disabled ? "opacity-60 cursor-not-allowed pointer-events-none" : "";
+  const variantClasses = disabled
+    ? variants[variant].replace(/\s*hover:[^\s]+/g, "")
+    : variants[variant];
+
   return (
     <button
       className={clsx(
         base,
-        variants[variant],
+        variantClasses,
         fullWidth && "w-full",
+        disabledClasses,
         className
       )}
+      disabled={disabled}
       {...props}
     >
       {children}

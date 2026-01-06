@@ -22,16 +22,29 @@ export default function Register() {
     password: "",
     confirm: "",
     phone: "",
+    termsAccepted: false,
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
+
+  useEffect(() => {
+    if (!showTerms) return;
+
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [showTerms]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
     // For phone field, only allow digits and limit to 11 characters
     if (name === 'phone') {
       const digitsOnly = value.replace(/\D/g, '');
@@ -40,8 +53,14 @@ export default function Register() {
     } else {
       setForm((f) => ({ ...f, [name]: value }));
     }
-    
+
     if (errors[name]) setErrors((err) => ({ ...err, [name]: "" }));
+  };
+
+  const handleTermsChange = (e) => {
+    const checked = e.target.checked;
+    setForm((f) => ({ ...f, termsAccepted: checked }));
+    if (errors.termsAccepted) setErrors((err) => ({ ...err, termsAccepted: "" }));
   };
 
   const validate = () => {
@@ -61,6 +80,9 @@ export default function Register() {
     if (!form.confirm) errs.confirm = "Please confirm password";
     else if (form.confirm !== form.password)
       errs.confirm = "Passwords do not match";
+
+    if (!form.termsAccepted)
+      errs.termsAccepted = "You must read and agree to the terms and conditions.";
     return errs;
   };
 
@@ -291,7 +313,7 @@ export default function Register() {
                 name="phone"
                 value={form.phone}
                 onChange={handleChange}
-                placeholder="+63 912 345 6789"
+                placeholder="09000000000"
                 error={errors.phone}
               />
               <Input
@@ -356,11 +378,37 @@ export default function Register() {
                 </button>
               </div>
 
+              <div className="space-y-2">
+                <label className="flex items-start gap-3 text-sm text-jckl-slate select-none">
+                  <input
+                    type="checkbox"
+                    name="termsAccepted"
+                    checked={form.termsAccepted}
+                    onChange={handleTermsChange}
+                    className="mt-1 h-4 w-4 rounded border-gray-300 text-jckl-navy focus:ring-jckl-gold"
+                  />
+                  <span>
+                    Please mark this box if you’ve read and agreed to the{" "}
+                    <button
+                      type="button"
+                      onClick={() => setShowTerms(true)}
+                      className="text-jckl-navy hover:text-jckl-light-navy font-semibold underline"
+                    >
+                      terms and conditions
+                    </button>
+                    .
+                  </span>
+                </label>
+                {errors.termsAccepted ? (
+                  <p className="text-xs text-red-600">{errors.termsAccepted}</p>
+                ) : null}
+              </div>
+
               <Button
                 type="submit"
                 variant="primary"
                 fullWidth
-                disabled={isLoading}
+                disabled={isLoading || !form.termsAccepted}
                 className="bg-jckl-navy hover:bg-jckl-light-navy"
               >
                 {isLoading ? "Creating Account..." : "Create Account"}
@@ -409,9 +457,122 @@ export default function Register() {
       {/* FOOTER */}
       <footer className="py-6 sm:py-8 bg-jckl-navy text-center">
         <div className="text-jckl-cream text-xs sm:text-sm">
-          © 2025 JCKL Food Reservation System. All rights reserved.
+          &copy; 2025 JCKL Food Reservation System. All rights reserved.
         </div>
       </footer>
+
+      {showTerms ? (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setShowTerms(false)}
+        >
+          <div
+            className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl border-t-4 border-jckl-gold"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b">
+              <h2 className="text-lg sm:text-xl font-extrabold text-jckl-navy">
+                📄 Terms and Conditions
+              </h2>
+              <button
+                type="button"
+                onClick={() => setShowTerms(false)}
+                className="p-2 rounded-lg hover:bg-jckl-cream text-jckl-navy"
+                aria-label="Close terms and conditions"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="px-5 sm:px-6 py-5 max-h-[70vh] overflow-auto text-sm text-jckl-slate space-y-4">
+              <p>
+                By registering and using the <em>JCKL Food Reservation & Allowance System</em>, you
+                agree to the following terms and conditions:
+              </p>
+
+              <ol className="list-decimal pl-5 space-y-3">
+                <li>
+                  <div className="font-semibold text-jckl-navy">Account Responsibility</div>
+                  <div>
+                    Users are responsible for maintaining the confidentiality of their account
+                    information, including their username and password. Any activity performed using
+                    the account is the responsibility of the registered user.
+                  </div>
+                </li>
+                <li>
+                  <div className="font-semibold text-jckl-navy">Accurate Information</div>
+                  <div>
+                    Users must provide true, accurate, and complete information during registration.
+                    Providing false or misleading information may result in account suspension or
+                    termination.
+                  </div>
+                </li>
+                <li>
+                  <div className="font-semibold text-jckl-navy">Proper Use of the System</div>
+                  <div>
+                    The system must be used only for its intended purpose, which is food reservation
+                    and allowance management. Any misuse, abuse, or attempt to disrupt the system is
+                    strictly prohibited.
+                  </div>
+                </li>
+                <li>
+                  <div className="font-semibold text-jckl-navy">Reservations and Allowance</div>
+                  <div>
+                    All food reservations and allowance usage are subject to availability and system
+                    rules. The system administrator reserves the right to approve, modify, or cancel
+                    reservations when necessary.
+                  </div>
+                </li>
+                <li>
+                  <div className="font-semibold text-jckl-navy">Data Privacy</div>
+                  <div>
+                    The system collects personal information solely for system operations such as user
+                    identification and reservation processing. All user data will be handled with
+                    confidentiality and will not be shared without user consent, except when required
+                    by law.
+                  </div>
+                </li>
+                <li>
+                  <div className="font-semibold text-jckl-navy">System Availability</div>
+                  <div>
+                    The system may experience temporary downtime due to maintenance or technical
+                    issues. The developers are not responsible for any inconvenience caused by such
+                    interruptions.
+                  </div>
+                </li>
+                <li>
+                  <div className="font-semibold text-jckl-navy">Account Termination</div>
+                  <div>
+                    The administrator has the right to suspend or terminate user accounts that violate
+                    these terms and conditions or engage in improper system use.
+                  </div>
+                </li>
+                <li>
+                  <div className="font-semibold text-jckl-navy">Changes to Terms</div>
+                  <div>
+                    The system administrators may update these terms and conditions at any time.
+                    Continued use of the system after changes indicates acceptance of the updated
+                    terms.
+                  </div>
+                </li>
+              </ol>
+            </div>
+
+            <div className="px-5 sm:px-6 py-4 border-t flex justify-end">
+              <Button
+                type="button"
+                variant="primary"
+                className="bg-jckl-navy hover:bg-jckl-light-navy"
+                onClick={() => setShowTerms(false)}
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
