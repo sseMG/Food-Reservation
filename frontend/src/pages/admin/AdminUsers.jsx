@@ -248,10 +248,24 @@ export default function AdminUsers() {
   };
 
   const handlePhoneChange = (e) => {
-    const value = e.target.value;
-    // Only allow digits and limit to 11 characters
+    let value = e.target.value;
+    // Only allow digits
     const digitsOnly = value.replace(/\D/g, '');
-    const limited = digitsOnly.slice(0, 11);
+    
+    // Ensure it starts with '09' and limit to 11 characters
+    let formatted = digitsOnly;
+    if (formatted.length > 0 && !formatted.startsWith('09')) {
+      if (formatted.startsWith('9')) {
+        formatted = '0' + formatted;
+      } else if (formatted.startsWith('0') && !formatted.startsWith('09')) {
+        formatted = '09' + formatted.slice(1);
+      } else {
+        formatted = '09' + formatted;
+      }
+    }
+    
+    // Limit to 11 characters
+    const limited = formatted.slice(0, 11);
     setEditForm({...editForm, phone: limited});
   };
 

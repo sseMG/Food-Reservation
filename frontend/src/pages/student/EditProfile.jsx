@@ -144,10 +144,23 @@ export default function EditProfile() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     
-    // For phone field, only allow digits and limit to 11 characters
+    // For phone field, only allow digits and ensure it starts with '09'
     if (name === 'phone') {
       const digitsOnly = value.replace(/\D/g, '');
-      const limited = digitsOnly.slice(0, 11);
+      
+      // Ensure it starts with '09' and limit to 11 characters
+      let formatted = digitsOnly;
+      if (formatted.length > 0 && !formatted.startsWith('09')) {
+        if (formatted.startsWith('9')) {
+          formatted = '0' + formatted;
+        } else if (formatted.startsWith('0') && !formatted.startsWith('09')) {
+          formatted = '09' + formatted.slice(1);
+        } else {
+          formatted = '09' + formatted;
+        }
+      }
+      
+      const limited = formatted.slice(0, 11);
       setForm(prev => ({
         ...prev,
         [name]: limited

@@ -429,17 +429,8 @@ export default function Landing() {
                 key={p.title}
                 className={`group hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 motion-reduce:transition-none motion-reduce:hover:transform-none border-0 shadow-lg bg-gradient-to-br ${p.gradient} border-t-4 border-jckl-gold`}
               >
-                <div className="relative overflow-hidden rounded-2xl mb-6">
-                  <img
-                    src={p.img}
-                    alt={p.alt}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 motion-reduce:transition-none motion-reduce:hover:scale-100"
-                    loading="lazy"
-                    width={800}
-                    height={192}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" aria-hidden="true"></div>
-                  <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-sm font-medium ${p.tagClass}`}>
+                <div className="mb-6">
+                  <div className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${p.tagClass}`}>
                     {p.tag}
                   </div>
                 </div>
