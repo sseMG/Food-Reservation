@@ -398,7 +398,7 @@ export default function TopUpHistory() {
                         </div>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <div className="text-lg font-bold text-gray-900">{peso.format(r.amount)}</div>
+                        <div className={`text-lg font-bold ${(r.amount < 0) ? 'text-red-600' : 'text-green-600'}`}>{peso.format(r.amount)}</div>
                       </div>
                     </div>
 
@@ -441,6 +441,15 @@ export default function TopUpHistory() {
                       >
                         <Eye className="w-4 h-4" />
                         View Payment Proof
+                      </button>
+                    )}
+                    {!r.proofUrl && r.provider?.toLowerCase() === 'admin' && (
+                      <button
+                        onClick={() => openViewer(r)}
+                        className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 bg-jckl-cream text-jckl-navy rounded-lg text-sm font-medium hover:bg-jckl-gold"
+                      >
+                        <Eye className="w-4 h-4" />
+                        View
                       </button>
                     )}
                   </div>

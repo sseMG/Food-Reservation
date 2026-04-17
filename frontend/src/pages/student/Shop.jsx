@@ -312,6 +312,15 @@ export default function Shop({ publicView = false }) {
   const filterBarRef = useRef(null);
   const menuGridRef = useRef(null);
 
+  // Prevent body scroll when preview modal is open
+  useEffect(() => {
+    if (!preview) return;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [preview]);
+
   useEffect(() => {
     if (publicView) return;
     if (location?.pathname !== "/shop") return;

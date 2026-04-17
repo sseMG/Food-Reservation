@@ -235,7 +235,22 @@ function TopUpManager() {
   const handleMobileChange = (e) => {
     const value = e.target.value;
     // Only allow digits and limit to 11 characters
-    const digitsOnly = value.replace(/\D/g, '');
+    let digitsOnly = value.replace(/\D/g, '');
+    
+    // Ensure first two digits are "09" if there are at least 2 digits
+    if (digitsOnly.length >= 2 && !digitsOnly.startsWith('09')) {
+      // If user types something that doesn't start with 09, replace first digits with 09
+      if (digitsOnly.length === 2) {
+        digitsOnly = '09';
+      } else if (digitsOnly.length > 2) {
+        // Keep digits after the first two, but prepend with 09
+        digitsOnly = '09' + digitsOnly.slice(2);
+      }
+    } else if (digitsOnly.length === 1 && digitsOnly !== '0') {
+      // If single digit is not 0, make it 09
+      digitsOnly = '09';
+    }
+    
     const limited = digitsOnly.slice(0, 11);
     setMeta((m) => ({ ...m, [provider]: { ...m[provider], mobile: limited } }));
   };

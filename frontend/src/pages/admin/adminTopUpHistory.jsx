@@ -46,17 +46,12 @@ function StatusBadge({ status }) {
       class: "bg-blue-100 text-blue-700 border-blue-200",
       icon: <CheckCircle className="w-3 h-3" />
     },
-    "admin error": {
-      class: "bg-orange-100 text-orange-700 border-orange-200",
-      icon: <AlertCircle className="w-3 h-3" />
-    }
-  };
+      };
 
   const config = s.includes("approve") ? configs.approved :
                  s.includes("reject") ? configs.rejected :
                  s.includes("pending") ? configs.pending :
                  s.includes("in person") ? configs["in person transaction"] :
-                 s.includes("admin error") ? configs["admin error"] :
                  { class: "bg-slate-100 text-slate-700 border-slate-200", icon: null };
 
   return (
@@ -184,7 +179,7 @@ export default function AdminTopUpHistory() {
     for (const r of rawList) {
       if (r.status) s.add(String(r.status).toLowerCase());
     }
-    ["pending", "approved", "rejected", "in person transaction", "admin error"].forEach((st) => s.add(st));
+    ["pending", "approved", "rejected", "in person transaction"].forEach((st) => s.add(st));
     return ["all", ...Array.from(s).filter(Boolean)];
   }, [rawList]);
 
@@ -335,7 +330,6 @@ export default function AdminTopUpHistory() {
                 <option key={s} value={s}>
                   {s === "all" ? "All statuses" : 
                    s === "in person transaction" ? "In person transaction" :
-                   s === "admin error" ? "Admin Error" :
                    s.charAt(0).toUpperCase() + s.slice(1)}
                 </option>
               ))}
@@ -424,7 +418,7 @@ export default function AdminTopUpHistory() {
 
                   {/* Amount - Large */}
                   <div className="mb-3 pb-3 border-b">
-                    <div className="text-2xl font-bold text-jckl-navy">{peso.format(t.amount)}</div>
+                    <div className={`text-2xl font-bold ${(t.amount < 0) ? 'text-red-600' : 'text-green-600'}`}>{peso.format(t.amount)}</div>
                     <div className="flex items-center gap-1 text-xs text-jckl-slate mt-1">
                       <Calendar className="w-3 h-3" />
                       {shortDate(t.createdAt)}
@@ -583,7 +577,7 @@ export default function AdminTopUpHistory() {
               </div>
               <div className="text-right flex-shrink-0">
                 <div className="text-sm text-jckl-slate mb-1">Amount</div>
-                <div className="text-2xl font-bold text-jckl-navy">{peso.format(selected.amount)}</div>
+                <div className={`text-2xl font-bold ${(selected.amount < 0) ? 'text-red-600' : 'text-green-600'}`}>{peso.format(selected.amount)}</div>
                 <div className="mt-2">
                   <StatusBadge status={selected.status} />
                 </div>
