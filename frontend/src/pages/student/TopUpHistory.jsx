@@ -20,7 +20,8 @@ import {
   DollarSign,
   Calendar,
   CreditCard,
-  Image as ImageIcon
+  Image as ImageIcon,
+  FileText
 } from "lucide-react";
 
 const peso = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" });
@@ -110,7 +111,9 @@ export default function TopUpHistory() {
         status: t.status || "Pending",
         proofUrl: norm(t.proofUrl),
         reference: t.reference || t.ref || "",
-        rejectionReason: t.rejectionReason || ""
+        rejectionReason: t.rejectionReason || "",
+        oldBalance: t.oldBalance,
+        newBalance: t.newBalance
       }));
       setRows(mapped);
     } catch (e) {
@@ -307,6 +310,7 @@ export default function TopUpHistory() {
               <option value="Pending">Pending</option>
               <option value="Approved">Approved</option>
               <option value="Rejected">Rejected</option>
+              <option value="In person transaction">In person transaction</option>
             </select>
 
             <select
@@ -472,13 +476,22 @@ export default function TopUpHistory() {
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-600">{fmtDateTime(r.submittedAt)}</td>
                         <td className="px-6 py-4 text-sm text-gray-600 text-center uppercase">{r.provider}</td>
-                        <td className="px-6 py-4 text-sm font-semibold text-gray-900 text-center">{peso.format(r.amount)}</td>
+                        <td className={`px-6 py-4 text-sm font-semibold text-gray-900 text-center ${(r.amount < 0) ? 'text-red-600' : 'text-green-600'}`}>{peso.format(r.amount)}</td>
                         <td className="px-6 py-4 text-sm text-center">
                           {r.proofUrl ? (
                             <button
                               onClick={() => openViewer(r)}
                               className="inline-flex items-center gap-1 text-jckl-navy hover:text-jckl-light-navy font-medium"
                               title="View proof"
+                            >
+                              <Eye className="w-4 h-4" />
+                              View
+                            </button>
+                          ) : r.provider?.toLowerCase() === 'admin' ? (
+                            <button
+                              onClick={() => openViewer(r)}
+                              className="inline-flex items-center gap-1 text-jckl-navy hover:text-jckl-light-navy font-medium"
+                              title="View notes"
                             >
                               <Eye className="w-4 h-4" />
                               View
@@ -554,9 +567,9 @@ export default function TopUpHistory() {
               </button>
             </div>
 
-            {/* Image */}
+            {/* Content - Image or Notes */}
             <div className="flex-1 overflow-y-auto bg-gray-900 flex items-center justify-center p-4">
-              {viewer.src ? (
+              {viewer.src && viewer.details?.provider?.toLowerCase() !== 'admin' ? (
                 <img 
                   src={viewer.src} 
                   alt="Payment proof"
@@ -567,9 +580,30 @@ export default function TopUpHistory() {
                   }}
                 />
               ) : (
-                <div className="text-center text-gray-400">
-                  <ImageIcon className="w-16 h-16 mx-auto mb-3 opacity-50" />
-                  <p className="text-sm">No image available</p>
+                <div className="w-full max-w-md bg-white rounded-lg p-6 text-center">
+                  <FileText className="w-16 h-16 mx-auto mb-4 text-blue-600" />
+                  <h4 className="text-lg font-semibold text-gray-900 mb-3">Transaction Details</h4>
+                  <div className="space-y-3 text-left">
+                    <div>
+                      <div className="text-sm text-gray-600 mb-1">Note:</div>
+                      <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p className="text-sm text-blue-900">
+                          {viewer.details?.note && viewer.details.note.trim() !== ''
+                            ? viewer.details.note
+                            : `Balance adjusted from ${peso.format(viewer.details?.oldBalance || 0)} to ${peso.format(viewer.details?.newBalance || 0)}`
+                          }
+                        </p>
+                      </div>
+                    </div>
+                    {viewer.details?.oldBalance !== undefined && viewer.details?.newBalance !== undefined && (
+                      <div>
+                        <div className="text-sm text-gray-600 mb-1">Balance Change:</div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {peso.format(viewer.details.oldBalance)} <span className="text-gray-500">to</span> {peso.format(viewer.details.newBalance)}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

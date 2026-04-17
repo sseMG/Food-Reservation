@@ -630,7 +630,9 @@ export default function AdminTopUpHistory() {
                     }`}>
                       {selected.status?.toLowerCase() === "rejected"
                         ? (selected.rejectionReason || "No reason provided")
-                        : (selected.note || "—")}
+                        : selected.provider === 'Admin' && (!selected.note || selected.note.trim() === '')
+                          ? `Balance adjusted from ${peso.format(selected.oldBalance || 0)} to ${peso.format(selected.newBalance || 0)}`
+                          : (selected.note || "—")}
                     </div>
                   </div>
                 </div>
@@ -667,7 +669,9 @@ export default function AdminTopUpHistory() {
                     <div className="border rounded-lg p-12 text-center bg-white">
                       <ImageIcon className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                       <p className="text-sm text-jckl-slate">
-                        {selected.provider === 'Admin' ? 'No admin notes provided' : 'No proof image available'}
+                        {selected.provider === 'Admin' && (!selected.note || selected.note.trim() === '')
+                          ? `Balance adjusted from ${peso.format(selected.oldBalance || 0)} to ${peso.format(selected.newBalance || 0)}`
+                          : (selected.provider === 'Admin' ? 'No admin notes provided' : 'No proof image available')}
                       </p>
                     </div>
                   )}
