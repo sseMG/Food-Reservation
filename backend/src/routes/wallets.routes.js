@@ -114,4 +114,11 @@ router.post('/update-profile',
   W.updateProfile
 );
 
+// Admin: edit user balance with enhanced top-up history
+router.post('/users/:id/wallet/edit-balance',
+  requireAuth,
+  requireAdmin,
+  W.editBalance
+);
+
 module.exports = router;

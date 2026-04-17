@@ -2,6 +2,11 @@
 const RepositoryFactory = require('../repositories/repository.factory');
 const ImageUploadFactory = require('../repositories/image-upload/image-upload.factory');
 
+const peso = new Intl.NumberFormat("en-PH", {
+  style: "currency",
+  currency: "PHP",
+});
+
 function safeName(name = '') {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }
@@ -273,11 +278,41 @@ exports.setBalance = async (req, res) => {
         direction: difference >= 0 ? 'credit' : 'debit',
         status: 'Success',
         ref: `ADMIN_ADJ_${Date.now()}`,
-        note: `Balance adjusted from ${peso.format(oldBalance)} to ${peso.format(balanceNum)}`
+        reference: `ADMIN_ADJ_${Date.now()}`,
+        note: `Balance adjusted from ${peso.format(oldBalance)} to ${peso.format(balanceNum)} by admin`,
+        createdAt: new Date().toISOString()
       });
     } catch (err) {
       console.error('[WALLET] Failed to create transaction record:', err);
       // Continue - balance was updated
+    }
+
+    // Create top-up history entry for user visibility
+    if (difference !== 0) {
+      try {
+        const now = new Date().toISOString();
+        const status = transactionType || 'In person transaction';
+        
+        await topupRepo.create({
+          userId: userId,
+          student: user.name || '---',
+          contact: user.phone || '---',
+          email: user.email || '---',
+          provider: 'Admin',
+          amount: Math.abs(difference),
+          reference: `ADMIN_${Date.now()}`,
+          status: status,
+          note: note || `Balance adjusted from ${peso.format(oldBalance)} to ${peso.format(balanceNum)}`,
+          submittedAt: now,
+          createdAt: now,
+          credited: true,
+          creditedAt: now,
+          direction: difference >= 0 ? 'credit' : 'debit'
+        });
+      } catch (err) {
+        console.error('[WALLET] Failed to create top-up record:', err);
+        // Continue - balance was updated
+      }
     }
 
     res.json({
@@ -294,5 +329,110 @@ exports.setBalance = async (req, res) => {
   } catch (err) {
     console.error('[WALLET] setBalance error:', err);
     res.status(500).json({ error: 'Failed to set balance' });
+  }
+};
+
+// Admin: edit user balance with enhanced top-up history showing balance differences
+exports.editBalance = async (req, res) => {
+  try {
+    const userId = req.params.id || req.params.userId;
+    const { newBalance, transactionType, note } = req.body || {};
+
+    if (!userId) return res.status(400).json({ error: 'Missing user ID' });
+    if (newBalance === undefined || newBalance === null) {
+      return res.status(400).json({ error: 'Missing new balance' });
+    }
+
+    const balanceNum = parseFloat(newBalance);
+    if (isNaN(balanceNum) || balanceNum < 0) {
+      return res.status(400).json({ error: 'Invalid balance amount' });
+    }
+
+    const userRepo = RepositoryFactory.getUserRepository();
+    const transactionRepo = RepositoryFactory.getTransactionRepository();
+    const topupRepo = RepositoryFactory.getTopupRepository();
+
+    const user = await userRepo.findById(userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const oldBalance = Number(user.balance) || 0;
+    const difference = balanceNum - oldBalance;
+
+    // Update user balance
+    const updated = await userRepo.update(userId, {
+      balance: balanceNum
+    });
+
+    if (!updated) return res.status(500).json({ error: 'Failed to update balance' });
+
+    // Create transaction record for audit trail
+    try {
+      await transactionRepo.create({
+        userId: userId,
+        type: 'Admin Balance Adjustment',
+        amount: difference,
+        direction: difference >= 0 ? 'credit' : 'debit',
+        status: 'Success',
+        ref: `ADMIN_EDIT_${Date.now()}`,
+        reference: `ADMIN_EDIT_${Date.now()}`,
+        note: `Balance adjusted from ${peso.format(oldBalance)} to ${peso.format(balanceNum)} by admin`,
+        createdAt: new Date().toISOString()
+      });
+    } catch (err) {
+      console.error('[WALLET] Failed to create transaction record:', err);
+      // Continue - balance was updated
+    }
+
+    // Create enhanced top-up history entry for user visibility with balance difference details
+    if (difference !== 0) {
+      try {
+        const now = new Date().toISOString();
+        const status = transactionType || 'In person transaction';
+        
+        await topupRepo.create({
+          userId: userId,
+          student: user.name || '---',
+          contact: user.phone || '---',
+          email: user.email || '---',
+          provider: 'Admin',
+          amount: difference,
+          reference: `ADMIN_EDIT_${Date.now()}`,
+          status: status,
+          note: note || `Balance adjusted from ${peso.format(oldBalance)} to ${peso.format(balanceNum)}`,
+          submittedAt: now,
+          createdAt: now,
+          credited: true,
+          creditedAt: now,
+          direction: difference >= 0 ? 'credit' : 'debit',
+          oldBalance: oldBalance,
+          newBalance: balanceNum,
+          balanceDifference: difference
+        });
+      } catch (err) {
+        console.error('[WALLET] Failed to create top-up record:', err);
+        // Continue - balance was updated
+      }
+    }
+
+    res.json({
+      ok: true,
+      message: 'Balance updated successfully',
+      user: {
+        id: updated.id,
+        name: updated.name,
+        email: updated.email,
+        studentId: updated.studentId,
+        balance: updated.balance
+      },
+      balanceChange: {
+        oldBalance: oldBalance,
+        newBalance: balanceNum,
+        difference: difference,
+        direction: difference >= 0 ? 'credit' : 'debit'
+      }
+    });
+  } catch (err) {
+    console.error('[WALLET] editBalance error:', err);
+    res.status(500).json({ error: 'Failed to edit balance' });
   }
 };

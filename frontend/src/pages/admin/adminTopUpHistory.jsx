@@ -14,6 +14,7 @@ import {
   CheckCircle,
   Clock,
   XCircle,
+  AlertCircle,
   User,
   CreditCard,
   Phone,
@@ -40,12 +41,22 @@ function StatusBadge({ status }) {
     rejected: {
       class: "bg-rose-100 text-rose-700 border-rose-200",
       icon: <XCircle className="w-3 h-3" />
+    },
+    "in person transaction": {
+      class: "bg-blue-100 text-blue-700 border-blue-200",
+      icon: <CheckCircle className="w-3 h-3" />
+    },
+    "admin error": {
+      class: "bg-orange-100 text-orange-700 border-orange-200",
+      icon: <AlertCircle className="w-3 h-3" />
     }
   };
 
   const config = s.includes("approve") ? configs.approved :
                  s.includes("reject") ? configs.rejected :
                  s.includes("pending") ? configs.pending :
+                 s.includes("in person") ? configs["in person transaction"] :
+                 s.includes("admin error") ? configs["admin error"] :
                  { class: "bg-slate-100 text-slate-700 border-slate-200", icon: null };
 
   return (
@@ -173,7 +184,7 @@ export default function AdminTopUpHistory() {
     for (const r of rawList) {
       if (r.status) s.add(String(r.status).toLowerCase());
     }
-    ["pending", "approved", "rejected"].forEach((st) => s.add(st));
+    ["pending", "approved", "rejected", "in person transaction", "admin error"].forEach((st) => s.add(st));
     return ["all", ...Array.from(s).filter(Boolean)];
   }, [rawList]);
 
@@ -191,7 +202,6 @@ export default function AdminTopUpHistory() {
       if (tokens.length === 0) return true;
       const haystack = [
         String(r.name || "").toLowerCase(),
-        String(r.studentId || "").toLowerCase(),
         String(r.reference || "").toLowerCase(),
         String(r.contact || "").toLowerCase(),
         String(r.id || "").toLowerCase(),
@@ -299,7 +309,7 @@ export default function AdminTopUpHistory() {
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder="Search name, student ID, reference..."
+                placeholder="Search name, reference..."
                 className="w-full border border-jckl-gold rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
               />
             </div>
@@ -323,7 +333,10 @@ export default function AdminTopUpHistory() {
             >
               {statusOptions.map((s) => (
                 <option key={s} value={s}>
-                  {s === "all" ? "All statuses" : s.charAt(0).toUpperCase() + s.slice(1)}
+                  {s === "all" ? "All statuses" : 
+                   s === "in person transaction" ? "In person transaction" :
+                   s === "admin error" ? "Admin Error" :
+                   s.charAt(0).toUpperCase() + s.slice(1)}
                 </option>
               ))}
             </select>
@@ -405,7 +418,6 @@ export default function AdminTopUpHistory() {
                         <User className="w-4 h-4 text-jckl-slate" />
                         <span className="font-semibold text-jckl-navy truncate">{t.name}</span>
                       </div>
-                      <div className="text-xs text-jckl-slate font-mono">{t.studentId}</div>
                     </div>
                     <StatusBadge status={t.status} />
                   </div>
@@ -512,7 +524,25 @@ export default function AdminTopUpHistory() {
                             </button>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-right text-sm font-semibold text-jckl-navy">{peso.format(t.amount)}</td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            {t.provider === 'Admin' && (
+                              <span className={`text-xs font-medium ${
+                                t.direction === 'debit' ? 'text-red-600' : 'text-green-600'
+                              }`}>
+                                {t.direction === 'debit' ? '-' : '+'}
+                              </span>
+                            )}
+                            <span className={`text-sm font-semibold ${(t.amount < 0) ? 'text-red-600' : 'text-green-600'}`}>{peso.format(t.amount)}</span>
+                            {t.provider === 'Admin' && t.balanceDifference !== undefined && (
+                              <div className="text-xs text-jckl-slate mt-1">
+                                {t.oldBalance !== undefined && t.newBalance !== undefined && (
+                                  <span>{peso.format(t.oldBalance)} → {peso.format(t.newBalance)}</span>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </td>
                         <td className="px-6 py-4 text-center">
                           <StatusBadge status={t.status} />
                         </td>
@@ -546,7 +576,6 @@ export default function AdminTopUpHistory() {
                   <User className="w-5 h-5 text-jckl-slate" />
                   <span className="text-lg font-semibold text-jckl-navy">{selected.name}</span>
                 </div>
-                <div className="text-sm text-jckl-slate font-mono">{selected.studentId}</div>
                 <div className="flex items-center gap-1 text-xs text-jckl-slate mt-1">
                   <Calendar className="w-3 h-3" />
                   {shortDate(selected.createdAt)}
@@ -610,9 +639,19 @@ export default function AdminTopUpHistory() {
                 <div>
                   <div className="flex items-center gap-2 text-sm text-jckl-slate mb-2">
                     <ImageIcon className="w-4 h-4" />
-                    Payment Proof
+                    {selected.provider === 'Admin' ? 'Admin Notes' : 'Payment Proof'}
                   </div>
-                  {selected.proofUrl ? (
+                  {selected.provider === 'Admin' && selected.note ? (
+                    <div className="border rounded-lg p-4 bg-blue-50 border-blue-200">
+                      <div className="flex items-start gap-2">
+                        <FileText className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <p className="text-sm text-blue-900 whitespace-pre-wrap">{selected.note}</p>
+                          <p className="text-xs text-blue-600 mt-2">Admin balance adjustment</p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : selected.proofUrl ? (
                     <div className="border rounded-lg overflow-hidden bg-gray-900 p-4">
                       <img 
                         src={selected.proofUrl} 
@@ -627,7 +666,9 @@ export default function AdminTopUpHistory() {
                   ) : (
                     <div className="border rounded-lg p-12 text-center bg-white">
                       <ImageIcon className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                      <p className="text-sm text-jckl-slate">No proof image available</p>
+                      <p className="text-sm text-jckl-slate">
+                        {selected.provider === 'Admin' ? 'No admin notes provided' : 'No proof image available'}
+                      </p>
                     </div>
                   )}
                 </div>

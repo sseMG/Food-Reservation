@@ -93,6 +93,8 @@ export default function AdminUsers() {
   const [balancePasswordVerified, setBalancePasswordVerified] = useState(false);
   const [newBalance, setNewBalance] = useState('');
   const [balanceUpdateLoading, setBalanceUpdateLoading] = useState(false);
+  const [balanceTransactionType, setBalanceTransactionType] = useState('In person transaction');
+  const [balanceNote, setBalanceNote] = useState('');
 
   const load = async () => {
     setLoading(true);
@@ -474,9 +476,11 @@ export default function AdminUsers() {
 
     setBalanceUpdateLoading(true);
     try {
-      // Update user balance through wallet endpoint
-      await api.post(`/admin/users/${balanceEditUser.id}/wallet/set-balance`, {
-        newBalance: newBalanceNum
+      // Update user balance through enhanced edit-balance endpoint
+      await api.post(`/admin/users/${balanceEditUser.id}/wallet/edit-balance`, {
+        newBalance: newBalanceNum,
+        transactionType: balanceTransactionType,
+        note: balanceNote
       });
 
       // Update local state
@@ -505,6 +509,8 @@ export default function AdminUsers() {
     setNewBalance('');
     setBalanceLoginError('');
     setBalancePasswordVerified(false);
+    setBalanceTransactionType('In person transaction');
+    setBalanceNote('');
   };
 
   return (
