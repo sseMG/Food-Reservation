@@ -482,7 +482,6 @@ export default function AdminTopUpHistory() {
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-slate uppercase">Date</th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-slate uppercase">User</th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-slate uppercase">Student ID</th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-slate uppercase">Contact</th>
                       <th className="px-6 py-3 text-center text-xs font-semibold text-jckl-slate uppercase">Provider</th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-slate uppercase">Reference</th>
@@ -499,7 +498,6 @@ export default function AdminTopUpHistory() {
                           <div className="text-xs text-jckl-slate">{new Date(t.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
                         </td>
                         <td className="px-6 py-4 text-sm font-medium text-jckl-navy">{t.name}</td>
-                        <td className="px-6 py-4 text-sm text-jckl-slate font-mono">{t.studentId}</td>
                         <td className="px-6 py-4 text-sm text-jckl-slate">{t.contact}</td>
                         <td className="px-6 py-4 text-center text-sm text-jckl-slate uppercase font-medium">{t.provider || "—"}</td>
                         <td className="px-6 py-4">
