@@ -958,25 +958,14 @@ export default function Shop({ publicView = false }) {
                             Preview <ChevronRight className="w-3 h-3" />
                           </button>
                         ) : (
-                          <>
-                            <div className="inline-flex items-center border rounded-lg">
-                              <button 
-                                onClick={() => inc(it.id)} 
-                                className="px-2 py-1.5 hover:bg-jckl-cream transition disabled:opacity-50 text-jckl-navy" 
-                                disabled={soldOut}
-                              >
-                                <Plus className="w-4 h-4" />
-                              </button>
-                            </div>
-                            <button
-                              onClick={() => inc(it.id)}
-                              disabled={soldOut}
-                              className="inline-flex items-center gap-2 bg-jckl-navy text-white px-3 py-2 rounded-lg hover:bg-jckl-light-navy disabled:opacity-60 font-medium text-sm"
-                            >
-                              <ShoppingCart className="w-4 h-4" />
-                              Add
-                            </button>
-                          </>
+                          <button
+                            onClick={() => inc(it.id)}
+                            disabled={soldOut}
+                            className="inline-flex items-center gap-2 bg-jckl-navy text-white px-3 py-2 rounded-lg hover:bg-jckl-light-navy disabled:opacity-60 font-medium text-sm"
+                          >
+                            <ShoppingCart className="w-4 h-4" />
+                            Add
+                          </button>
                         )}
                       </div>
                     </div>

@@ -465,7 +465,7 @@ export default function TopUp() {
                 <img
                   src={qr[provider]}
                   alt={`${provider} qr`}
-                  className="w-48 h-48 sm:w-56 sm:h-56 object-contain rounded"
+                  className="w-full max-w-[240px] h-auto object-contain rounded-xl mx-auto shadow-lg"
                   onError={(e) => {
                     e.currentTarget.onerror = null;
                     e.currentTarget.src = "";
@@ -526,7 +526,7 @@ export default function TopUp() {
               {/* Student ID & contact */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Number Used for top-up</label>
                   <input
                     value={contact}
                     onChange={handleContactChange}

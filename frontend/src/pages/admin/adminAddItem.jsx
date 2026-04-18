@@ -79,7 +79,6 @@ export default function AdminAddItem() {
     price: "",
     stock: "",
     category: categoryParam || "Meals",
-    isActive: true,
   });
 
   const [imagePreview, setImagePreview] = useState(null);
@@ -171,7 +170,6 @@ export default function AdminAddItem() {
       fd.append("category", form.category);
       fd.append("price", String(Number(form.price)));
       fd.append("stock", String(form.stock === "" ? 0 : Number(form.stock)));
-      fd.append("isActive", form.isActive ? "true" : "false");
 
       if (imageFile) {
         fd.append("image", imageFile, imageFile.name);
@@ -188,7 +186,6 @@ export default function AdminAddItem() {
           price: "",
           stock: "",
           category: categoryParam || "Meals",
-          isActive: true,
         });
         removeImage();
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -420,21 +417,6 @@ export default function AdminAddItem() {
               <p className="text-xs text-gray-500 mt-1">Fixed category for this add page</p>
             </div>
 
-            <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
-              <input
-                id="isActive"
-                type="checkbox"
-                checked={form.isActive}
-                onChange={(e) => setField("isActive", e.target.checked)}
-                className="mt-0.5 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <label htmlFor="isActive" className="flex-1 cursor-pointer">
-                <div className="text-sm font-medium text-gray-900">Mark as active</div>
-                <div className="text-xs text-gray-500 mt-0.5">
-                  Active items will be visible to customers in the menu
-                </div>
-              </label>
-            </div>
           </div>
 
           <div className="border-t border-gray-200 p-4 sm:p-6 bg-gray-50 space-y-3">
