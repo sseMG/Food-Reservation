@@ -3,6 +3,7 @@ import { api } from "../../lib/api";
 import React, { useEffect, useMemo, useState } from "react";
 import { useCart } from "../../contexts/CartContext";
 import { useModal } from "../../contexts/ModalContext";
+import { useReservation } from "../../contexts/ReservationContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import { refreshSessionForProtected } from "../../lib/auth";
 import { getUserFromStorage, setUserToStorage } from "../../lib/storage";
@@ -107,6 +108,7 @@ const getPickupTimes = (grade) => {
 export default function Cart() {
   const navigate = useNavigate();
   const { showAlert, showConfirm } = useModal();
+  const { reservation, setReservationDetails } = useReservation();
   useEffect(() => {
     (async () => {
       await refreshSessionForProtected({ navigate, requiredRole: 'student' });
@@ -306,7 +308,16 @@ export default function Cart() {
   const syncRemove = (itemId) => removeLine(itemId);
   const syncClear = () => clearCart();
 
-  const openReserve = () => setOpen(true);
+  const openReserve = () => {
+    setReserve((r) => ({
+      ...r,
+      grade: reservation.grade || r.grade,
+      section: reservation.section || r.section,
+      pickupDate: reservation.pickupDate || r.pickupDate,
+      slot: reservation.slot || r.slot,
+    }));
+    setOpen(true);
+  };
   const closeReserve = () => setOpen(false);
 
   // Prevent body scroll when modal is open
@@ -634,7 +645,10 @@ export default function Cart() {
                           <div className="relative">
                             <select
                               value={reserve.grade}
-                              onChange={(e) => setReserve((r) => ({ ...r, grade: e.target.value }))}
+                              onChange={(e) => {
+                              setReserve((r) => ({ ...r, grade: e.target.value }));
+                              setReservationDetails({ ...reservation, grade: e.target.value });
+                            }}
                               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
                             >
                               <option value="" disabled={!!reserve.grade}>Select grade level</option>
@@ -661,7 +675,10 @@ export default function Cart() {
                           </label>
                           <input
                             value={reserve.section}
-                            onChange={(e) => setReserve((r) => ({ ...r, section: e.target.value }))}
+                            onChange={(e) => {
+                              setReserve((r) => ({ ...r, section: e.target.value }));
+                              setReservationDetails({ ...reservation, section: e.target.value });
+                            }}
                             placeholder="e.g., A / Rizal"
                             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                           />
@@ -674,7 +691,10 @@ export default function Cart() {
                         </label>
                         <RestrictedDateCalendar
                           value={reserve.pickupDate}
-                          onChange={(next) => setReserve((r) => ({ ...r, pickupDate: next }))}
+                          onChange={(next) => {
+                            setReserve((r) => ({ ...r, pickupDate: next }));
+                            setReservationDetails({ ...reservation, pickupDate: next });
+                          }}
                           min={getMinDate()}
                           rules={dateRestrictions}
                         />
@@ -705,9 +725,10 @@ export default function Cart() {
                                     type="radio"
                                     name="pickup-slot"
                                     checked={reserve.slot === s.id}
-                                    onChange={() =>
-                                      setReserve((r) => ({ ...r, slot: s.id }))
-                                    }
+                                    onChange={() => {
+                                      setReserve((r) => ({ ...r, slot: s.id }));
+                                      setReservationDetails({ ...reservation, slot: s.id });
+                                    }}
                                   />
                                   <div className="flex flex-col">
                                     <span className="text-sm font-medium">{s.label}</span>
@@ -718,6 +739,15 @@ export default function Cart() {
                             })}
                           </div>
                         )}
+
+                        <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                          <div className="flex items-start gap-2">
+                            <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                            <p className="text-xs text-amber-800">
+                              If selected Pickup Window and Date of reservation is modified, unavailable items will be removed from cart.
+                            </p>
+                          </div>
+                        </div>
                       </div>
 
                       <div>

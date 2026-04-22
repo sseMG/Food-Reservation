@@ -11,6 +11,7 @@ import { api } from "../../lib/api";
 import { getCategoryEmoji } from '../../lib/categories';
 import { useCart } from "../../contexts/CartContext";
 import { useModal } from "../../contexts/ModalContext";
+import { useReservation } from "../../contexts/ReservationContext";
 import { getUserFromStorage, setUserToStorage } from "../../lib/storage";
 
 import {
@@ -171,7 +172,7 @@ function Toast({ message, visible, onClose }) {
   );
 }
 
-function EmptyCartSuggestions({ items, onAdd, categoriesMap = {} }) {
+function EmptyCartSuggestions({ items, onAdd, categoriesMap = {}, show = true }) {
   const popularItems = useMemo(() => {
     return items
       .filter(i => i.stock > 0)
@@ -179,7 +180,7 @@ function EmptyCartSuggestions({ items, onAdd, categoriesMap = {} }) {
       .slice(0, 3);
   }, [items]);
 
-  if (popularItems.length === 0) return null;
+  if (popularItems.length === 0 || !show) return null;
 
   return (
     <div className="py-4 space-y-3">
@@ -257,6 +258,7 @@ export default function Shop({ publicView = false }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { showAlert, showConfirm } = useModal();
+  const { reservation, setReservationDetails } = useReservation();
   const [searchParams] = useSearchParams();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -609,7 +611,16 @@ export default function Shop({ publicView = false }) {
   };
 
   const goCart = () => navigate("/cart");
-  const openReserve = () => setOpen(true);
+  const openReserve = () => {
+    setReserve((r) => ({
+      ...r,
+      grade: reservation.grade || r.grade,
+      section: reservation.section || r.section,
+      pickupDate: reservation.pickupDate || r.pickupDate,
+      slot: reservation.slot || r.slot,
+    }));
+    setOpen(true);
+  };
   const closeReserve = () => setOpen(false);
 
   const openPreviewModal = (item) => {
@@ -770,6 +781,95 @@ export default function Shop({ publicView = false }) {
           </div>
         )}
 
+        {!publicView && (
+          <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-4 bg-gradient-to-r from-jckl-cream to-white border-y border-jckl-gold">
+            <div className="text-sm font-semibold text-jckl-navy mb-3 flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              Pickup Details
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-jckl-navy mb-1">Grade Level</label>
+                <select
+                  value={reservation.grade}
+                  onChange={(e) => setReservationDetails({ ...reservation, grade: e.target.value })}
+                  className="w-full border border-jckl-gold rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold bg-white"
+                >
+                  <option value="">Select grade</option>
+                  {[...Array(11)].map((_, i) => (
+                    <option key={i} value={`G${i + 2}`}>G{i + 2}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-jckl-navy mb-1">Section</label>
+                <input
+                  value={reservation.section}
+                  onChange={(e) => setReservationDetails({ ...reservation, section: e.target.value })}
+                  placeholder="e.g., A"
+                  className="w-full border border-jckl-gold rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold bg-white"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-jckl-navy mb-1">Pickup Date</label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const input = document.querySelector('input[name="pickup-date-hidden"]');
+                    if (input) input.showPicker ? input.showPicker() : input.click();
+                  }}
+                  className="w-full border border-jckl-gold rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold bg-white text-left hover:bg-jckl-cream transition"
+                >
+                  {reservation.pickupDate || "Select date"}
+                </button>
+                <input
+                  type="date"
+                  name="pickup-date-hidden"
+                  value={reservation.pickupDate}
+                  onChange={(e) => setReservationDetails({ ...reservation, pickupDate: e.target.value })}
+                  min={getMinDate()}
+                  className="sr-only"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-jckl-navy mb-1">Pickup Window</label>
+                {!reservation.grade ? (
+                  <div className="p-2 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800">
+                    Select grade first
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-3 gap-1">
+                    {SLOTS.map((s) => {
+                      const times = getPickupTimes(reservation.grade);
+                      const timeStr = times[s.id] || s.label;
+                      return (
+                        <label
+                          key={s.id}
+                          className={`flex flex-col items-center gap-1 p-2 rounded-lg border text-xs cursor-pointer transition ${
+                            reservation.slot === s.id
+                              ? "bg-jckl-navy text-white border-jckl-navy"
+                              : "bg-white text-jckl-navy border-jckl-gold hover:bg-jckl-cream"
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="pickup-slot"
+                            checked={reservation.slot === s.id}
+                            onChange={() => setReservationDetails({ ...reservation, slot: s.id })}
+                            className="sr-only"
+                          />
+                          <span className="font-medium">{s.label}</span>
+                          <span className="text-[10px] opacity-80">{timeStr}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         <div 
           ref={filterBarRef}
           className={`sticky top-14 sm:top-16 z-30 transition-all duration-300 ${
@@ -869,7 +969,18 @@ export default function Shop({ publicView = false }) {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <section className="lg:col-span-2 space-y-6">
-            <div ref={menuGridRef} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {!publicView && (!reservation.pickupDate || !reservation.slot) ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                <div className="col-span-full bg-white rounded-lg border-t-4 border-jckl-gold p-10 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-50 flex items-center justify-center text-amber-600">
+                    <Clock className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-jckl-navy mb-2">Fill-up Pickup Details above first to view Available Items</h3>
+                  <p className="text-sm text-jckl-slate">Please select your pickup date and pickup window from the section above to browse the menu.</p>
+                </div>
+              </div>
+            ) : (
+              <div ref={menuGridRef} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {loading ? (
                 Array.from({ length: 6 }).map((_, i) => (
                   <div
@@ -973,6 +1084,7 @@ export default function Shop({ publicView = false }) {
                 })
               )}
             </div>
+            )}
 
             {!publicView && recentlyViewedItems.length > 0 && (
               <div className="bg-white rounded-lg shadow-sm border-t-4 border-jckl-gold p-4">
@@ -1039,7 +1151,7 @@ export default function Shop({ publicView = false }) {
                       <ShoppingCart className="w-8 h-8 text-gray-400" />
                     </div>
                     <div className="text-sm text-jckl-slate">Your cart is empty.</div>
-                    <EmptyCartSuggestions items={items} onAdd={(id) => inc(id)} categoriesMap={categoriesMap} />
+                    <EmptyCartSuggestions items={items} onAdd={(id) => inc(id)} categoriesMap={categoriesMap} show={!!reservation.pickupDate && !!reservation.slot} />
                   </div>
                 ) : (
                   list.map((it) => (
@@ -1263,7 +1375,10 @@ export default function Shop({ publicView = false }) {
                           <label className="block text-sm font-medium text-jckl-navy mb-1">Grade Level</label>
                           <select
                             value={reserve.grade}
-                            onChange={(e) => setReserve((r) => ({ ...r, grade: e.target.value }))}
+                            onChange={(e) => {
+                            setReserve((r) => ({ ...r, grade: e.target.value }));
+                            setReservationDetails({ ...reservation, grade: e.target.value });
+                          }}
                             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
                           >
                             <option value="" disabled={!!reserve.grade}>Select grade level</option>
@@ -1276,7 +1391,10 @@ export default function Shop({ publicView = false }) {
                           <label className="block text-sm font-medium text-jckl-navy mb-1">Section</label>
                           <input
                             value={reserve.section}
-                            onChange={(e) => setReserve((r) => ({ ...r, section: e.target.value }))}
+                            onChange={(e) => {
+                            setReserve((r) => ({ ...r, section: e.target.value }));
+                            setReservationDetails({ ...reservation, section: e.target.value });
+                          }}
                             placeholder="e.g., A"
                             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
                           />
@@ -1287,7 +1405,10 @@ export default function Shop({ publicView = false }) {
                         <label className="block text-sm font-medium text-jckl-navy mb-1">Pickup Date</label>
                         <RestrictedDateCalendar
                           value={reserve.pickupDate}
-                          onChange={(next) => setReserve((r) => ({ ...r, pickupDate: next }))}
+                          onChange={(next) => {
+                            setReserve((r) => ({ ...r, pickupDate: next }));
+                            setReservationDetails({ ...reservation, pickupDate: next });
+                          }}
                           min={getMinDate()}
                           rules={dateRestrictions}
                         />
@@ -1316,7 +1437,10 @@ export default function Shop({ publicView = false }) {
                                     type="radio"
                                     name="slot"
                                     checked={reserve.slot === s.id}
-                                    onChange={() => setReserve((r) => ({ ...r, slot: s.id }))}
+                                    onChange={() => {
+                                      setReserve((r) => ({ ...r, slot: s.id }));
+                                      setReservationDetails({ ...reservation, slot: s.id });
+                                    }}
                                   />
                                   <div className="flex flex-col">
                                     <span className="text-sm font-medium">{s.label}</span>
@@ -1328,6 +1452,14 @@ export default function Shop({ publicView = false }) {
                           </div>
                         )}
                       </div>
+                        <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                          <div className="flex items-start gap-2">
+                            <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                            <p className="text-xs text-amber-800">
+                              If selected Pickup Window and Date of reservation is modified, unavailable items will be removed from cart.
+                            </p>
+                          </div>
+                        </div>
 
                       <div>
                         <label className="block text-sm font-medium text-jckl-navy mb-1">Note (optional)</label>

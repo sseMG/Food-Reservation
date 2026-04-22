@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { CartProvider } from "./contexts/CartContext";
 import { ModalProvider } from "./contexts/ModalContext";
+import { ReservationProvider } from "./contexts/ReservationContext";
 
 // Suppress ResizeObserver loop error (non-critical browser notification issue)
 const errorHandler = window.addEventListener('error', (event) => {
@@ -39,10 +40,12 @@ root.render(
     <QueryClientProvider client={queryClient}>
       <ModalProvider>
         <CartProvider>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-          <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
+          <ReservationProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+            <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
+          </ReservationProvider>
         </CartProvider>
       </ModalProvider>
     </QueryClientProvider>
