@@ -462,13 +462,23 @@ export default function Cart() {
       const unavailableItems = checkUnavailableItems(newReservation.pickupDate, newReservation.slot);
       
       if (unavailableItems.length > 0) {
+        // Close popup temporarily to show warning, then reopen if user cancels
+        const wasPopupOpen = open;
+        if (wasPopupOpen) {
+          setOpen(false);
+        }
+        
         const confirmed = await showConfirm(
           `If pickup details are updated, ${unavailableItems.length} item(s) that are not available in the pickup window and date will be removed from the cart. Continue?`,
           "Update Pickup Details"
         );
         
         if (!confirmed) {
-          return; // User cancelled, don't change pickup details
+          // User cancelled - reopen popup if it was open, but DON'T apply the changes
+          if (wasPopupOpen) {
+            setOpen(true);
+          }
+          return;
         }
         
         // Remove unavailable items from cart
@@ -478,10 +488,15 @@ export default function Cart() {
         
         // Show toast notification (Cart.jsx doesn't have showToast, so we'll use alert)
         alert(`${unavailableItems.length} item(s) removed from cart due to availability`);
+        
+        // Reopen popup after successful change
+        if (wasPopupOpen) {
+          setOpen(true);
+        }
       }
     }
     
-    // Apply the change
+    // Apply the change ONLY after confirmation or if no warning needed
     setReservationDetails(newReservation);
   };
 
@@ -745,9 +760,56 @@ export default function Cart() {
                         </label>
                         <RestrictedDateCalendar
                           value={reserve.pickupDate}
-                          onChange={(next) => {
+                          onChange={async (next) => {
+                            // Don't update local state immediately, only check if warning needed
+                            const newReservation = { ...reservation, pickupDate: next };
+                            const hasPickupDetails = newReservation.pickupDate && reservation.slot;
+                            
+                            if (hasPickupDetails && Object.keys(cart).length > 0) {
+                              const pickupDate = new Date(newReservation.pickupDate);
+                              const pickupDay = pickupDate.getDay();
+                              
+                              const unavailableItems = list.filter((item) => {
+                                const availableDays = item.availableDays || [];
+                                const dayMatch = availableDays.length === 0 || availableDays.includes(pickupDay);
+                                const availableSlots = item.availableSlots || [];
+                                const slotMatch = availableSlots.length === 0 || availableSlots.includes(reservation.slot);
+                                return !dayMatch || !slotMatch;
+                              });
+                              
+                              if (unavailableItems.length > 0) {
+                                // Close popup temporarily to show warning
+                                setOpen(false);
+                                
+                                const confirmed = await showConfirm(
+                                  `If pickup details are updated, ${unavailableItems.length} item(s) that are not available in the pickup window and date will be removed from the cart. Continue?`,
+                                  "Update Pickup Details"
+                                );
+                                
+                                if (confirmed) {
+                                  // User confirmed - update both local and global state
+                                  setReserve((r) => ({ ...r, pickupDate: next }));
+                                  setReservationDetails(newReservation);
+                                  
+                                  // Remove unavailable items from cart
+                                  unavailableItems.forEach(item => {
+                                    remove(item.id);
+                                  });
+                                  
+                                  alert(`${unavailableItems.length} item(s) removed from cart due to availability`);
+                                  // Don't reopen popup - user can continue with reservation process
+                                  return;
+                                } else {
+                                  // User cancelled - reopen popup with original values
+                                  setOpen(true);
+                                  return;
+                                }
+                              }
+                            }
+                            
+                            // No warning needed or no cart items - update both states
                             setReserve((r) => ({ ...r, pickupDate: next }));
-                            handlePickupChange('pickupDate', next);
+                            setReservationDetails(newReservation);
                           }}
                           min={getMinDate()}
                           rules={dateRestrictions}
@@ -779,9 +841,56 @@ export default function Cart() {
                                     type="radio"
                                     name="pickup-slot"
                                     checked={reserve.slot === s.id}
-                                    onChange={() => {
+                                    onChange={async () => {
+                                      // Don't update local state immediately, only check if warning needed
+                                      const newReservation = { ...reservation, slot: s.id };
+                                      const hasPickupDetails = reservation.pickupDate && newReservation.slot;
+                                      
+                                      if (hasPickupDetails && Object.keys(cart).length > 0) {
+                                        const pickupDate = new Date(reservation.pickupDate);
+                                        const pickupDay = pickupDate.getDay();
+                                        
+                                        const unavailableItems = list.filter((item) => {
+                                          const availableDays = item.availableDays || [];
+                                          const dayMatch = availableDays.length === 0 || availableDays.includes(pickupDay);
+                                          const availableSlots = item.availableSlots || [];
+                                          const slotMatch = availableSlots.length === 0 || availableSlots.includes(s.id);
+                                          return !dayMatch || !slotMatch;
+                                        });
+                                        
+                                        if (unavailableItems.length > 0) {
+                                          // Close popup temporarily to show warning
+                                          setOpen(false);
+                                          
+                                          const confirmed = await showConfirm(
+                                            `If pickup details are updated, ${unavailableItems.length} item(s) that are not available in the pickup window and date will be removed from the cart. Continue?`,
+                                            "Update Pickup Details"
+                                          );
+                                          
+                                          if (confirmed) {
+                                            // User confirmed - update both local and global state
+                                            setReserve((r) => ({ ...r, slot: s.id }));
+                                            setReservationDetails(newReservation);
+                                            
+                                            // Remove unavailable items from cart
+                                            unavailableItems.forEach(item => {
+                                              remove(item.id);
+                                            });
+                                            
+                                            alert(`${unavailableItems.length} item(s) removed from cart due to availability`);
+                                            // Don't reopen popup - user can continue with reservation process
+                                            return;
+                                          } else {
+                                            // User cancelled - reopen popup with original values
+                                            setOpen(true);
+                                            return;
+                                          }
+                                        }
+                                      }
+                                      
+                                      // No warning needed or no cart items - update both states
                                       setReserve((r) => ({ ...r, slot: s.id }));
-                                      handlePickupChange('slot', s.id);
+                                      setReservationDetails(newReservation);
                                     }}
                                   />
                                   <div className="flex flex-col">
