@@ -518,6 +518,24 @@ export default function Shop({ publicView = false }) {
     }
     if (category !== "all") rows = rows.filter((i) => i.category === category);
 
+    // Filter by pickup details if they are selected
+    if (reservation.pickupDate && reservation.slot) {
+      const pickupDate = new Date(reservation.pickupDate);
+      const pickupDay = pickupDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+      
+      rows = rows.filter((item) => {
+        // Check weekday availability
+        const availableDays = item.availableDays || [];
+        const dayMatch = availableDays.length === 0 || availableDays.includes(pickupDay);
+        
+        // Check pickup window availability
+        const availableSlots = item.availableSlots || [];
+        const slotMatch = availableSlots.length === 0 || availableSlots.includes(reservation.slot);
+        
+        return dayMatch && slotMatch;
+      });
+    }
+
     switch (sort) {
       case "name-asc":
         rows.sort((a, b) => a.name.localeCompare(b.name));
@@ -541,7 +559,7 @@ export default function Shop({ publicView = false }) {
         });
     }
     return rows;
-  }, [items, debouncedQ, category, sort]);
+  }, [items, debouncedQ, category, sort, reservation.pickupDate, reservation.slot]);
 
   const list = useMemo(
     () =>

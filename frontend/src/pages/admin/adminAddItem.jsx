@@ -15,6 +15,8 @@ import {
   AlertCircle,
   Info,
   Utensils,
+  Calendar,
+  Clock,
 } from "lucide-react";
 
 const peso = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" });
@@ -79,7 +81,25 @@ export default function AdminAddItem() {
     price: "",
     stock: "",
     category: categoryParam || "Meals",
+    availableDays: [],
+    availableSlots: [],
   });
+
+  const weekdays = [
+    { value: 0, label: "Sunday" },
+    { value: 1, label: "Monday" },
+    { value: 2, label: "Tuesday" },
+    { value: 3, label: "Wednesday" },
+    { value: 4, label: "Thursday" },
+    { value: 5, label: "Friday" },
+    { value: 6, label: "Saturday" },
+  ];
+
+  const slots = [
+    { id: "recess", label: "Recess" },
+    { id: "lunch", label: "Lunch" },
+    { id: "after", label: "After Class" },
+  ];
 
   const [imagePreview, setImagePreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
@@ -94,6 +114,24 @@ export default function AdminAddItem() {
     if (errors[key]) {
       setErrors((prev) => ({ ...prev, [key]: undefined }));
     }
+  };
+
+  const toggleWeekday = (dayValue) => {
+    setForm((f) => ({
+      ...f,
+      availableDays: f.availableDays.includes(dayValue)
+        ? f.availableDays.filter((d) => d !== dayValue)
+        : [...f.availableDays, dayValue],
+    }));
+  };
+
+  const toggleSlot = (slotId) => {
+    setForm((f) => ({
+      ...f,
+      availableSlots: f.availableSlots.includes(slotId)
+        ? f.availableSlots.filter((s) => s !== slotId)
+        : [...f.availableSlots, slotId],
+    }));
   };
 
   const openPicker = () => fileRef.current?.click();
@@ -170,6 +208,8 @@ export default function AdminAddItem() {
       fd.append("category", form.category);
       fd.append("price", String(Number(form.price)));
       fd.append("stock", String(form.stock === "" ? 0 : Number(form.stock)));
+      fd.append("availableDays", JSON.stringify(form.availableDays));
+      fd.append("availableSlots", JSON.stringify(form.availableSlots));
 
       if (imageFile) {
         fd.append("image", imageFile, imageFile.name);
@@ -186,6 +226,8 @@ export default function AdminAddItem() {
           price: "",
           stock: "",
           category: categoryParam || "Meals",
+          availableDays: [],
+          availableSlots: [],
         });
         removeImage();
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -415,6 +457,74 @@ export default function AdminAddItem() {
                 className="w-full border border-gray-200 bg-gray-100 rounded-xl px-4 py-3 text-sm text-gray-600 cursor-not-allowed"
               />
               <p className="text-xs text-gray-500 mt-1">Fixed category for this add page</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-3">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  Available Days (Weekdays)
+                </div>
+              </label>
+              <div className="p-4 border border-gray-200 rounded-xl bg-gray-50">
+                <p className="text-xs text-gray-600 mb-3">
+                  Select specific days. If none selected, item will be available on all days.
+                </p>
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                  {weekdays.map((day) => (
+                    <label
+                      key={day.value}
+                      className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition ${
+                        form.availableDays.includes(day.value)
+                          ? "bg-orange-100 border-orange-500 text-orange-900"
+                          : "bg-white border-gray-300 hover:border-orange-400"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={form.availableDays.includes(day.value)}
+                        onChange={() => toggleWeekday(day.value)}
+                        className="sr-only"
+                      />
+                      <span className="text-xs font-medium">{day.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-3">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  Available Pickup Windows
+                </div>
+              </label>
+              <div className="p-4 border border-gray-200 rounded-xl bg-gray-50">
+                <p className="text-xs text-gray-600 mb-3">
+                  Select specific pickup windows. If none selected, item will be available for all windows.
+                </p>
+                <div className="grid grid-cols-3 gap-2">
+                  {slots.map((slot) => (
+                    <label
+                      key={slot.id}
+                      className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition ${
+                        form.availableSlots.includes(slot.id)
+                          ? "bg-orange-100 border-orange-500 text-orange-900"
+                          : "bg-white border-gray-300 hover:border-orange-400"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={form.availableSlots.includes(slot.id)}
+                        onChange={() => toggleSlot(slot.id)}
+                        className="sr-only"
+                      />
+                      <span className="text-xs font-medium">{slot.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
             </div>
 
           </div>

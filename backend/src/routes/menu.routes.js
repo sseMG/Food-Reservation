@@ -42,6 +42,9 @@ router.get("/", C.list);
  */
 router.get("/:id", C.get);
 
+// POST route for creating new menu items
+router.post("/", requireAuth, requireAdmin, upload.single("image"), C.create);
+
 // ensure update route accepts single image field named "image"
 router.put("/:id", requireAuth, requireAdmin, upload.single("image"), C.update);
 

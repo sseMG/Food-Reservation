@@ -18,7 +18,16 @@ exports.listMenu = async (_req, res) => {
 
 exports.addMenu = async (req, res) => {
   try {
-    const { name = "", category = "", price, stock, isActive = true } = req.body || {};
+    const { 
+      name = "", 
+      category = "", 
+      price, 
+      stock, 
+      isActive = true,
+      availableDays,
+      availableSlots
+    } = req.body || {};
+    
     if (!name.trim() || !category.trim()) {
       return res.status(400).json({ error: "Missing name or category" });
     }
@@ -26,6 +35,30 @@ exports.addMenu = async (req, res) => {
     const s = Number(stock);
     if (Number.isNaN(p) || Number.isNaN(s)) {
       return res.status(400).json({ error: "Price/stock must be numeric" });
+    }
+
+    // Parse availability fields if they exist as JSON strings
+    let parsedAvailableDays = [];
+    let parsedAvailableSlots = [];
+    
+    if (availableDays != null) {
+      try {
+        parsedAvailableDays = typeof availableDays === 'string' 
+          ? JSON.parse(availableDays) 
+          : availableDays;
+      } catch (e) {
+        return res.status(400).json({ error: "Invalid availableDays format" });
+      }
+    }
+
+    if (availableSlots != null) {
+      try {
+        parsedAvailableSlots = typeof availableSlots === 'string' 
+          ? JSON.parse(availableSlots) 
+          : availableSlots;
+      } catch (e) {
+        return res.status(400).json({ error: "Invalid availableSlots format" });
+      }
     }
 
     // handle optional image upload
@@ -48,6 +81,8 @@ exports.addMenu = async (req, res) => {
       img,
       isActive: !!JSON.parse(String(isActive)),
       visible: true,
+      availableDays: parsedAvailableDays,
+      availableSlots: parsedAvailableSlots,
       deleted: false,
     });
     res.json({ status: 200, data: item, ok: true, item });
@@ -64,6 +99,27 @@ exports.updateMenu = async (req, res) => {
     if ("price" in patch) patch.price = Number(patch.price);
     if ("stock" in patch) patch.stock = Number(patch.stock);
     if ("isActive" in patch) patch.isActive = !!JSON.parse(String(patch.isActive));
+
+    // Parse availability fields if they exist as JSON strings
+    if (patch.availableDays != null) {
+      try {
+        patch.availableDays = typeof patch.availableDays === 'string' 
+          ? JSON.parse(patch.availableDays) 
+          : patch.availableDays;
+      } catch (e) {
+        return res.status(400).json({ error: "Invalid availableDays format" });
+      }
+    }
+
+    if (patch.availableSlots != null) {
+      try {
+        patch.availableSlots = typeof patch.availableSlots === 'string' 
+          ? JSON.parse(patch.availableSlots) 
+          : patch.availableSlots;
+      } catch (e) {
+        return res.status(400).json({ error: "Invalid availableSlots format" });
+      }
+    }
 
     const menuRepo = RepositoryFactory.getMenuRepository();
     

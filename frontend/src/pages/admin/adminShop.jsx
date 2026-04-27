@@ -545,6 +545,7 @@ export default function AdminShop() {
                         <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-navy uppercase tracking-wider">Category</th>
                         <th className="px-6 py-3 text-center text-xs font-semibold text-jckl-navy uppercase tracking-wider">Stock</th>
                         <th className="px-6 py-3 text-center text-xs font-semibold text-jckl-navy uppercase tracking-wider">Status</th>
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-jckl-navy uppercase tracking-wider">Availability</th>
                         <th className="px-6 py-3 text-right text-xs font-semibold text-jckl-navy uppercase tracking-wider">Price</th>
                         <th className="px-6 py-3 text-right text-xs font-semibold text-jckl-navy uppercase tracking-wider">Actions</th>
                       </tr>
@@ -554,6 +555,32 @@ export default function AdminShop() {
                       {filtered.map((p) => {
                         const available = (p.stock ?? 0) > 0;
                         const isLowStock = p.stock > 0 && p.stock <= 5;
+                        
+                        // Format availability display
+                        const getAvailabilityDisplay = (item) => {
+                          const days = item.availableDays || [];
+                          const slots = item.availableSlots || [];
+                          
+                          if (days.length === 0 && slots.length === 0) {
+                            return <span className="text-xs text-green-600">All days & windows</span>;
+                          }
+                          
+                          const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                          const selectedDays = days.map(d => dayNames[d]).join(', ');
+                          const slotNames = { recess: 'Recess', lunch: 'Lunch', after: 'After' };
+                          const selectedSlots = slots.map(s => slotNames[s] || s).join(', ');
+                          
+                          return (
+                            <div className="text-xs">
+                              {days.length > 0 && (
+                                <div className="text-blue-600">Days: {selectedDays}</div>
+                              )}
+                              {slots.length > 0 && (
+                                <div className="text-purple-600">Windows: {selectedSlots}</div>
+                              )}
+                            </div>
+                          );
+                        };
                         
                         return (
                           <tr key={p.id} className="hover:bg-jckl-cream">
@@ -576,6 +603,9 @@ export default function AdminShop() {
                               >
                                 {available ? "Available" : "Out of stock"}
                               </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              {getAvailabilityDisplay(p)}
                             </td>
                             <td className="px-6 py-4 text-right text-sm font-semibold text-jckl-navy">
                               {typeof p.price === "number" ? peso.format(p.price) : "-"}

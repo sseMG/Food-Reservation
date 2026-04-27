@@ -269,6 +269,8 @@ export const api = {
         img: r.img || r.image || '',
         desc: r.desc || r.description || '',
         visible: r.visible,
+        availableDays: r.availableDays || [],
+        availableSlots: r.availableSlots || [],
         createdAt: r.createdAt || r.created_at,
         updatedAt: r.updatedAt || r.updated_at,
       };

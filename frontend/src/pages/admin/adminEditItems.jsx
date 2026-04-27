@@ -15,6 +15,8 @@ import {
   Image as ImageIcon,
   Loader2,
   ArrowLeft,
+  Calendar,
+  Clock,
 } from "lucide-react";
 import { getCategoryEmoji } from '../../lib/categories';
 
@@ -38,7 +40,7 @@ export default function AdminEditItems() {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("All");
 
-  const [editing, setEditing] = useState(null); // {id, name, category, price, stock, img?}
+  const [editing, setEditing] = useState(null); // {id, name, category, price, stock, img?, availableDays, availableSlots}
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
   const [savedOk, setSavedOk] = useState(false);
@@ -49,6 +51,23 @@ export default function AdminEditItems() {
 
   const [deletingId, setDeletingId] = useState(null);
   const [serverCategories, setServerCategories] = useState([]);
+
+  // Availability arrays
+  const weekdays = [
+    { value: 0, label: "Sunday" },
+    { value: 1, label: "Monday" },
+    { value: 2, label: "Tuesday" },
+    { value: 3, label: "Wednesday" },
+    { value: 4, label: "Thursday" },
+    { value: 5, label: "Friday" },
+    { value: 6, label: "Saturday" },
+  ];
+
+  const slots = [
+    { id: "recess", label: "Recess" },
+    { id: "lunch", label: "Lunch" },
+    { id: "after", label: "After Class" },
+  ];
 
   // Per-item cache-bust seeds. When we save an item (upload/remove),
   // we bump its seed so <img src="...?...&v=seed"> forces a real fetch.
@@ -128,10 +147,12 @@ export default function AdminEditItems() {
       price: it.price ?? 0,
       stock: it.stock ?? 0,
       img: it.img || "",
+      availableDays: it.availableDays || [],
+      availableSlots: it.availableSlots || [],
     });
-    setSaveError("");
     setImgPreview(typeof it.img === "string" && it.img.startsWith("data:") ? it.img : null);
     setImgFile(null);
+    setSaveError("");
   };
 
   const closeEdit = () => {
@@ -144,6 +165,26 @@ export default function AdminEditItems() {
 
   const setEditField = (k, v) =>
     setEditing((e) => (e ? { ...e, [k]: v } : e));
+
+  const toggleWeekday = (dayValue) => {
+    if (!editing) return;
+    setEditing((e) => ({
+      ...e,
+      availableDays: e.availableDays.includes(dayValue)
+        ? e.availableDays.filter((d) => d !== dayValue)
+        : [...e.availableDays, dayValue],
+    }));
+  };
+
+  const toggleSlot = (slotId) => {
+    if (!editing) return;
+    setEditing((e) => ({
+      ...e,
+      availableSlots: e.availableSlots.includes(slotId)
+        ? e.availableSlots.filter((s) => s !== slotId)
+        : [...e.availableSlots, slotId],
+    }));
+  };
 
   const onPickImage = (e) => {
     const file = e.target.files?.[0];
@@ -196,6 +237,8 @@ export default function AdminEditItems() {
       category: editing.category,
       price: Number(editing.price),
       stock: Number(editing.stock),
+      availableDays: editing.availableDays || [],
+      availableSlots: editing.availableSlots || [],
       ...(editing.img === "" ? { img: "" } : {}),
     };
 
@@ -211,6 +254,8 @@ export default function AdminEditItems() {
         fd.append("category", payload.category);
         fd.append("price", String(payload.price));
         fd.append("stock", String(payload.stock));
+        fd.append("availableDays", JSON.stringify(payload.availableDays));
+        fd.append("availableSlots", JSON.stringify(payload.availableSlots));
         // fd.append("replace", "1"); // uncomment if your backend needs an explicit replace flag
 
         updated = await api.putForm(`/admin/menu/${editing.id}`, fd);
@@ -237,6 +282,8 @@ export default function AdminEditItems() {
           price: fresh.price ?? 0,
           stock: fresh.stock ?? 0,
           img: fresh.img || "",
+          availableDays: fresh.availableDays || [],
+          availableSlots: fresh.availableSlots || [],
         });
         setImgPreview(null); // modal should show stored path, not local blob
       }
@@ -526,6 +573,74 @@ export default function AdminEditItems() {
                     <p className="text-xs text-jckl-slate mt-1">
                       Preview: {editing.price ? peso.format(Number(editing.price)) : "—"}
                     </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-jckl-slate mb-2">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
+                        Available Days (Weekdays)
+                      </div>
+                    </label>
+                    <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                      <p className="text-xs text-gray-600 mb-3">
+                        Select specific days. If none selected, item will be available on all days.
+                      </p>
+                      <div className="grid grid-cols-4 gap-2">
+                        {weekdays.map((day) => (
+                          <label
+                            key={day.value}
+                            className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition ${
+                              editing.availableDays.includes(day.value)
+                                ? "bg-blue-100 border-blue-500 text-blue-900"
+                                : "bg-white border-gray-300 hover:border-blue-400"
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={editing.availableDays.includes(day.value)}
+                              onChange={() => toggleWeekday(day.value)}
+                              className="sr-only"
+                            />
+                            <span className="text-xs font-medium">{day.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-jckl-slate mb-2">
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4" />
+                        Available Pickup Windows
+                      </div>
+                    </label>
+                    <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                      <p className="text-xs text-gray-600 mb-3">
+                        Select specific pickup windows. If none selected, item will be available for all windows.
+                      </p>
+                      <div className="grid grid-cols-3 gap-2">
+                        {slots.map((slot) => (
+                          <label
+                            key={slot.id}
+                            className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition ${
+                              editing.availableSlots.includes(slot.id)
+                                ? "bg-blue-100 border-blue-500 text-blue-900"
+                                : "bg-white border-gray-300 hover:border-blue-400"
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={editing.availableSlots.includes(slot.id)}
+                              onChange={() => toggleSlot(slot.id)}
+                              className="sr-only"
+                            />
+                            <span className="text-xs font-medium">{slot.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
 

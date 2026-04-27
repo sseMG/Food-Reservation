@@ -46,6 +46,27 @@ exports.create = async (req, res) => {
     if (payload.stock != null) payload.stock = Number(payload.stock);
     if (payload.visible === undefined) payload.visible = true;
 
+    // Parse availability fields if they exist as JSON strings
+    if (payload.availableDays != null) {
+      try {
+        payload.availableDays = typeof payload.availableDays === 'string' 
+          ? JSON.parse(payload.availableDays) 
+          : payload.availableDays;
+      } catch (e) {
+        return res.status(400).json({ error: "Invalid availableDays format" });
+      }
+    }
+
+    if (payload.availableSlots != null) {
+      try {
+        payload.availableSlots = typeof payload.availableSlots === 'string' 
+          ? JSON.parse(payload.availableSlots) 
+          : payload.availableSlots;
+      } catch (e) {
+        return res.status(400).json({ error: "Invalid availableSlots format" });
+      }
+    }
+
     const item = await menuRepo.create(payload);
     return res.json({ ok: true, item });
   } catch (err) {
@@ -91,8 +112,29 @@ exports.update = async (req, res) => {
     if (payload.price != null) payload.price = Number(payload.price);
     if (payload.stock != null) payload.stock = Number(payload.stock);
 
+    // Parse availability fields if they exist as JSON strings
+    if (payload.availableDays != null) {
+      try {
+        payload.availableDays = typeof payload.availableDays === 'string' 
+          ? JSON.parse(payload.availableDays) 
+          : payload.availableDays;
+      } catch (e) {
+        return res.status(400).json({ error: "Invalid availableDays format" });
+      }
+    }
+
+    if (payload.availableSlots != null) {
+      try {
+        payload.availableSlots = typeof payload.availableSlots === 'string' 
+          ? JSON.parse(payload.availableSlots) 
+          : payload.availableSlots;
+      } catch (e) {
+        return res.status(400).json({ error: "Invalid availableSlots format" });
+      }
+    }
+
     // Only allow specific fields to be updated
-    const allowedFields = ["name", "price", "category", "stock", "img", "desc", "visible"];
+    const allowedFields = ["name", "price", "category", "stock", "img", "desc", "visible", "availableDays", "availableSlots"];
     const updateData = {};
     allowedFields.forEach((f) => {
       if (payload[f] !== undefined) updateData[f] = payload[f];
