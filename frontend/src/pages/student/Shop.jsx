@@ -499,12 +499,43 @@ export default function Shop({ publicView = false }) {
   }, [items]);
 
   const catCounts = useMemo(() => {
+    // First apply the same filtering logic as the filtered items
+    let availableItems = items.slice(0);
+    
+    if (debouncedQ) {
+      availableItems = availableItems.filter(
+        (i) =>
+          String(i.name || "").toLowerCase().includes(debouncedQ) ||
+          String(i.category || "").toLowerCase().includes(debouncedQ)
+      );
+    }
+    if (category !== "all") availableItems = availableItems.filter((i) => i.category === category);
+    
+    // Filter by pickup details if they are selected
+    if (reservation.pickupDate && reservation.slot) {
+      const pickupDate = new Date(reservation.pickupDate);
+      const pickupDay = pickupDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+      
+      availableItems = availableItems.filter((item) => {
+        // Check weekday availability
+        const availableDays = item.availableDays || [];
+        const dayMatch = availableDays.length === 0 || availableDays.includes(pickupDay);
+        
+        // Check slot availability
+        const availableSlots = item.availableSlots || [];
+        const slotMatch = availableSlots.length === 0 || availableSlots.includes(reservation.slot);
+        
+        return dayMatch && slotMatch;
+      });
+    }
+    
+    // Count categories from available items only
     const map = new Map();
-    for (const it of items) {
+    for (const it of availableItems) {
       map.set(it.category || "Others", (map.get(it.category || "Others") || 0) + 1);
     }
     return map;
-  }, [items]);
+  }, [items, debouncedQ, category, reservation.pickupDate, reservation.slot]);
 
   const filtered = useMemo(() => {
     let rows = items.slice(0);

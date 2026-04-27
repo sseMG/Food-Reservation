@@ -269,24 +269,11 @@ export default function AdminEditItems() {
       // Bump this item's bust seed so every <img> refetches
       setImgBust((m) => ({ ...m, [updated.id]: Date.now() }));
 
-      // Refetch full list from server to ensure we have the latest stored path
+      // Refetch full list from server to ensure we have the latest data
       await load();
 
-      // Re-open the just-saved item from the freshly-loaded list
-      const fresh = findItemById(updated.id);
-      if (fresh) {
-        setEditing({
-          id: fresh.id,
-          name: fresh.name || "",
-          category: fresh.category || "Meals",
-          price: fresh.price ?? 0,
-          stock: fresh.stock ?? 0,
-          img: fresh.img || "",
-          availableDays: fresh.availableDays || [],
-          availableSlots: fresh.availableSlots || [],
-        });
-        setImgPreview(null); // modal should show stored path, not local blob
-      }
+      // Close the modal after successful save
+      closeEdit();
 
       // Clear file input after successful save
       setImgFile(null);
@@ -387,8 +374,8 @@ export default function AdminEditItems() {
           </div>
         )}
 
-        {/* Table */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-x-auto">
+        {/* Desktop: Table view */}
+        <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-x-auto">
           <table className="min-w-full">
             <thead className="bg-white">
               <tr>
@@ -397,19 +384,20 @@ export default function AdminEditItems() {
                 <th className="px-4 py-3 text-right text-xs font-semibold text-jckl-slate uppercase tracking-wider">Price</th>
                 <th className="px-4 py-3 text-center text-xs font-semibold text-jckl-slate uppercase tracking-wider">Stock</th>
                 <th className="px-4 py-3 text-center text-xs font-semibold text-jckl-slate uppercase tracking-wider">Status</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-jckl-slate uppercase tracking-wider">Availability</th>
                 <th className="px-4 py-3 text-right text-xs font-semibold text-jckl-slate uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-jckl-slate">
+                  <td colSpan={7} className="px-4 py-8 text-center text-jckl-slate">
                     Loading…
                   </td>
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-jckl-slate">
+                  <td colSpan={7} className="px-4 py-8 text-center text-jckl-slate">
                     No items found.
                   </td>
                 </tr>
@@ -467,6 +455,28 @@ export default function AdminEditItems() {
                         </span>
                       </td>
                       <td className="px-4 py-3">
+                        {(() => {
+                          const days = it.availableDays || [];
+                          const slots = it.availableSlots || [];
+                          
+                          const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                          const selectedDays = days.map(d => dayNames[d]).join(', ');
+                          const slotNames = { recess: 'Recess', lunch: 'Lunch', after: 'After' };
+                          const selectedSlots = slots.map(s => slotNames[s] || s).join(', ');
+                          
+                          return (
+                            <div className="text-xs">
+                              <div className="text-blue-600">
+                                Days: {days.length > 0 ? selectedDays : 'All days'}
+                              </div>
+                              <div className="text-purple-600">
+                                Windows: {slots.length > 0 ? selectedSlots : 'All windows'}
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </td>
+                      <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => openEdit(it)}
@@ -500,6 +510,133 @@ export default function AdminEditItems() {
           </table>
         </div>
 
+        {/* Mobile: Card view */}
+        <div className="md:hidden space-y-3">
+          {loading ? (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 text-center text-jckl-slate">
+              Loading…
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 text-center text-jckl-slate">
+              No items found.
+            </div>
+          ) : (
+            filtered.map((it) => {
+              const imgSrc = bust(it.img, it.id);
+              const available = (it.stock ?? 0) > 0;
+              const isLowStock = it.stock > 0 && it.stock <= 5;
+              
+              return (
+                <div key={it.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                  <div className="flex items-start gap-3">
+                    {/* Product info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-sm font-medium text-jckl-navy truncate">{it.name}</h3>
+                          <div className="text-xs text-jckl-slate mt-0.5">{it.category || "Uncategorized"}</div>
+                        </div>
+                        
+                        {/* Product image */}
+                        <div className="w-12 h-12 bg-jckl-cream rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0">
+                          {imgSrc ? (
+                            <img
+                              key={imgSrc}
+                              src={imgSrc}
+                              alt={it.name}
+                              className="w-full h-full object-cover"
+                              onError={(e) => { e.currentTarget.style.display = "none"; }}
+                            />
+                          ) : (
+                            <ImageIcon className="w-6 h-6 text-jckl-slate" />
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 flex-wrap mb-2">
+                        <span
+                          className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
+                            available ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                          }`}
+                        >
+                          {available ? "In Stock" : "Out of Stock"}
+                        </span>
+                        
+                        {isLowStock && (
+                          <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-orange-100 text-orange-700">
+                            Low Stock
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-xs text-jckl-slate">
+                          Stock: <span className="font-medium">{it.stock ?? 0}</span>
+                        </div>
+                        <div className="text-base font-semibold text-jckl-navy">
+                          {typeof it.price === "number" ? peso.format(it.price) : "-"}
+                        </div>
+                      </div>
+
+                      {/* Availability display for mobile */}
+                      <div className="mb-3 pt-2 border-t border-gray-100">
+                        {(() => {
+                          const days = it.availableDays || [];
+                          const slots = it.availableSlots || [];
+                          
+                          const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                          const selectedDays = days.map(d => dayNames[d]).join(', ');
+                          const slotNames = { recess: 'Recess', lunch: 'Lunch', after: 'After' };
+                          const selectedSlots = slots.map(s => slotNames[s] || s).join(', ');
+                          
+                          return (
+                            <div className="space-y-1">
+                              <div className="text-xs">
+                                <span className="text-blue-600 font-medium">📅 Days:</span>
+                                <span className="text-gray-700 ml-1">{days.length > 0 ? selectedDays : 'All days'}</span>
+                              </div>
+                              <div className="text-xs">
+                                <span className="text-purple-600 font-medium">🕐 Windows:</span>
+                                <span className="text-gray-700 ml-1">{slots.length > 0 ? selectedSlots : 'All windows'}</span>
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
+
+                      {/* Action buttons */}
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => openEdit(it)}
+                          className="flex-1 inline-flex items-center justify-center gap-1 px-3 py-2 rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 text-sm"
+                        >
+                          <Edit className="w-4 h-4" /> Edit
+                        </button>
+                        <button
+                          disabled={deletingId === it.id}
+                          onClick={() => {
+                            if (window.confirm(`Delete "${it.name}"? This cannot be undone.`)) {
+                              deleteItem(it.id);
+                            }
+                          }}
+                          className="flex-1 inline-flex items-center justify-center gap-1 px-3 py-2 rounded-md text-red-700 bg-red-50 hover:bg-red-100 text-sm disabled:opacity-60"
+                        >
+                          {deletingId === it.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="w-4 h-4" />
+                          )}
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+
         {/* Edit Modal */}
         {editing && (
           <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
@@ -507,7 +644,7 @@ export default function AdminEditItems() {
               className="absolute inset-0 bg-black/30"
               onClick={closeEdit}
             />
-            <div className="relative w-full sm:max-w-2xl bg-white rounded-t-2xl sm:rounded-2xl shadow-lg border border-gray-100 max-h-[85vh] sm:max-h-none overflow-hidden flex flex-col">
+            <div className="relative w-full sm:max-w-2xl bg-white rounded-t-2xl sm:rounded-2xl shadow-lg border border-gray-100 max-h-[85vh] sm:max-h-[90vh] overflow-hidden flex flex-col">
               <div className="flex items-center justify-between p-6 sticky top-0 bg-white z-10 border-b">
                 <h3 className="text-lg font-semibold text-jckl-navy">Edit Item</h3>
                 <button

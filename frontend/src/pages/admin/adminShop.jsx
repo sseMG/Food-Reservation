@@ -528,6 +528,32 @@ export default function AdminShop() {
                               {typeof p.price === "number" ? peso.format(p.price) : "-"}
                             </div>
                           </div>
+
+                          {/* Availability display for mobile */}
+                          <div className="mt-2 pt-2 border-t border-gray-100">
+                            {(() => {
+                              const days = p.availableDays || [];
+                              const slots = p.availableSlots || [];
+                              
+                              const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                              const selectedDays = days.map(d => dayNames[d]).join(', ');
+                              const slotNames = { recess: 'Recess', lunch: 'Lunch', after: 'After' };
+                              const selectedSlots = slots.map(s => slotNames[s] || s).join(', ');
+                              
+                              return (
+                                <div className="space-y-1">
+                                  <div className="text-xs">
+                                    <span className="text-blue-600 font-medium">📅 Days:</span>
+                                    <span className="text-gray-700 ml-1">{days.length > 0 ? selectedDays : 'All days'}</span>
+                                  </div>
+                                  <div className="text-xs">
+                                    <span className="text-purple-600 font-medium">🕐 Windows:</span>
+                                    <span className="text-gray-700 ml-1">{slots.length > 0 ? selectedSlots : 'All windows'}</span>
+                                  </div>
+                                </div>
+                              );
+                            })()}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -561,10 +587,6 @@ export default function AdminShop() {
                           const days = item.availableDays || [];
                           const slots = item.availableSlots || [];
                           
-                          if (days.length === 0 && slots.length === 0) {
-                            return <span className="text-xs text-green-600">All days & windows</span>;
-                          }
-                          
                           const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
                           const selectedDays = days.map(d => dayNames[d]).join(', ');
                           const slotNames = { recess: 'Recess', lunch: 'Lunch', after: 'After' };
@@ -572,12 +594,12 @@ export default function AdminShop() {
                           
                           return (
                             <div className="text-xs">
-                              {days.length > 0 && (
-                                <div className="text-blue-600">Days: {selectedDays}</div>
-                              )}
-                              {slots.length > 0 && (
-                                <div className="text-purple-600">Windows: {selectedSlots}</div>
-                              )}
+                              <div className="text-blue-600">
+                                Days: {days.length > 0 ? selectedDays : 'All days'}
+                              </div>
+                              <div className="text-purple-600">
+                                Windows: {slots.length > 0 ? selectedSlots : 'All windows'}
+                              </div>
                             </div>
                           );
                         };
