@@ -172,13 +172,26 @@ function Toast({ message, visible, onClose }) {
   );
 }
 
-function EmptyCartSuggestions({ items, onAdd, categoriesMap = {}, show = true }) {
+function EmptyCartSuggestions({ items, onAdd, categoriesMap = {}, show = true, selectedSlot = null }) {
   const popularItems = useMemo(() => {
+    const currentDay = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
+    
     return items
       .filter(i => i.stock > 0)
+      .filter(i => {
+        // Check if item is available on current day
+        const availableDays = i.availableDays || [];
+        const dayMatch = availableDays.length === 0 || availableDays.includes(currentDay);
+        
+        // Check if item is available in selected slot
+        const availableSlots = i.availableSlots || [];
+        const slotMatch = availableSlots.length === 0 || availableSlots.includes(selectedSlot);
+        
+        return dayMatch && slotMatch;
+      })
       .sort((a, b) => a.price - b.price)
       .slice(0, 3);
-  }, [items]);
+  }, [items, selectedSlot]);
 
   if (popularItems.length === 0 || !show) return null;
 
@@ -1268,7 +1281,7 @@ export default function Shop({ publicView = false }) {
                       <ShoppingCart className="w-8 h-8 text-gray-400" />
                     </div>
                     <div className="text-sm text-jckl-slate">Your cart is empty.</div>
-                    <EmptyCartSuggestions items={items} onAdd={(id) => inc(id)} categoriesMap={categoriesMap} show={!!reservation.pickupDate && !!reservation.slot} />
+                    <EmptyCartSuggestions items={items} onAdd={(id) => inc(id)} categoriesMap={categoriesMap} show={!!reservation.pickupDate && !!reservation.slot} selectedSlot={reservation.slot} />
                   </div>
                 ) : (
                   list.map((it) => (
