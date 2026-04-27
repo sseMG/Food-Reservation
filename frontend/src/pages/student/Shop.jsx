@@ -46,6 +46,8 @@ const SLOTS = [
   { id: "after", label: "After Class" },
 ];
 
+const DAY_NAMES = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
 // Grade-specific pickup times
 const getPickupTimes = (grade) => {
   if (!grade) return {};
@@ -514,7 +516,7 @@ export default function Shop({ publicView = false }) {
     // Filter by pickup details if they are selected
     if (reservation.pickupDate && reservation.slot) {
       const pickupDate = new Date(reservation.pickupDate);
-      const pickupDay = pickupDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+      const pickupDay = DAY_NAMES[pickupDate.getDay()];
       
       availableItems = availableItems.filter((item) => {
         // Check weekday availability
@@ -552,7 +554,7 @@ export default function Shop({ publicView = false }) {
     // Filter by pickup details if they are selected
     if (reservation.pickupDate && reservation.slot) {
       const pickupDate = new Date(reservation.pickupDate);
-      const pickupDay = pickupDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+      const pickupDay = DAY_NAMES[pickupDate.getDay()];
       
       rows = rows.filter((item) => {
         // Check weekday availability
@@ -692,7 +694,7 @@ export default function Shop({ publicView = false }) {
     if (!newPickupDate || !newSlot) return [];
     
     const pickupDate = new Date(newPickupDate);
-    const pickupDay = pickupDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const pickupDay = DAY_NAMES[pickupDate.getDay()];
     
     return list.filter((item) => {
       // Check weekday availability
@@ -724,7 +726,7 @@ export default function Shop({ publicView = false }) {
         );
         
         if (!confirmed) {
-          return; // User cancelled, don't change pickup details
+          return false; // User cancelled, don't change pickup details
         }
         
         // Remove unavailable items from cart
@@ -738,6 +740,7 @@ export default function Shop({ publicView = false }) {
     
     // Apply the change
     setReservationDetails(newReservation);
+    return true;
   };
 
   const submitReservation = async () => {
@@ -1507,9 +1510,9 @@ export default function Shop({ publicView = false }) {
                         <label className="block text-sm font-medium text-jckl-navy mb-1">Pickup Date</label>
                         <RestrictedDateCalendar
                           value={reserve.pickupDate}
-                          onChange={(next) => {
-                            setReserve((r) => ({ ...r, pickupDate: next }));
-                            setReservationDetails({ ...reservation, pickupDate: next });
+                          onChange={async (next) => {
+                            const ok = await handlePickupChange('pickupDate', next);
+                            if (ok !== false) setReserve((r) => ({ ...r, pickupDate: next }));
                           }}
                           min={getMinDate()}
                           rules={dateRestrictions}
@@ -1539,9 +1542,9 @@ export default function Shop({ publicView = false }) {
                                     type="radio"
                                     name="slot"
                                     checked={reserve.slot === s.id}
-                                    onChange={() => {
-                                      setReserve((r) => ({ ...r, slot: s.id }));
-                                      setReservationDetails({ ...reservation, slot: s.id });
+                                    onChange={async () => {
+                                      const ok = await handlePickupChange('slot', s.id);
+                                      if (ok !== false) setReserve((r) => ({ ...r, slot: s.id }));
                                     }}
                                   />
                                   <div className="flex flex-col">

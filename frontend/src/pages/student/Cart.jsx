@@ -30,9 +30,11 @@ const peso = new Intl.NumberFormat("en-PH", {
 
 const SLOTS = [
   { id: "recess", label: "Recess" },
-  { id: "lunch",  label: "Lunch" },
-  { id: "after",  label: "After Class" },
+  { id: "lunch", label: "Lunch" },
+  { id: "after", label: "After Class" },
 ];
+
+const DAY_NAMES = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
 function normalizeDateString(v) {
   if (!v) return "";
@@ -436,7 +438,7 @@ export default function Cart() {
     if (!newPickupDate || !newSlot) return [];
     
     const pickupDate = new Date(newPickupDate);
-    const pickupDay = pickupDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const pickupDay = DAY_NAMES[pickupDate.getDay()];
     
     return list.filter((item) => {
       // Check weekday availability
@@ -468,7 +470,7 @@ export default function Cart() {
         );
         
         if (!confirmed) {
-          return; // User cancelled, don't change pickup details
+          return false; // User cancelled, don't change pickup details
         }
         
         // Remove unavailable items from cart
@@ -483,6 +485,7 @@ export default function Cart() {
     
     // Apply the change
     setReservationDetails(newReservation);
+    return true;
   };
 
   return (
@@ -745,9 +748,9 @@ export default function Cart() {
                         </label>
                         <RestrictedDateCalendar
                           value={reserve.pickupDate}
-                          onChange={(next) => {
-                            setReserve((r) => ({ ...r, pickupDate: next }));
-                            handlePickupChange('pickupDate', next);
+                          onChange={async (next) => {
+                            const ok = await handlePickupChange('pickupDate', next);
+                            if (ok !== false) setReserve((r) => ({ ...r, pickupDate: next }));
                           }}
                           min={getMinDate()}
                           rules={dateRestrictions}
@@ -779,9 +782,9 @@ export default function Cart() {
                                     type="radio"
                                     name="pickup-slot"
                                     checked={reserve.slot === s.id}
-                                    onChange={() => {
-                                      setReserve((r) => ({ ...r, slot: s.id }));
-                                      handlePickupChange('slot', s.id);
+                                    onChange={async () => {
+                                      const ok = await handlePickupChange('slot', s.id);
+                                      if (ok !== false) setReserve((r) => ({ ...r, slot: s.id }));
                                     }}
                                   />
                                   <div className="flex flex-col">
