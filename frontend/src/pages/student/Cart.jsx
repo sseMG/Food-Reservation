@@ -431,6 +431,60 @@ export default function Cart() {
     return `${yyyy}-${mm}-${dd}`;
   };
 
+  // Check if items would be removed with new pickup details
+  const checkUnavailableItems = (newPickupDate, newSlot) => {
+    if (!newPickupDate || !newSlot) return [];
+    
+    const pickupDate = new Date(newPickupDate);
+    const pickupDay = pickupDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    
+    return list.filter((item) => {
+      // Check weekday availability
+      const availableDays = item.availableDays || [];
+      const dayMatch = availableDays.length === 0 || availableDays.includes(pickupDay);
+      
+      // Check slot availability
+      const availableSlots = item.availableSlots || [];
+      const slotMatch = availableSlots.length === 0 || availableSlots.includes(newSlot);
+      
+      return !dayMatch || !slotMatch;
+    });
+  };
+
+  // Handle pickup details change with warning
+  const handlePickupChange = async (field, value) => {
+    const newReservation = { ...reservation, [field]: value };
+    
+    // Only check if both pickup date and slot are set (or being set)
+    const hasPickupDetails = newReservation.pickupDate && newReservation.slot;
+    
+    if (hasPickupDetails && Object.keys(cart).length > 0) {
+      const unavailableItems = checkUnavailableItems(newReservation.pickupDate, newReservation.slot);
+      
+      if (unavailableItems.length > 0) {
+        const confirmed = await showConfirm(
+          `If pickup details are updated, ${unavailableItems.length} item(s) that are not available in the pickup window and date will be removed from the cart. Continue?`,
+          "Update Pickup Details"
+        );
+        
+        if (!confirmed) {
+          return; // User cancelled, don't change pickup details
+        }
+        
+        // Remove unavailable items from cart
+        unavailableItems.forEach(item => {
+          remove(item.id);
+        });
+        
+        // Show toast notification (Cart.jsx doesn't have showToast, so we'll use alert)
+        alert(`${unavailableItems.length} item(s) removed from cart due to availability`);
+      }
+    }
+    
+    // Apply the change
+    setReservationDetails(newReservation);
+  };
+
   return (
     <div className="min-h-screen bg-white pb-16 md:pb-0">
       <Navbar />
@@ -693,7 +747,7 @@ export default function Cart() {
                           value={reserve.pickupDate}
                           onChange={(next) => {
                             setReserve((r) => ({ ...r, pickupDate: next }));
-                            setReservationDetails({ ...reservation, pickupDate: next });
+                            handlePickupChange('pickupDate', next);
                           }}
                           min={getMinDate()}
                           rules={dateRestrictions}
@@ -727,7 +781,7 @@ export default function Cart() {
                                     checked={reserve.slot === s.id}
                                     onChange={() => {
                                       setReserve((r) => ({ ...r, slot: s.id }));
-                                      setReservationDetails({ ...reservation, slot: s.id });
+                                      handlePickupChange('slot', s.id);
                                     }}
                                   />
                                   <div className="flex flex-col">

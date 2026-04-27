@@ -687,6 +687,59 @@ export default function Shop({ publicView = false }) {
     return `${yyyy}-${mm}-${dd}`;
   };
 
+  // Check if items would be removed with new pickup details
+  const checkUnavailableItems = (newPickupDate, newSlot) => {
+    if (!newPickupDate || !newSlot) return [];
+    
+    const pickupDate = new Date(newPickupDate);
+    const pickupDay = pickupDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    
+    return list.filter((item) => {
+      // Check weekday availability
+      const availableDays = item.availableDays || [];
+      const dayMatch = availableDays.length === 0 || availableDays.includes(pickupDay);
+      
+      // Check slot availability
+      const availableSlots = item.availableSlots || [];
+      const slotMatch = availableSlots.length === 0 || availableSlots.includes(newSlot);
+      
+      return !dayMatch || !slotMatch;
+    });
+  };
+
+  // Handle pickup details change with warning
+  const handlePickupChange = async (field, value) => {
+    const newReservation = { ...reservation, [field]: value };
+    
+    // Only check if both pickup date and slot are set (or being set)
+    const hasPickupDetails = newReservation.pickupDate && newReservation.slot;
+    
+    if (hasPickupDetails && Object.keys(cart).length > 0) {
+      const unavailableItems = checkUnavailableItems(newReservation.pickupDate, newReservation.slot);
+      
+      if (unavailableItems.length > 0) {
+        const confirmed = await showConfirm(
+          `If pickup details are updated, ${unavailableItems.length} item(s) that are not available in the pickup window and date will be removed from the cart. Continue?`,
+          "Update Pickup Details"
+        );
+        
+        if (!confirmed) {
+          return; // User cancelled, don't change pickup details
+        }
+        
+        // Remove unavailable items from cart
+        unavailableItems.forEach(item => {
+          remove(item.id);
+        });
+        
+        showToast(`${unavailableItems.length} item(s) removed from cart due to availability`);
+      }
+    }
+    
+    // Apply the change
+    setReservationDetails(newReservation);
+  };
+
   const submitReservation = async () => {
     if (!list.length) return showAlert("Your cart is empty.", "warning");
     if (!reserve.grade) return showAlert("Select grade level.", "warning");
@@ -875,7 +928,7 @@ export default function Shop({ publicView = false }) {
                   type="date"
                   name="pickup-date-hidden"
                   value={reservation.pickupDate}
-                  onChange={(e) => setReservationDetails({ ...reservation, pickupDate: e.target.value })}
+                  onChange={(e) => handlePickupChange('pickupDate', e.target.value)}
                   min={getMinDate()}
                   className="sr-only"
                 />
@@ -904,7 +957,7 @@ export default function Shop({ publicView = false }) {
                             type="radio"
                             name="pickup-slot"
                             checked={reservation.slot === s.id}
-                            onChange={() => setReservationDetails({ ...reservation, slot: s.id })}
+                            onChange={() => handlePickupChange('slot', s.id)}
                             className="sr-only"
                           />
                           <span className="font-medium">{s.label}</span>
