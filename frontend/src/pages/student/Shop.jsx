@@ -511,6 +511,42 @@ export default function Shop({ publicView = false }) {
     return ["all", ...Array.from(set)];
   }, [items]);
 
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    
+    // Count search filter
+    if (debouncedQ) count++;
+    
+    // Count category filter
+    if (category !== "all") count++;
+    
+    // Count sort filter
+    if (sort !== "featured") count++;
+    
+    // Count pickup details filters
+    if (reservation.pickupDate && reservation.slot) {
+      const pickupDate = new Date(reservation.pickupDate);
+      const pickupDay = pickupDate.getDay();
+      
+      // Check if any products are actually filtered by day availability
+      const hasDayFilter = items.some(item => {
+        const availableDays = item.availableDays || [];
+        return availableDays.length > 0 && !availableDays.includes(pickupDay);
+      });
+      
+      // Check if any products are actually filtered by slot availability
+      const hasSlotFilter = items.some(item => {
+        const availableSlots = item.availableSlots || [];
+        return availableSlots.length > 0 && !availableSlots.includes(reservation.slot);
+      });
+      
+      if (hasDayFilter) count++;
+      if (hasSlotFilter) count++;
+    }
+    
+    return count;
+  }, [debouncedQ, category, sort, reservation.pickupDate, reservation.slot, items]);
+
   const catCounts = useMemo(() => {
     // First apply the same filtering logic as the filtered items
     let availableItems = items.slice(0);
@@ -1009,7 +1045,14 @@ export default function Shop({ publicView = false }) {
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
               <div className="inline-flex items-center gap-1 sm:gap-2 mr-1 text-jckl-navy">
-                <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <div className="relative">
+                  <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  {activeFilterCount > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[8px] sm:text-[9px] font-bold rounded-full min-w-[14px] sm:min-w-[16px] h-[14px] sm:h-[16px] flex items-center justify-center">
+                      {activeFilterCount}
+                    </span>
+                  )}
+                </div>
                 <span className="text-[10px] sm:text-xs font-medium uppercase tracking-wide">Categories</span>
               </div>
               <div className="flex flex-wrap gap-1 sm:gap-1.5">
