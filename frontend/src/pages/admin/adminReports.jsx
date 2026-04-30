@@ -26,6 +26,8 @@ import {
 } from "chart.js";
 import { Bar, Pie } from "react-chartjs-2";
 import { useNavigate } from "react-router-dom";
+import { generateEnhancedCSV, downloadEnhancedCSV } from "../../utils/csvExportHelper";
+import { generateExcelHTML, downloadExcelFile } from "../../utils/excelExportHelper";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
@@ -704,206 +706,906 @@ export default function AdminReports() {
     }
   };
 
-  // Update the exportToCsv function to handle different data types with proper formatting
-  const exportToCsv = (data, type = 'products') => {
-    const escapeCSV = (cell) => {
-      const str = String(cell || '');
-      // Escape quotes by doubling them
-      return `"${str.replace(/"/g, '""')}"`;
-    };
-
-    let csvContent = '';
-    const filename = `${type}_${periodLabel.replace(/\s/g, '_')}.csv`;
-
+  // Enhanced Excel export functions with JCKL theme and actual formatting
+  const exportToExcel = (data, type = 'products') => {
+    const filename = `${type}_${periodLabel.replace(/\s/g, '_')}.xls`;
+    
     switch (type) {
       case 'top_items':
-        csvContent = [
-          ['Item', 'Category', 'Quantity Sold', 'Revenue (PHP)'],
-          ...data.map(item => [
-            item.name,
-            item.category || 'Uncategorized',
-            item.qty || 0,
-            Number(item.revenue || 0).toFixed(2)
-          ])
-        ].map(row => row.map(escapeCSV).join(',')).join('\n');
+        const topItemsConfig = {
+          title: 'TOP SELLING ITEMS REPORT',
+          subtitle: `Best performing items for ${periodLabel}`,
+          sections: [
+            {
+              type: 'summary',
+              data: {
+                'Report Period': periodLabel,
+                'Total Items Listed': data.length,
+                'Total Revenue': data.reduce((sum, item) => sum + (item.revenue || 0), 0).toFixed(2),
+                'Total Quantity Sold': data.reduce((sum, item) => sum + (item.qty || 0), 0),
+                'Average Revenue per Item': data.length > 0 ? (data.reduce((sum, item) => sum + (item.revenue || 0), 0) / data.length).toFixed(2) : '0.00'
+              }
+            },
+            {
+              type: 'table',
+              title: 'TOP SELLING ITEMS PERFORMANCE',
+              headers: ['Item Name', 'Category', 'Quantity Sold', 'Revenue (PHP)', 'Average Price'],
+              data: data.map(item => ({
+                item_name: item.name,
+                category: item.category || 'Uncategorized',
+                quantity_sold: item.qty || 0,
+                revenue: item.revenue || 0,
+                average_price: (item.qty && item.qty > 0) ? (item.revenue / item.qty) : 0
+              })),
+              columns: [
+                { key: 'item_name', type: 'text' },
+                { key: 'category', type: 'text' },
+                { key: 'quantity_sold', type: 'number' },
+                { key: 'revenue', type: 'currency' },
+                { key: 'average_price', type: 'currency' }
+              ]
+            }
+          ]
+        };
+        const topItemsExcel = generateExcelHTML(topItemsConfig);
+        downloadExcelFile(topItemsExcel, filename);
         break;
 
       case 'products':
-        csvContent = [
-          ['Product', 'Category', 'Quantity Sold', 'Revenue (PHP)'],
-          ...data.map(item => [
-            item.name,
-            item.category || 'Uncategorized',
-            item.qty || 0,
-            Number(item.revenue || 0).toFixed(2)
-          ])
-        ].map(row => row.map(escapeCSV).join(',')).join('\n');
+        const productsConfig = {
+          title: 'PRODUCTS PERFORMANCE REPORT',
+          subtitle: `Detailed product analysis for ${periodLabel}`,
+          sections: [
+            {
+              type: 'summary',
+              data: {
+                'Report Period': periodLabel,
+                'Total Products': data.length,
+                'Total Revenue': data.reduce((sum, item) => sum + (item.revenue || 0), 0).toFixed(2),
+                'Total Units Sold': data.reduce((sum, item) => sum + (item.qty || 0), 0),
+                'Products with Sales': data.filter(item => (item.qty || 0) > 0).length
+              }
+            },
+            {
+              type: 'table',
+              title: 'PRODUCTS PERFORMANCE DETAILS',
+              headers: ['Product Name', 'Category', 'Quantity Sold', 'Revenue (PHP)', 'Status'],
+              data: data.map(item => ({
+                product_name: item.name,
+                category: item.category || 'Uncategorized',
+                quantity_sold: item.qty || 0,
+                revenue: item.revenue || 0,
+                status: (item.qty || 0) > 0 ? 'HAS SALES' : 'NO SALES'
+              })),
+              columns: [
+                { key: 'product_name', type: 'text' },
+                { key: 'category', type: 'text' },
+                { key: 'quantity_sold', type: 'number' },
+                { key: 'revenue', type: 'currency' },
+                { key: 'status', type: 'status' }
+              ]
+            }
+          ]
+        };
+        const productsExcel = generateExcelHTML(productsConfig);
+        downloadExcelFile(productsExcel, filename);
         break;
 
       case 'reservations':
-        csvContent = [
-          ['Reservation Status', 'Count'],
-          ...Object.entries(data).map(([status, count]) => [
-            status,
-            count
-          ])
-        ].map(row => row.map(escapeCSV).join(',')).join('\n');
+        const reservationsConfig = {
+          title: 'RESERVATION STATUS REPORT',
+          subtitle: `Reservation breakdown for ${periodLabel}`,
+          sections: [
+            {
+              type: 'summary',
+              data: {
+                'Report Period': periodLabel,
+                'Total Reservations': Object.values(data).reduce((sum, count) => sum + count, 0),
+                'Completion Rate': ((data.Approved + data.Preparing + data.Ready + data.Claimed) / Object.values(data).reduce((sum, count) => sum + count, 0) * 100).toFixed(1) + '%',
+                'Pending Reservations': data.Pending || 0,
+                'Rejected Reservations': data.Rejected || 0
+              }
+            },
+            {
+              type: 'table',
+              title: 'RESERVATION STATUS BREAKDOWN',
+              headers: ['Status', 'Count', 'Percentage'],
+              data: Object.entries(data).map(([status, count]) => ({
+                status: status,
+                count: count,
+                percentage: ((count / Object.values(data).reduce((sum, c) => sum + c, 0)) * 100).toFixed(1) + '%'
+              })),
+              columns: [
+                { key: 'status', type: 'text' },
+                { key: 'count', type: 'number' },
+                { key: 'percentage', type: 'text' }
+              ]
+            }
+          ]
+        };
+        const reservationsExcel = generateExcelHTML(reservationsConfig);
+        downloadExcelFile(reservationsExcel, filename);
         break;
 
       case 'topups':
-        csvContent = [
-          ['Metric', 'Value'],
-          ['Approved Count', data.approvedCount],
-          ['Approved Amount (PHP)', Number(data.approvedAmt || 0).toFixed(2)],
-          ['Pending', data.pending],
-          ['Rejected', data.rejected]
-        ].map(row => row.map(escapeCSV).join(',')).join('\n');
+        const topupsConfig = {
+          title: 'TOP-UP ANALYSIS REPORT',
+          subtitle: `Wallet top-up statistics for ${periodLabel}`,
+          sections: [
+            {
+              type: 'summary',
+              data: {
+                'Report Period': periodLabel,
+                'Approved Transactions': data.approvedCount,
+                'Total Approved Amount': Number(data.approvedAmt || 0).toFixed(2),
+                'Pending Approvals': data.pending,
+                'Rejected Transactions': data.rejected,
+                'Average Top-up Amount': data.approvedCount > 0 ? (Number(data.approvedAmt || 0) / data.approvedCount).toFixed(2) : '0.00',
+                'Approval Rate': data.approvedCount + data.rejected > 0 ? ((data.approvedCount / (data.approvedCount + data.rejected)) * 100).toFixed(1) + '%' : '0%'
+              }
+            },
+            {
+              type: 'table',
+              title: 'TOP-UP STATISTICS',
+              headers: ['Metric', 'Value', 'Status'],
+              data: [
+                { metric: 'Approved Transactions', value: data.approvedCount, status: 'COMPLETED' },
+                { metric: 'Total Approved Amount', value: Number(data.approvedAmt || 0).toFixed(2), status: 'PROCESSED' },
+                { metric: 'Pending Approvals', value: data.pending, status: 'AWAITING' },
+                { metric: 'Rejected Transactions', value: data.rejected, status: 'DECLINED' }
+              ],
+              columns: [
+                { key: 'metric', type: 'text' },
+                { key: 'value', type: 'text' },
+                { key: 'status', type: 'status' }
+              ]
+            }
+          ]
+        };
+        const topupsExcel = generateExcelHTML(topupsConfig);
+        downloadExcelFile(topupsExcel, filename);
         break;
 
       case 'categories':
-        csvContent = [
-          ['Category', 'Revenue (PHP)'],
-          ...data.map(row => [
-            row.category,
-            Number(row.amount || 0).toFixed(2)
-          ])
-        ].map(row => row.map(escapeCSV).join(',')).join('\n');
+        const categoriesConfig = {
+          title: 'REVENUE BY CATEGORY REPORT',
+          subtitle: `Category performance analysis for ${periodLabel}`,
+          sections: [
+            {
+              type: 'summary',
+              data: {
+                'Report Period': periodLabel,
+                'Total Categories': data.length,
+                'Total Revenue': data.reduce((sum, row) => sum + (row.amount || 0), 0).toFixed(2),
+                'Average Revenue per Category': data.length > 0 ? (data.reduce((sum, row) => sum + (row.amount || 0), 0) / data.length).toFixed(2) : '0.00',
+                'Top Performing Category': data.length > 0 ? data.reduce((max, row) => (row.amount || 0) > (max.amount || 0) ? row : max).category : 'N/A'
+              }
+            },
+            {
+              type: 'table',
+              title: 'CATEGORY REVENUE BREAKDOWN',
+              headers: ['Category', 'Revenue (PHP)', 'Market Share', 'Performance'],
+              data: data.map(row => ({
+                category: row.category,
+                revenue: row.amount || 0,
+                market_share: ((row.amount || 0) / data.reduce((sum, r) => sum + (r.amount || 0), 0) * 100).toFixed(1) + '%',
+                performance: (row.amount || 0) > 1000 ? 'HIGH' : (row.amount || 0) > 500 ? 'MEDIUM' : 'LOW'
+              })),
+              columns: [
+                { key: 'category', type: 'text' },
+                { key: 'revenue', type: 'currency' },
+                { key: 'market_share', type: 'text' },
+                { key: 'performance', type: 'status' }
+              ]
+            }
+          ]
+        };
+        const categoriesExcel = generateExcelHTML(categoriesConfig);
+        downloadExcelFile(categoriesExcel, filename);
         break;
 
       case 'charts':
         if (data && data.chartData) {
-          csvContent = [
-            ['Product', 'Quantity Sold', 'Revenue (PHP)'],
-            ...data.chartData.labels.map((label, idx) => [
-              label,
-              data.chartData.datasets[0].data[idx] || 0,
-              Number(data.chartData.datasets[1].data[idx] || 0).toFixed(2)
-            ])
-          ].map(row => row.map(escapeCSV).join(',')).join('\n');
+          const chartsConfig = {
+            title: 'CHART DATA EXPORT',
+            subtitle: `Visual data representation for ${periodLabel}`,
+            sections: [
+              {
+                type: 'summary',
+                data: {
+                  'Report Period': periodLabel,
+                  'Data Points': data.chartData.labels.length,
+                  'Total Quantity': data.chartData.datasets[0].data.reduce((sum, val) => sum + (val || 0), 0),
+                  'Total Revenue': data.chartData.datasets[1].data.reduce((sum, val) => sum + (val || 0), 0).toFixed(2)
+                }
+              },
+              {
+                type: 'table',
+                title: 'PRODUCT PERFORMANCE DATA',
+                headers: ['Product', 'Quantity Sold', 'Revenue (PHP)', 'Performance Tier'],
+                data: data.chartData.labels.map((label, idx) => ({
+                  product: label,
+                  quantity_sold: data.chartData.datasets[0].data[idx] || 0,
+                  revenue: data.chartData.datasets[1].data[idx] || 0,
+                  performance_tier: (data.chartData.datasets[1].data[idx] || 0) > 1000 ? 'TOP' : 
+                                  (data.chartData.datasets[1].data[idx] || 0) > 500 ? 'MID' : 'LOW'
+                })),
+                columns: [
+                  { key: 'product', type: 'text' },
+                  { key: 'quantity_sold', type: 'number' },
+                  { key: 'revenue', type: 'currency' },
+                  { key: 'performance_tier', type: 'status' }
+                ]
+              }
+            ]
+          };
+          const chartsExcel = generateExcelHTML(chartsConfig);
+          downloadExcelFile(chartsExcel, filename);
         }
         break;
       
       default:
-        // Default case for any unknown type
+        console.warn(`Unknown export type: ${type}`);
         break;
     }
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;BOM' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
-    URL.revokeObjectURL(link.href);
   };
 
-  // Update the exportCombinedStats function to include KPIs with proper formatting
-  const exportCombinedStats = (resStats, topupStats, categoryStats, dashboard) => {
-    const escapeCSV = (cell) => {
-      const str = String(cell || '');
-      return `"${str.replace(/"/g, '""')}"`;
+  // Enhanced exportToCsv function with improved formatting
+  const exportToCsv = (data, type = 'products') => {
+    const filename = `${type}_${periodLabel.replace(/\s/g, '_')}.csv`;
+    
+    switch (type) {
+      case 'top_items':
+        const topItemsConfig = {
+          title: 'TOP SELLING ITEMS REPORT',
+          subtitle: `Best performing items for ${periodLabel}`,
+          sections: [
+            {
+              type: 'summary',
+              data: {
+                'Report Period': periodLabel,
+                'Total Items Listed': data.length,
+                'Total Revenue': data.reduce((sum, item) => sum + (item.revenue || 0), 0).toFixed(2),
+                'Total Quantity Sold': data.reduce((sum, item) => sum + (item.qty || 0), 0),
+                'Average Revenue per Item': data.length > 0 ? (data.reduce((sum, item) => sum + (item.revenue || 0), 0) / data.length).toFixed(2) : '0.00'
+              }
+            },
+            {
+              type: 'table',
+              title: 'TOP SELLING ITEMS PERFORMANCE',
+              headers: ['Item Name', 'Category', 'Quantity Sold', 'Revenue (PHP)', 'Average Price'],
+              data: data.map(item => ({
+                item_name: item.name,
+                category: item.category || 'Uncategorized',
+                quantity_sold: item.qty || 0,
+                revenue: item.revenue || 0,
+                average_price: (item.qty && item.qty > 0) ? (item.revenue / item.qty) : 0
+              })),
+              columns: [
+                { key: 'item_name', type: 'text' },
+                { key: 'category', type: 'text' },
+                { key: 'quantity_sold', type: 'number' },
+                { key: 'revenue', type: 'currency' },
+                { key: 'average_price', type: 'currency' }
+              ]
+            }
+          ]
+        };
+        const topItemsCsv = generateEnhancedCSV(topItemsConfig);
+        downloadEnhancedCSV(topItemsCsv, filename);
+        break;
+
+      case 'products':
+        const productsConfig = {
+          title: 'PRODUCTS PERFORMANCE REPORT',
+          subtitle: `Detailed product analysis for ${periodLabel}`,
+          sections: [
+            {
+              type: 'summary',
+              data: {
+                'Report Period': periodLabel,
+                'Total Products': data.length,
+                'Total Revenue': data.reduce((sum, item) => sum + (item.revenue || 0), 0).toFixed(2),
+                'Total Units Sold': data.reduce((sum, item) => sum + (item.qty || 0), 0),
+                'Products with Sales': data.filter(item => (item.qty || 0) > 0).length
+              }
+            },
+            {
+              type: 'table',
+              title: 'PRODUCTS PERFORMANCE DETAILS',
+              headers: ['Product Name', 'Category', 'Quantity Sold', 'Revenue (PHP)', 'Status'],
+              data: data.map(item => ({
+                product_name: item.name,
+                category: item.category || 'Uncategorized',
+                quantity_sold: item.qty || 0,
+                revenue: item.revenue || 0,
+                status: (item.qty || 0) > 0 ? 'HAS SALES' : 'NO SALES'
+              })),
+              columns: [
+                { key: 'product_name', type: 'text' },
+                { key: 'category', type: 'text' },
+                { key: 'quantity_sold', type: 'number' },
+                { key: 'revenue', type: 'currency' },
+                { key: 'status', type: 'status' }
+              ]
+            }
+          ]
+        };
+        const productsCsv = generateEnhancedCSV(productsConfig);
+        downloadEnhancedCSV(productsCsv, filename);
+        break;
+
+      case 'reservations':
+        const reservationsConfig = {
+          title: 'RESERVATION STATUS REPORT',
+          subtitle: `Reservation breakdown for ${periodLabel}`,
+          sections: [
+            {
+              type: 'summary',
+              data: {
+                'Report Period': periodLabel,
+                'Total Reservations': Object.values(data).reduce((sum, count) => sum + count, 0),
+                'Completion Rate': ((data.Approved + data.Preparing + data.Ready + data.Claimed) / Object.values(data).reduce((sum, count) => sum + count, 0) * 100).toFixed(1) + '%',
+                'Pending Reservations': data.Pending || 0,
+                'Rejected Reservations': data.Rejected || 0
+              }
+            },
+            {
+              type: 'table',
+              title: 'RESERVATION STATUS BREAKDOWN',
+              headers: ['Status', 'Count', 'Percentage'],
+              data: Object.entries(data).map(([status, count]) => ({
+                status: status,
+                count: count,
+                percentage: ((count / Object.values(data).reduce((sum, c) => sum + c, 0)) * 100).toFixed(1) + '%'
+              })),
+              columns: [
+                { key: 'status', type: 'text' },
+                { key: 'count', type: 'number' },
+                { key: 'percentage', type: 'text' }
+              ]
+            }
+          ]
+        };
+        const reservationsCsv = generateEnhancedCSV(reservationsConfig);
+        downloadEnhancedCSV(reservationsCsv, filename);
+        break;
+
+      case 'topups':
+        const topupsConfig = {
+          title: 'TOP-UP ANALYSIS REPORT',
+          subtitle: `Wallet top-up statistics for ${periodLabel}`,
+          sections: [
+            {
+              type: 'summary',
+              data: {
+                'Report Period': periodLabel,
+                'Approved Transactions': data.approvedCount,
+                'Total Approved Amount': Number(data.approvedAmt || 0).toFixed(2),
+                'Pending Approvals': data.pending,
+                'Rejected Transactions': data.rejected,
+                'Average Top-up Amount': data.approvedCount > 0 ? (Number(data.approvedAmt || 0) / data.approvedCount).toFixed(2) : '0.00',
+                'Approval Rate': data.approvedCount + data.rejected > 0 ? ((data.approvedCount / (data.approvedCount + data.rejected)) * 100).toFixed(1) + '%' : '0%'
+              }
+            },
+            {
+              type: 'table',
+              title: 'TOP-UP STATISTICS',
+              headers: ['Metric', 'Value', 'Additional Info'],
+              data: [
+                { metric: 'Approved Count', value: data.approvedCount, additional_info: 'Successfully processed' },
+                { metric: 'Approved Amount', value: Number(data.approvedAmt || 0).toFixed(2), additional_info: 'In PHP' },
+                { metric: 'Pending', value: data.pending, additional_info: 'Awaiting approval' },
+                { metric: 'Rejected', value: data.rejected, additional_info: 'Declined transactions' }
+              ],
+              columns: [
+                { key: 'metric', type: 'text' },
+                { key: 'value', type: 'text' },
+                { key: 'additional_info', type: 'text' }
+              ]
+            }
+          ]
+        };
+        const topupsCsv = generateEnhancedCSV(topupsConfig);
+        downloadEnhancedCSV(topupsCsv, filename);
+        break;
+
+      case 'categories':
+        const categoriesConfig = {
+          title: 'REVENUE BY CATEGORY REPORT',
+          subtitle: `Category performance analysis for ${periodLabel}`,
+          sections: [
+            {
+              type: 'summary',
+              data: {
+                'Report Period': periodLabel,
+                'Total Categories': data.length,
+                'Total Revenue': data.reduce((sum, row) => sum + (row.amount || 0), 0).toFixed(2),
+                'Average Revenue per Category': data.length > 0 ? (data.reduce((sum, row) => sum + (row.amount || 0), 0) / data.length).toFixed(2) : '0.00',
+                'Top Performing Category': data.length > 0 ? data.reduce((max, row) => (row.amount || 0) > (max.amount || 0) ? row : max).category : 'N/A'
+              }
+            },
+            {
+              type: 'table',
+              title: 'CATEGORY REVENUE BREAKDOWN',
+              headers: ['Category', 'Revenue (PHP)', 'Market Share', 'Performance'],
+              data: data.map(row => ({
+                category: row.category,
+                revenue: row.amount || 0,
+                market_share: ((row.amount || 0) / data.reduce((sum, r) => sum + (r.amount || 0), 0) * 100).toFixed(1) + '%',
+                performance: (row.amount || 0) > 1000 ? 'HIGH' : (row.amount || 0) > 500 ? 'MEDIUM' : 'LOW'
+              })),
+              columns: [
+                { key: 'category', type: 'text' },
+                { key: 'revenue', type: 'currency' },
+                { key: 'market_share', type: 'text' },
+                { key: 'performance', type: 'status' }
+              ]
+            }
+          ]
+        };
+        const categoriesCsv = generateEnhancedCSV(categoriesConfig);
+        downloadEnhancedCSV(categoriesCsv, filename);
+        break;
+
+      case 'charts':
+        if (data && data.chartData) {
+          const chartsConfig = {
+            title: 'CHART DATA EXPORT',
+            subtitle: `Visual data representation for ${periodLabel}`,
+            sections: [
+              {
+                type: 'summary',
+                data: {
+                  'Report Period': periodLabel,
+                  'Data Points': data.chartData.labels.length,
+                  'Total Quantity': data.chartData.datasets[0].data.reduce((sum, val) => sum + (val || 0), 0),
+                  'Total Revenue': data.chartData.datasets[1].data.reduce((sum, val) => sum + (val || 0), 0).toFixed(2)
+                }
+              },
+              {
+                type: 'table',
+                title: 'PRODUCT PERFORMANCE DATA',
+                headers: ['Product', 'Quantity Sold', 'Revenue (PHP)', 'Performance Tier'],
+                data: data.chartData.labels.map((label, idx) => ({
+                  product: label,
+                  quantity_sold: data.chartData.datasets[0].data[idx] || 0,
+                  revenue: data.chartData.datasets[1].data[idx] || 0,
+                  performance_tier: (data.chartData.datasets[1].data[idx] || 0) > 1000 ? 'TOP' : 
+                                  (data.chartData.datasets[1].data[idx] || 0) > 500 ? 'MID' : 'LOW'
+                })),
+                columns: [
+                  { key: 'product', type: 'text' },
+                  { key: 'quantity_sold', type: 'number' },
+                  { key: 'revenue', type: 'currency' },
+                  { key: 'performance_tier', type: 'status' }
+                ]
+              }
+            ]
+          };
+          const chartsCsv = generateEnhancedCSV(chartsConfig);
+          downloadEnhancedCSV(chartsCsv, filename);
+        }
+        break;
+      
+      default:
+        console.warn(`Unknown export type: ${type}`);
+        break;
+    }
+  };
+
+  // Enhanced Excel exportCombinedStats function with themed formatting
+  const exportCombinedStatsExcel = (resStats, topupStats, categoryStats, dashboard) => {
+    const config = {
+      title: 'COMBINED STATISTICS REPORT',
+      subtitle: `Comprehensive analytics for ${periodLabel}`,
+      sections: [
+        {
+          type: 'summary',
+          data: {
+            'Report Period': periodLabel,
+            'Total Revenue': Number((dashboard.totalSales || 0) || resStats.revenue || 0).toFixed(2),
+            'Total Orders': resStats.orders,
+            'Pending Reservations': resStats.pendingReservations,
+            'Pending Top-ups': topupStats?.pending ?? 0,
+            'Approval Rate (Top-ups)': topupStats.approvedCount + topupStats.rejected > 0 ? 
+              ((topupStats.approvedCount / (topupStats.approvedCount + topupStats.rejected)) * 100).toFixed(1) + '%' : '0%',
+            'Average Order Value': resStats.orders > 0 ? (Number((dashboard.totalSales || 0) || resStats.revenue || 0) / resStats.orders).toFixed(2) : '0.00'
+          }
+        },
+        {
+          type: 'table',
+          title: 'RESERVATION STATUS BREAKDOWN',
+          headers: ['Status', 'Count', 'Percentage'],
+          data: Object.entries(resStats.counts).map(([status, count]) => ({
+            status: status,
+            count: count,
+            percentage: ((count / Object.values(resStats.counts).reduce((sum, c) => sum + c, 0)) * 100).toFixed(1) + '%'
+          })),
+          columns: [
+            { key: 'status', type: 'text' },
+            { key: 'count', type: 'number' },
+            { key: 'percentage', type: 'text' }
+          ]
+        },
+        {
+          type: 'table',
+          title: 'TOP-UP ANALYSIS',
+          headers: ['Metric', 'Value', 'Status'],
+          data: [
+            { metric: 'Approved Transactions', value: topupStats.approvedCount, status: 'COMPLETED' },
+            { metric: 'Total Approved Amount', value: Number(topupStats.approvedAmt || 0).toFixed(2), status: 'PROCESSED' },
+            { metric: 'Pending Approvals', value: topupStats.pending, status: 'AWAITING' },
+            { metric: 'Rejected Transactions', value: topupStats.rejected, status: 'DECLINED' }
+          ],
+          columns: [
+            { key: 'metric', type: 'text' },
+            { key: 'value', type: 'text' },
+            { key: 'status', type: 'status' }
+          ]
+        },
+        {
+          type: 'table',
+          title: 'REVENUE BY CATEGORY',
+          headers: ['Category', 'Revenue (PHP)', 'Market Share', 'Performance Tier'],
+          data: categoryStats.map(row => ({
+            category: row.category,
+            revenue: Number(row.amount || 0).toFixed(2),
+            market_share: categoryStats.reduce((sum, r) => sum + (r.amount || 0), 0) > 0 ? 
+              ((row.amount || 0) / categoryStats.reduce((sum, r) => sum + (r.amount || 0), 0) * 100).toFixed(1) + '%' : '0%',
+            performance_tier: (row.amount || 0) > 1000 ? 'HIGH' : (row.amount || 0) > 500 ? 'MEDIUM' : 'LOW'
+          })),
+          columns: [
+            { key: 'category', type: 'text' },
+            { key: 'revenue', type: 'text' },
+            { key: 'market_share', type: 'text' },
+            { key: 'performance_tier', type: 'status' }
+          ]
+        }
+      ]
     };
 
-    const csvContent = [
-      ['KEY PERFORMANCE INDICATORS'],
-      [],
-      ['Metric', 'Value (PHP)'],
-      ['Revenue (this period)', Number((dashboard.totalSales || 0) || resStats.revenue || 0).toFixed(2)],
-      ['Total Orders (this period)', resStats.orders],
-      ['Pending Reservations', resStats.pendingReservations],
-      ['Pending Top-ups', topupStats?.pending ?? 0],
-      [],
-      ['RESERVATION STATUS BREAKDOWN'],
-      ['Status', 'Count'],
-      ...Object.entries(resStats.counts).map(([status, count]) => [status, count]),
-      [],
-      ['TOP-UPS ANALYSIS'],
-      ['Metric', 'Value'],
-      ['Approved Wallets', topupStats.approvedCount],
-      ['Total Approved Amount (PHP)', Number(topupStats.approvedAmt || 0).toFixed(2)],
-      ['Pending Approvals', topupStats.pending],
-      ['Rejected Top-ups', topupStats.rejected],
-      [],
-      ['REVENUE BY CATEGORY'],
-      ['Category', 'Revenue (PHP)'],
-      ...categoryStats.map(row => [row.category, Number(row.amount || 0).toFixed(2)])
-    ].map(row => row.map(escapeCSV).join(',')).join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;BOM' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `combined_stats_${periodLabel.replace(/\s/g, '_')}.csv`;
-    link.click();
-    URL.revokeObjectURL(link.href);
+    const excelContent = generateExcelHTML(config);
+    downloadExcelFile(excelContent, `combined_stats_${periodLabel.replace(/\s/g, '_')}.xls`);
   };
 
-  // Update the exportFullReport function to include KPIs with proper formatting
+// Enhanced exportCombinedStats function with improved formatting
+  const exportCombinedStats = (resStats, topupStats, categoryStats, dashboard) => {
+    const config = {
+      title: 'COMBINED STATISTICS REPORT',
+      subtitle: `Comprehensive analytics for ${periodLabel}`,
+      sections: [
+        {
+          type: 'summary',
+          data: {
+            'Report Period': periodLabel,
+            'Total Revenue': Number((dashboard.totalSales || 0) || resStats.revenue || 0).toFixed(2),
+            'Total Orders': resStats.orders,
+            'Pending Reservations': resStats.pendingReservations,
+            'Pending Top-ups': topupStats?.pending ?? 0,
+            'Approval Rate (Top-ups)': topupStats.approvedCount + topupStats.rejected > 0 ? 
+              ((topupStats.approvedCount / (topupStats.approvedCount + topupStats.rejected)) * 100).toFixed(1) + '%' : '0%',
+            'Average Order Value': resStats.orders > 0 ? (Number((dashboard.totalSales || 0) || resStats.revenue || 0) / resStats.orders).toFixed(2) : '0.00'
+          }
+        },
+        {
+          type: 'table',
+          title: 'RESERVATION STATUS BREAKDOWN',
+          headers: ['Status', 'Count', 'Percentage'],
+          data: Object.entries(resStats.counts).map(([status, count]) => ({
+            status: status,
+            count: count,
+            percentage: ((count / Object.values(resStats.counts).reduce((sum, c) => sum + c, 0)) * 100).toFixed(1) + '%'
+          })),
+          columns: [
+            { key: 'status', type: 'text' },
+            { key: 'count', type: 'number' },
+            { key: 'percentage', type: 'text' }
+          ]
+        },
+        {
+          type: 'table',
+          title: 'TOP-UP ANALYSIS',
+          headers: ['Metric', 'Value', 'Status'],
+          data: [
+            { metric: 'Approved Transactions', value: topupStats.approvedCount, status: 'COMPLETED' },
+            { metric: 'Total Approved Amount', value: Number(topupStats.approvedAmt || 0).toFixed(2), status: 'PROCESSED' },
+            { metric: 'Pending Approvals', value: topupStats.pending, status: 'AWAITING' },
+            { metric: 'Rejected Transactions', value: topupStats.rejected, status: 'DECLINED' }
+          ],
+          columns: [
+            { key: 'metric', type: 'text' },
+            { key: 'value', type: 'text' },
+            { key: 'status', type: 'status' }
+          ]
+        },
+        {
+          type: 'table',
+          title: 'REVENUE BY CATEGORY',
+          headers: ['Category', 'Revenue (PHP)', 'Market Share', 'Performance Tier'],
+          data: categoryStats.map(row => ({
+            category: row.category,
+            revenue: Number(row.amount || 0).toFixed(2),
+            market_share: categoryStats.reduce((sum, r) => sum + (r.amount || 0), 0) > 0 ? 
+              ((row.amount || 0) / categoryStats.reduce((sum, r) => sum + (r.amount || 0), 0) * 100).toFixed(1) + '%' : '0%',
+            performance_tier: (row.amount || 0) > 1000 ? 'HIGH' : (row.amount || 0) > 500 ? 'MEDIUM' : 'LOW'
+          })),
+          columns: [
+            { key: 'category', type: 'text' },
+            { key: 'revenue', type: 'text' },
+            { key: 'market_share', type: 'text' },
+            { key: 'performance_tier', type: 'status' }
+          ]
+        }
+      ]
+    };
+
+    const csvContent = generateEnhancedCSV(config);
+    downloadEnhancedCSV(csvContent, `combined_stats_${periodLabel.replace(/\s/g, '_')}.csv`);
+  };
+
+  // Enhanced Excel exportFullReport function with themed formatting
+  const exportFullReportExcel = (allData) => {
+    const { resStats, topupStats, filteredResTopItems, sortedProducts, productsBar, dashboard } = allData;
+    
+    const config = {
+      title: 'COMPREHENSIVE BUSINESS REPORT',
+      subtitle: `Complete analytics for ${periodLabel}`,
+      sections: [
+        {
+          type: 'summary',
+          data: {
+            'Report Period': periodLabel,
+            'Generated On': new Date().toLocaleString('en-PH'),
+            'Total Revenue': Number((dashboard.totalSales || 0) || resStats.revenue || 0).toFixed(2),
+            'Total Orders': resStats.orders,
+            'Pending Reservations': resStats.pendingReservations,
+            'Pending Top-ups': topupStats?.pending ?? 0,
+            'Average Order Value': resStats.orders > 0 ? (Number((dashboard.totalSales || 0) || resStats.revenue || 0) / resStats.orders).toFixed(2) : '0.00'
+          }
+        },
+        {
+          type: 'table',
+          title: 'RESERVATION STATUS BREAKDOWN',
+          headers: ['Status', 'Count', 'Percentage'],
+          data: Object.entries(resStats.counts).map(([status, count]) => ({
+            status: status,
+            count: count,
+            percentage: ((count / Object.values(resStats.counts).reduce((sum, c) => sum + c, 0)) * 100).toFixed(1) + '%'
+          })),
+          columns: [
+            { key: 'status', type: 'text' },
+            { key: 'count', type: 'number' },
+            { key: 'percentage', type: 'text' }
+          ]
+        },
+        {
+          type: 'table',
+          title: 'TOP-UP ANALYSIS',
+          headers: ['Metric', 'Value', 'Status'],
+          data: [
+            { metric: 'Approved Transactions', value: topupStats.approvedCount, status: 'COMPLETED' },
+            { metric: 'Total Approved Amount', value: Number(topupStats.approvedAmt || 0).toFixed(2), status: 'PROCESSED' },
+            { metric: 'Pending Approvals', value: topupStats.pending, status: 'AWAITING' },
+            { metric: 'Rejected Transactions', value: topupStats.rejected, status: 'DECLINED' }
+          ],
+          columns: [
+            { key: 'metric', type: 'text' },
+            { key: 'value', type: 'text' },
+            { key: 'status', type: 'status' }
+          ]
+        },
+        {
+          type: 'table',
+          title: 'REVENUE BY CATEGORY',
+          headers: ['Category', 'Revenue (PHP)', 'Market Share', 'Performance Tier'],
+          data: resStats.categoryRows.map(row => ({
+            category: row.category,
+            revenue: Number(row.amount || 0).toFixed(2),
+            market_share: resStats.categoryRows.reduce((sum, r) => sum + (r.amount || 0), 0) > 0 ? 
+              ((row.amount || 0) / resStats.categoryRows.reduce((sum, r) => sum + (r.amount || 0), 0) * 100).toFixed(1) + '%' : '0%',
+            performance_tier: (row.amount || 0) > 1000 ? 'HIGH' : (row.amount || 0) > 500 ? 'MEDIUM' : 'LOW'
+          })),
+          columns: [
+            { key: 'category', type: 'text' },
+            { key: 'revenue', type: 'text' },
+            { key: 'market_share', type: 'text' },
+            { key: 'performance_tier', type: 'status' }
+          ]
+        },
+        {
+          type: 'table',
+          title: 'TOP SELLING ITEMS',
+          headers: ['Item Name', 'Category', 'Quantity Sold', 'Revenue (PHP)', 'Performance'],
+          data: filteredResTopItems.map(item => ({
+            item_name: item.name,
+            category: item.category || 'Uncategorized',
+            quantity_sold: item.qty || 0,
+            revenue: Number(item.revenue || 0).toFixed(2),
+            performance: (item.revenue || 0) > 1000 ? 'TOP PERFORMER' : (item.revenue || 0) > 500 ? 'GOOD' : 'AVERAGE'
+          })),
+          columns: [
+            { key: 'item_name', type: 'text' },
+            { key: 'category', type: 'text' },
+            { key: 'quantity_sold', type: 'number' },
+            { key: 'revenue', type: 'text' },
+            { key: 'performance', type: 'status' }
+          ]
+        },
+        {
+          type: 'table',
+          title: 'TOP PRODUCTS BY REVENUE',
+          headers: ['Product Name', 'Category', 'Quantity Sold', 'Revenue (PHP)', 'Rank'],
+          data: sortedProducts.byRevenue.map((item, index) => ({
+            product_name: item.name,
+            category: item.category || 'Uncategorized',
+            quantity_sold: item.qty || 0,
+            revenue: Number(item.revenue || 0).toFixed(2),
+            rank: `#${index + 1}`
+          })),
+          columns: [
+            { key: 'product_name', type: 'text' },
+            { key: 'category', type: 'text' },
+            { key: 'quantity_sold', type: 'number' },
+            { key: 'revenue', type: 'text' },
+            { key: 'rank', type: 'text' }
+          ]
+        },
+        {
+          type: 'table',
+          title: 'CHART DATA - PRODUCT PERFORMANCE',
+          headers: ['Product', 'Quantity Sold', 'Revenue (PHP)', 'Performance Level'],
+          data: productsBar.labels.map((label, idx) => ({
+            product: label,
+            quantity_sold: productsBar.datasets[0].data[idx] || 0,
+            revenue: Number(productsBar.datasets[1].data[idx] || 0).toFixed(2),
+            performance_level: (productsBar.datasets[1].data[idx] || 0) > 1000 ? 'EXCELLENT' : 
+                             (productsBar.datasets[1].data[idx] || 0) > 500 ? 'GOOD' : 'NEEDS IMPROVEMENT'
+          })),
+          columns: [
+            { key: 'product', type: 'text' },
+            { key: 'quantity_sold', type: 'number' },
+            { key: 'revenue', type: 'text' },
+            { key: 'performance_level', type: 'status' }
+          ]
+        }
+      ]
+    };
+
+    const excelContent = generateExcelHTML(config);
+    downloadExcelFile(excelContent, `full_report_${periodLabel.replace(/\s/g, '_')}.xls`);
+  };
+
+  // Enhanced exportFullReport function with improved formatting
   const exportFullReport = (allData) => {
     const { resStats, topupStats, filteredResTopItems, sortedProducts, productsBar, dashboard } = allData;
     
-    const escapeCSV = (cell) => {
-      const str = String(cell || '');
-      return `"${str.replace(/"/g, '""')}"`;
+    const config = {
+      title: 'COMPREHENSIVE BUSINESS REPORT',
+      subtitle: `Complete analytics for ${periodLabel}`,
+      sections: [
+        {
+          type: 'summary',
+          data: {
+            'Report Period': periodLabel,
+            'Generated On': new Date().toLocaleString('en-PH'),
+            'Total Revenue': Number((dashboard.totalSales || 0) || resStats.revenue || 0).toFixed(2),
+            'Total Orders': resStats.orders,
+            'Pending Reservations': resStats.pendingReservations,
+            'Pending Top-ups': topupStats?.pending ?? 0,
+            'Average Order Value': resStats.orders > 0 ? (Number((dashboard.totalSales || 0) || resStats.revenue || 0) / resStats.orders).toFixed(2) : '0.00'
+          }
+        },
+        {
+          type: 'table',
+          title: 'RESERVATION STATUS BREAKDOWN',
+          headers: ['Status', 'Count', 'Percentage'],
+          data: Object.entries(resStats.counts).map(([status, count]) => ({
+            status: status,
+            count: count,
+            percentage: ((count / Object.values(resStats.counts).reduce((sum, c) => sum + c, 0)) * 100).toFixed(1) + '%'
+          })),
+          columns: [
+            { key: 'status', type: 'text' },
+            { key: 'count', type: 'number' },
+            { key: 'percentage', type: 'text' }
+          ]
+        },
+        {
+          type: 'table',
+          title: 'TOP-UP ANALYSIS',
+          headers: ['Metric', 'Value', 'Status'],
+          data: [
+            { metric: 'Approved Transactions', value: topupStats.approvedCount, status: 'COMPLETED' },
+            { metric: 'Total Approved Amount', value: Number(topupStats.approvedAmt || 0).toFixed(2), status: 'PROCESSED' },
+            { metric: 'Pending Approvals', value: topupStats.pending, status: 'AWAITING' },
+            { metric: 'Rejected Transactions', value: topupStats.rejected, status: 'DECLINED' }
+          ],
+          columns: [
+            { key: 'metric', type: 'text' },
+            { key: 'value', type: 'text' },
+            { key: 'status', type: 'status' }
+          ]
+        },
+        {
+          type: 'table',
+          title: 'REVENUE BY CATEGORY',
+          headers: ['Category', 'Revenue (PHP)', 'Market Share', 'Performance Tier'],
+          data: resStats.categoryRows.map(row => ({
+            category: row.category,
+            revenue: Number(row.amount || 0).toFixed(2),
+            market_share: resStats.categoryRows.reduce((sum, r) => sum + (r.amount || 0), 0) > 0 ? 
+              ((row.amount || 0) / resStats.categoryRows.reduce((sum, r) => sum + (r.amount || 0), 0) * 100).toFixed(1) + '%' : '0%',
+            performance_tier: (row.amount || 0) > 1000 ? 'HIGH' : (row.amount || 0) > 500 ? 'MEDIUM' : 'LOW'
+          })),
+          columns: [
+            { key: 'category', type: 'text' },
+            { key: 'revenue', type: 'text' },
+            { key: 'market_share', type: 'text' },
+            { key: 'performance_tier', type: 'status' }
+          ]
+        },
+        {
+          type: 'table',
+          title: 'TOP SELLING ITEMS',
+          headers: ['Item Name', 'Category', 'Quantity Sold', 'Revenue (PHP)', 'Performance'],
+          data: filteredResTopItems.map(item => ({
+            item_name: item.name,
+            category: item.category || 'Uncategorized',
+            quantity_sold: item.qty || 0,
+            revenue: Number(item.revenue || 0).toFixed(2),
+            performance: (item.revenue || 0) > 1000 ? 'TOP PERFORMER' : (item.revenue || 0) > 500 ? 'GOOD' : 'AVERAGE'
+          })),
+          columns: [
+            { key: 'item_name', type: 'text' },
+            { key: 'category', type: 'text' },
+            { key: 'quantity_sold', type: 'number' },
+            { key: 'revenue', type: 'text' },
+            { key: 'performance', type: 'status' }
+          ]
+        },
+        {
+          type: 'table',
+          title: 'TOP PRODUCTS BY REVENUE',
+          headers: ['Product Name', 'Category', 'Quantity Sold', 'Revenue (PHP)', 'Rank'],
+          data: sortedProducts.byRevenue.map((item, index) => ({
+            product_name: item.name,
+            category: item.category || 'Uncategorized',
+            quantity_sold: item.qty || 0,
+            revenue: Number(item.revenue || 0).toFixed(2),
+            rank: `#${index + 1}`
+          })),
+          columns: [
+            { key: 'product_name', type: 'text' },
+            { key: 'category', type: 'text' },
+            { key: 'quantity_sold', type: 'number' },
+            { key: 'revenue', type: 'text' },
+            { key: 'rank', type: 'text' }
+          ]
+        },
+        {
+          type: 'table',
+          title: 'CHART DATA - PRODUCT PERFORMANCE',
+          headers: ['Product', 'Quantity Sold', 'Revenue (PHP)', 'Performance Level'],
+          data: productsBar.labels.map((label, idx) => ({
+            product: label,
+            quantity_sold: productsBar.datasets[0].data[idx] || 0,
+            revenue: Number(productsBar.datasets[1].data[idx] || 0).toFixed(2),
+            performance_level: (productsBar.datasets[1].data[idx] || 0) > 1000 ? 'EXCELLENT' : 
+                             (productsBar.datasets[1].data[idx] || 0) > 500 ? 'GOOD' : 'NEEDS IMPROVEMENT'
+          })),
+          columns: [
+            { key: 'product', type: 'text' },
+            { key: 'quantity_sold', type: 'number' },
+            { key: 'revenue', type: 'text' },
+            { key: 'performance_level', type: 'status' }
+          ]
+        }
+      ]
     };
-    
-    const csvContent = [
-      ['FULL REPORT - ' + periodLabel],
-      ['Report Generated', new Date().toLocaleString()],
-      [],
-      ['KEY PERFORMANCE INDICATORS'],
-      ['Metric', 'Value (PHP)'],
-      ['Total Revenue (this period)', Number((dashboard.totalSales || 0) || resStats.revenue || 0).toFixed(2)],
-      ['Total Orders (this period)', resStats.orders],
-      ['Pending Reservations', resStats.pendingReservations],
-      ['Pending Top-ups', topupStats?.pending ?? 0],
-      [],
-      ['RESERVATION STATUS BREAKDOWN'],
-      ['Status', 'Count'],
-      ...Object.entries(resStats.counts).map(([status, count]) => [status, count]),
-      [],
-      ['TOP-UPS ANALYSIS'],
-      ['Metric', 'Value'],
-      ['Approved Wallets', topupStats.approvedCount],
-      ['Total Approved Amount (PHP)', Number(topupStats.approvedAmt || 0).toFixed(2)],
-      ['Pending Approvals', topupStats.pending],
-      ['Rejected Top-ups', topupStats.rejected],
-      [],
-      ['REVENUE BY CATEGORY'],
-      ['Category', 'Revenue (PHP)'],
-      ...resStats.categoryRows.map(row => [row.category, Number(row.amount || 0).toFixed(2)]),
-      [],
-      ['TOP SELLING ITEMS'],
-      ['Item', 'Category', 'Quantity Sold', 'Revenue (PHP)'],
-      ...filteredResTopItems.map(item => [
-        item.name,
-        item.category || 'Uncategorized',
-        item.qty || 0,
-        Number(item.revenue || 0).toFixed(2)
-      ]),
-      [],
-      ['TOP PRODUCTS BY REVENUE'],
-      ['Product', 'Category', 'Quantity Sold', 'Revenue (PHP)'],
-      ...sortedProducts.byRevenue.map(item => [
-        item.name,
-        item.category || 'Uncategorized',
-        item.qty || 0,
-        Number(item.revenue || 0).toFixed(2)
-      ]),
-      [],
-      ['CHART DATA - PRODUCT PERFORMANCE'],
-      ['Product', 'Quantity Sold', 'Revenue (PHP)'],
-      ...productsBar.labels.map((label, idx) => [
-        label,
-        productsBar.datasets[0].data[idx] || 0,
-        Number(productsBar.datasets[1].data[idx] || 0).toFixed(2)
-      ])
-    ].map(row => row.map(escapeCSV).join(',')).join('\n');
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;BOM' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `full_report_${periodLabel.replace(/\s/g, '_')}.csv`;
-    link.click();
-    URL.revokeObjectURL(link.href);
+    const csvContent = generateEnhancedCSV(config);
+    downloadEnhancedCSV(csvContent, `full_report_${periodLabel.replace(/\s/g, '_')}.csv`);
   };
 
   // Add this memoized sorting function near other useMemo declarations
@@ -966,7 +1668,7 @@ export default function AdminReports() {
             </button>
 
             <button
-              onClick={() => exportFullReport({
+              onClick={() => exportFullReportExcel({
                 resStats,
                 topupStats,
                 filteredResTopItems,
@@ -976,7 +1678,7 @@ export default function AdminReports() {
               })}
               className="px-3 py-2 bg-jckl-navy text-white rounded hover:bg-jckl-navy text-sm whitespace-nowrap"
             >
-              Export Report
+              Export Excel
             </button>
             <button type="button" onClick={load} className="inline-flex items-center justify-center gap-2 border px-3 py-2 rounded-lg text-sm hover:bg-white">
               <RefreshCw className="w-4 h-4" />
@@ -1099,10 +1801,10 @@ export default function AdminReports() {
         {/* Combined export button - moved here */}
         <div className="flex justify-end">
           <button
-            onClick={() => exportCombinedStats(resStats, topupStats, resStats.categoryRows, dashboard)}
+            onClick={() => exportCombinedStatsExcel(resStats, topupStats, resStats.categoryRows, dashboard)}
             className="px-3 py-1 text-sm bg-jckl-navy text-white rounded hover:bg-jckl-navy"
           >
-            Export Combined Stats
+            Export Excel
           </button>
         </div>
 
@@ -1162,10 +1864,10 @@ export default function AdminReports() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
             <h3 className="text-base sm:text-lg font-semibold text-jckl-navy">Top-selling products ({periodLabel})</h3>
             <button
-              onClick={() => exportToCsv(filteredResTopItems, 'top_items')}
+              onClick={() => exportToExcel(filteredResTopItems, 'top_items')}
               className="px-3 py-1 text-xs sm:text-sm bg-jckl-navy text-white rounded hover:bg-jckl-navy whitespace-nowrap"
             >
-              Export CSV
+              Export Excel
             </button>
           </div>
           
@@ -1293,10 +1995,10 @@ export default function AdminReports() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
             <h3 className="text-base sm:text-lg font-semibold text-jckl-navy">Top Products ({periodLabel})</h3>
             <button
-              onClick={() => exportToCsv(sortedProducts.byRevenue)}
+              onClick={() => exportToExcel(sortedProducts.byRevenue)}
               className="px-4 py-2 bg-jckl-navy text-white rounded hover:bg-jckl-navy text-sm"
             >
-              Export as CSV
+              Export Excel
             </button>
           </div>
           

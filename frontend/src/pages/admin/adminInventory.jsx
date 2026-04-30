@@ -16,6 +16,8 @@ import {
   Legend,
   ArcElement,
 } from "chart.js";
+import { generateEnhancedCSV, downloadEnhancedCSV } from "../../utils/csvExportHelper";
+import { generateExcelHTML, downloadExcelFile } from "../../utils/excelExportHelper";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
@@ -225,91 +227,278 @@ export default function AdminInventory() {
     return items.some(it => stockEdits[it.id] !== String(it.stock));
   }, [items, stockEdits]);
 
-  // Export functions
-  const exportInventoryToCsv = () => {
-    const csvContent = [
-      ['INVENTORY REPORT - ' + new Date().toLocaleDateString()],
-      [''],
-      ['SUMMARY'],
-      ['Metric', 'Value'],
-      ['Total Items', items.length],
-      ['Total Stock', totalStock],
-      ['Low Stock Items', lowStock.length],
-      ['Out of Stock Items', outOfStock.length],
-      [''],
-      ['DETAILED INVENTORY'],
-      ['Item', 'Category', 'Stock', 'Price', 'Status'],
-      ...items.map(item => [
-        item.name,
-        item.category,
-        item.stock,
-        '₱' + item.price.toFixed(2),
-        item.stock === 0 ? 'Out of Stock' : item.stock <= LOW_STOCK_THRESHOLD ? 'Low Stock' : 'In Stock'
-      ]),
-      [''],
-      ['BY CATEGORY'],
-      ['Category', 'Total Items', 'Total Stock', 'Low Stock', 'Out of Stock'],
-      ...categoryStats.map(cat => [
-        cat.category,
-        cat.itemCount,
-        cat.totalStock,
-        cat.lowStockCount,
-        cat.outOfStockCount
-      ])
-    ].map(row => row.map(cell => {
-      // Properly escape and encode cells with UTF-8
-      const cellStr = String(cell);
-      // Wrap in quotes if contains comma, newline, or special characters
-      if (cellStr.includes(',') || cellStr.includes('\n') || cellStr.includes('"') || cellStr.includes('₱')) {
-        return '"' + cellStr.replace(/"/g, '""') + '"';
-      }
-      return cellStr;
-    }).join(',')).join('\n');
+  // Enhanced Excel export functions with JCKL theme and actual formatting
+  const exportInventoryToExcel = () => {
+    const config = {
+      title: 'INVENTORY REPORT',
+      subtitle: `Generated on ${new Date().toLocaleDateString('en-PH', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      })}`,
+      sections: [
+        {
+          type: 'summary',
+          data: {
+            'Total Items': items.length,
+            'Total Stock Units': totalStock,
+            'Low Stock Items': lowStock.length,
+            'Out of Stock Items': outOfStock.length,
+            'Categories Count': categories.length - 1,
+            'Low Stock Threshold': LOW_STOCK_THRESHOLD
+          }
+        },
+        {
+          type: 'table',
+          title: 'DETAILED INVENTORY LIST',
+          headers: ['Item Name', 'Category', 'Current Stock', 'Unit Price', 'Stock Status'],
+          data: items.map(item => ({
+            item_name: item.name,
+            category: item.category || 'Uncategorized',
+            current_stock: item.stock,
+            unit_price: item.price,
+            stock_status: item.stock === 0 ? 'OUT OF STOCK' : 
+                        item.stock <= LOW_STOCK_THRESHOLD ? 'LOW STOCK' : 'IN STOCK'
+          })),
+          columns: [
+            { key: 'item_name', type: 'text' },
+            { key: 'category', type: 'text' },
+            { key: 'current_stock', type: 'number' },
+            { key: 'unit_price', type: 'currency' },
+            { key: 'stock_status', type: 'status' }
+          ]
+        },
+        {
+          type: 'table',
+          title: 'INVENTORY SUMMARY BY CATEGORY',
+          headers: ['Category', 'Total Items', 'Total Stock', 'Low Stock Items', 'Out of Stock Items'],
+          data: categoryStats.map(cat => ({
+            category: cat.category,
+            total_items: cat.itemCount,
+            total_stock: cat.totalStock,
+            low_stock_items: cat.lowStockCount,
+            out_of_stock_items: cat.outOfStockCount
+          })),
+          columns: [
+            { key: 'category', type: 'text' },
+            { key: 'total_items', type: 'number' },
+            { key: 'total_stock', type: 'number' },
+            { key: 'low_stock_items', type: 'number' },
+            { key: 'out_of_stock_items', type: 'number' }
+          ]
+        }
+      ]
+    };
 
-    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `inventory_report_${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
-    URL.revokeObjectURL(link.href);
+    const excelContent = generateExcelHTML(config);
+    downloadExcelFile(excelContent, `jckl_inventory_${new Date().toISOString().split('T')[0]}.xls`);
+  };
+
+  const exportLowStockToExcel = () => {
+    const config = {
+      title: 'LOW STOCK REPORT',
+      subtitle: `Items requiring attention as of ${new Date().toLocaleDateString('en-PH', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      })}`,
+      sections: [
+        {
+          type: 'summary',
+          data: {
+            'Low Stock Threshold': `${LOW_STOCK_THRESHOLD} units`,
+            'Low Stock Items Count': lowStock.length,
+            'Out of Stock Items Count': outOfStock.length,
+            'Total Items Needing Attention': lowStock.length + outOfStock.length,
+            'Total Inventory Value': items.reduce((sum, item) => sum + (item.stock * item.price), 0).toFixed(2)
+          }
+        }
+      ]
+    };
+
+    // Add low stock items table if any exist
+    if (lowStock.length > 0) {
+      config.sections.push({
+        type: 'table',
+        title: `LOW STOCK ITEMS (<= ${LOW_STOCK_THRESHOLD} units)`,
+        headers: ['Item Name', 'Category', 'Current Stock', 'Unit Price', 'Total Value'],
+        data: lowStock.map(item => ({
+          item_name: item.name,
+          category: item.category || 'Uncategorized',
+          current_stock: item.stock,
+          unit_price: item.price,
+          total_value: item.stock * item.price
+        })),
+        columns: [
+          { key: 'item_name', type: 'text' },
+          { key: 'category', type: 'text' },
+          { key: 'current_stock', type: 'number' },
+          { key: 'unit_price', type: 'currency' },
+          { key: 'total_value', type: 'currency' }
+        ]
+      });
+    }
+
+    // Add out of stock items table if any exist
+    if (outOfStock.length > 0) {
+      config.sections.push({
+        type: 'table',
+        title: 'OUT OF STOCK ITEMS',
+        headers: ['Item Name', 'Category', 'Unit Price', 'Restock Suggestion'],
+        data: outOfStock.map(item => ({
+          item_name: item.name,
+          category: item.category || 'Uncategorized',
+          unit_price: item.price,
+          restock_suggestion: `Order at least ${Math.max(10, LOW_STOCK_THRESHOLD * 2)} units`
+        })),
+        columns: [
+          { key: 'item_name', type: 'text' },
+          { key: 'category', type: 'text' },
+          { key: 'unit_price', type: 'currency' },
+          { key: 'restock_suggestion', type: 'text' }
+        ]
+      });
+    }
+
+    const excelContent = generateExcelHTML(config);
+    downloadExcelFile(excelContent, `jckl_low_stock_${new Date().toISOString().split('T')[0]}.xls`);
+  };
+
+  // Enhanced Export functions
+  const exportInventoryToCsv = () => {
+    const config = {
+      title: 'INVENTORY REPORT',
+      subtitle: `Generated on ${new Date().toLocaleDateString('en-PH', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      })}`,
+      sections: [
+        {
+          type: 'summary',
+          data: {
+            'Total Items': items.length,
+            'Total Stock Units': totalStock,
+            'Low Stock Items': lowStock.length,
+            'Out of Stock Items': outOfStock.length,
+            'Categories Count': categories.length - 1, // Exclude "all"
+            'Low Stock Threshold': LOW_STOCK_THRESHOLD
+          }
+        },
+        {
+          type: 'table',
+          title: 'DETAILED INVENTORY LIST',
+          headers: ['Item Name', 'Category', 'Current Stock', 'Unit Price', 'Stock Status'],
+          data: items.map(item => ({
+            item_name: item.name,
+            category: item.category || 'Uncategorized',
+            current_stock: item.stock,
+            unit_price: item.price,
+            stock_status: item.stock === 0 ? 'OUT OF STOCK' : 
+                        item.stock <= LOW_STOCK_THRESHOLD ? 'LOW STOCK' : 'IN STOCK'
+          })),
+          columns: [
+            { key: 'item_name', type: 'text' },
+            { key: 'category', type: 'text' },
+            { key: 'current_stock', type: 'number' },
+            { key: 'unit_price', type: 'currency' },
+            { key: 'stock_status', type: 'status' }
+          ]
+        },
+        {
+          type: 'table',
+          title: 'INVENTORY SUMMARY BY CATEGORY',
+          headers: ['Category', 'Total Items', 'Total Stock', 'Low Stock Items', 'Out of Stock Items'],
+          data: categoryStats.map(cat => ({
+            category: cat.category,
+            total_items: cat.itemCount,
+            total_stock: cat.totalStock,
+            low_stock_items: cat.lowStockCount,
+            out_of_stock_items: cat.outOfStockCount
+          })),
+          columns: [
+            { key: 'category', type: 'text' },
+            { key: 'total_items', type: 'number' },
+            { key: 'total_stock', type: 'number' },
+            { key: 'low_stock_items', type: 'number' },
+            { key: 'out_of_stock_items', type: 'number' }
+          ]
+        }
+      ]
+    };
+
+    const csvContent = generateEnhancedCSV(config);
+    downloadEnhancedCSV(csvContent, `inventory_report_${new Date().toISOString().split('T')[0]}.csv`);
   };
 
   const exportLowStockToCsv = () => {
-    const csvContent = [
-      ['LOW STOCK & OUT OF STOCK REPORT - ' + new Date().toLocaleDateString()],
-      [''],
-      ['LOW STOCK ITEMS (≤ ' + LOW_STOCK_THRESHOLD + ' units)'],
-      ['Item', 'Category', 'Current Stock', 'Price'],
-      ...lowStock.map(item => [
-        item.name,
-        item.category,
-        item.stock,
-        '₱' + item.price.toFixed(2)
-      ]),
-      [''],
-      ['OUT OF STOCK ITEMS'],
-      ['Item', 'Category', 'Price'],
-      ...outOfStock.map(item => [
-        item.name,
-        item.category,
-        '₱' + item.price.toFixed(2)
-      ])
-    ].map(row => row.map(cell => {
-      // Properly escape and encode cells with UTF-8
-      const cellStr = String(cell);
-      // Wrap in quotes if contains comma, newline, or special characters
-      if (cellStr.includes(',') || cellStr.includes('\n') || cellStr.includes('"') || cellStr.includes('₱')) {
-        return '"' + cellStr.replace(/"/g, '""') + '"';
-      }
-      return cellStr;
-    }).join(',')).join('\n');
+    const config = {
+      title: 'LOW STOCK & OUT OF STOCK REPORT',
+      subtitle: `Items requiring attention as of ${new Date().toLocaleDateString('en-PH', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      })}`,
+      sections: [
+        {
+          type: 'summary',
+          data: {
+            'Low Stock Threshold': `${LOW_STOCK_THRESHOLD} units`,
+            'Low Stock Items Count': lowStock.length,
+            'Out of Stock Items Count': outOfStock.length,
+            'Total Items Needing Attention': lowStock.length + outOfStock.length,
+            'Total Inventory Value': items.reduce((sum, item) => sum + (item.stock * item.price), 0).toFixed(2)
+          }
+        }
+      ]
+    };
 
-    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `low_stock_report_${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
-    URL.revokeObjectURL(link.href);
+    // Add low stock items table if any exist
+    if (lowStock.length > 0) {
+      config.sections.push({
+        type: 'table',
+        title: `LOW STOCK ITEMS (<= ${LOW_STOCK_THRESHOLD} units)`,
+        headers: ['Item Name', 'Category', 'Current Stock', 'Unit Price', 'Total Value'],
+        data: lowStock.map(item => ({
+          item_name: item.name,
+          category: item.category || 'Uncategorized',
+          current_stock: item.stock,
+          unit_price: item.price,
+          total_value: item.stock * item.price
+        })),
+        columns: [
+          { key: 'item_name', type: 'text' },
+          { key: 'category', type: 'text' },
+          { key: 'current_stock', type: 'number' },
+          { key: 'unit_price', type: 'currency' },
+          { key: 'total_value', type: 'currency' }
+        ]
+      });
+    }
+
+    // Add out of stock items table if any exist
+    if (outOfStock.length > 0) {
+      config.sections.push({
+        type: 'table',
+        title: 'OUT OF STOCK ITEMS',
+        headers: ['Item Name', 'Category', 'Unit Price', 'Restock Suggestion'],
+        data: outOfStock.map(item => ({
+          item_name: item.name,
+          category: item.category || 'Uncategorized',
+          unit_price: item.price,
+          restock_suggestion: `Order at least ${Math.max(10, LOW_STOCK_THRESHOLD * 2)} units`
+        })),
+        columns: [
+          { key: 'item_name', type: 'text' },
+          { key: 'category', type: 'text' },
+          { key: 'unit_price', type: 'currency' },
+          { key: 'restock_suggestion', type: 'text' }
+        ]
+      });
+    }
+
+    const csvContent = generateEnhancedCSV(config);
+    downloadEnhancedCSV(csvContent, `low_stock_report_${new Date().toISOString().split('T')[0]}.csv`);
   };
 
   return (
@@ -485,19 +674,19 @@ export default function AdminInventory() {
               {/* Export Buttons */}
               <div className="flex flex-col sm:flex-row gap-2">
                 <button
-                  onClick={exportInventoryToCsv}
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-jckl-navy text-white rounded-lg hover:bg-jckl-navy text-sm font-medium"
-                >
-                  <Download className="w-4 h-4" />
-                  Export Full Inventory
-                </button>
+                    onClick={exportInventoryToExcel}
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-jckl-navy text-white rounded-lg hover:bg-jckl-navy text-sm font-medium"
+                  >
+                    <Download className="w-4 h-4" />
+                    Export Inventory
+                  </button>
                 <button
-                  onClick={exportLowStockToCsv}
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 text-sm font-medium"
-                >
-                  <Download className="w-4 h-4" />
-                  Export Low Stock Report
-                </button>
+                    onClick={exportLowStockToExcel}
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 text-sm font-medium"
+                  >
+                    <Download className="w-4 h-4" />
+                    Export Low Stock Inventory
+                  </button>
               </div>
             </div>
           )}

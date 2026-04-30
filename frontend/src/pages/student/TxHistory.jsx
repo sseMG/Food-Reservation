@@ -7,6 +7,7 @@ import BottomNav from "../../components/mobile/BottomNav";
 import FullScreenLoader from "../../components/FullScreenLoader";
 import { api } from "../../lib/api";
 import { refreshSessionForProtected } from "../../lib/auth";
+import { generateExcelHTML, downloadExcelFile } from "../../utils/excelExportHelper";
 import { Search, RefreshCw, ChevronLeft, ChevronRight, X, Filter, CheckCircle, Clock, XCircle, DollarSign, Calendar, ShoppingBag } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useModal } from "../../contexts/ModalContext";
@@ -390,74 +391,79 @@ export default function TxHistory() {
     await refetch();
   }, [refetch]);
 
-  // export CSV for current filtered results (not all server data)
-  const exportCSV = useCallback(async () => {
-    // ✅ Suggestion #1: Check for no data
+  // export Excel for current filtered results (not all server data)
+  const exportExcel = useCallback(async () => {
+    // Check for no data
     if (!rows || rows.length === 0) {
       await showAlert("No records to export. Please add some orders first.", "warning", "No Data Available");
       return;
     }
 
-    // ✅ Suggestion #1: Prompt user before export
+    // Prompt user before export
     const confirmed = await showConfirm(
-      `Export ${rows.length} order record${rows.length !== 1 ? 's' : ''} to CSV?\n\nThis will export all currently filtered orders.`,
+      `Export ${rows.length} order record${rows.length !== 1 ? 's' : ''} to Excel?\n\nThis will export all currently filtered orders with JCKL theme formatting.`,
       "Export Order History"
     );
     
     if (!confirmed) return;
 
-    const csvEscape = (value) => {
-      const v = value == null ? "" : String(value);
-      return `"${v.replace(/"/g, '""')}"`;
+    const config = {
+      title: 'TRANSACTION HISTORY REPORT',
+      subtitle: `Order history for ${new Date().toLocaleDateString('en-PH', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      })}`,
+      sections: [
+        {
+          type: 'summary',
+          data: {
+            'Total Orders': rows.length,
+            'Export Date': new Date().toLocaleDateString('en-PH'),
+            'Filter Status': status === 'all' ? 'All Orders' : status.toUpperCase(),
+            'Search Applied': q ? 'Yes' : 'No',
+            'Total Amount': peso.format(rows.reduce((sum, r) => sum + (r.amount || 0), 0))
+          }
+        },
+        {
+          type: 'table',
+          title: 'TRANSACTION DETAILS',
+          headers: ['Order ID', 'Order Type', 'Date & Time', 'Pickup', 'Amount (PHP)', 'Status', 'Items Ordered'],
+          data: rows.map((r) => ({
+            order_id: r.id,
+            order_type: r.title,
+            date_time: fmtDateTime(r.createdAt),
+            pickup: r.pickupDisplay || "N/A",
+            amount_php: r.amount || 0,
+            status: r.status,
+            items_ordered: r.products || "N/A"
+          })),
+          columns: [
+            { key: 'order_id', type: 'text' },
+            { key: 'order_type', type: 'text' },
+            { key: 'date_time', type: 'text' },
+            { key: 'pickup', type: 'text' },
+            { key: 'amount_php', type: 'currency' },
+            { key: 'status', type: 'status' },
+            { key: 'items_ordered', type: 'text' }
+          ]
+        }
+      ]
     };
 
-    // Human-readable headers matching website
-    const header = [
-      "Order ID",
-      "Order Type",
-      "Date & Time",
-      "Pickup",
-      "Amount (PHP)",
-      "Status",
-      "Items Ordered",
-    ];
-
-    const items = rows.map((r) => ({
-      "Order ID": r.id,
-      "Order Type": r.title,
-      "Date & Time": fmtDateTime(r.createdAt),
-      "Pickup": r.pickupDisplay || "—",
-      "Amount (PHP)": peso.format(r.amount),
-      "Status": r.status,
-      "Items Ordered": r.products || "—",
-    }));
-
-    const lines = [header.map(csvEscape).join(",")].concat(
-      items.map((it) => header.map((h) => csvEscape(it[h])).join(","))
-    );
-
-    // Use CRLF for better Excel compatibility + prepend UTF-8 BOM to avoid garbled chars (₱, ×)
-    const csv = `\uFEFF${lines.join("\r\n")}`;
+    const excelContent = generateExcelHTML(config);
     
-    // ✅ Suggestion #3: Professional filename with date
+    // Professional filename with date
     const today = new Date();
     const dateStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
     const timeStr = today.toTimeString().slice(0,5).replace(':', ''); // HHMM
     
-    let filename = `Order_History_${dateStr}_${timeStr}`;
+    let filename = `Transaction_History_${dateStr}_${timeStr}`;
     if (status !== "all") filename += `_${status}`;
     if (q) filename += `_filtered`;
-    filename += `.csv`;
+    filename += `.xls`;
     
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
+    downloadExcelFile(excelContent, filename);
   }, [rows, pageSafe, status, q, showAlert, showConfirm]);
 
   // modal keyboard handling (escape to close)
@@ -567,11 +573,11 @@ export default function TxHistory() {
                 <span className="hidden sm:inline">Refresh</span>
               </button>
               <button
-                onClick={exportCSV}
-                className="hidden sm:inline-flex items-center gap-2 border border-gray-300 px-3 py-2 rounded-lg text-sm hover:bg-gray-50"
-                title="Export CSV"
+                onClick={exportExcel}
+                className="hidden sm:inline-flex items-center gap-2 border border-jckl-navy px-3 py-2 rounded-lg text-sm hover:bg-jckl-cream text-jckl-navy"
+                title="Export Excel"
               >
-                Export CSV
+                Export Excel
               </button>
             </div>
           </div>
@@ -646,12 +652,12 @@ export default function TxHistory() {
               {showFilters ? <X className="w-4 h-4" /> : null}
             </button>
 
-            {/* Desktop: Export CSV */}
+            {/* Desktop: Export Excel */}
             <button
-              onClick={exportCSV}
-              className="hidden md:inline-flex items-center gap-2 border border-gray-300 px-3 py-2 rounded-lg text-sm hover:bg-gray-50"
+              onClick={exportExcel}
+              className="hidden md:inline-flex items-center gap-2 border border-jckl-navy px-3 py-2 rounded-lg text-sm hover:bg-jckl-cream text-jckl-navy"
             >
-              Export CSV
+              Export Excel
             </button>
           </div>
 
