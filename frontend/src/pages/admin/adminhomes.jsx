@@ -11,6 +11,7 @@ import {
   Trash2,
   Wallet,
   RefreshCw,
+  Calendar,
 } from "lucide-react";
 import { api } from "../../lib/api";
 import { refreshSessionForProtected } from "../../lib/auth";
@@ -42,6 +43,22 @@ const ADMIN_ROUTES = {
   users: "/admin/users",
   itemEdit: (id) => `/admin/shops/edit/${id}`,
 };
+
+const weekdays = [
+  { value: 0, label: "Sunday" },
+  { value: 1, label: "Monday" },
+  { value: 2, label: "Tuesday" },
+  { value: 3, label: "Wednesday" },
+  { value: 4, label: "Thursday" },
+  { value: 5, label: "Friday" },
+  { value: 6, label: "Saturday" },
+];
+
+const slots = [
+  { id: "recess", label: "Recess" },
+  { id: "lunch", label: "Lunch" },
+  { id: "after", label: "After Class" },
+];
 
 export default function AdminHome() {
   const navigate = useNavigate();
@@ -357,6 +374,8 @@ export default function AdminHome() {
           item.active !== undefined ? !!item.active :
           item.isActive !== undefined ? !!item.isActive : true,
         imageUrl: item.image || item.img || item.imageUrl || null,
+        availableDays: item.availableDays || [],
+        availableSlots: item.availableSlots || [],
       };
 
       setEditingItem(normalized);
@@ -365,6 +384,8 @@ export default function AdminHome() {
         category: normalized.category,
         stock: normalized.stock,
         price: normalized.price,
+        availableDays: normalized.availableDays,
+        availableSlots: normalized.availableSlots,
       });
       setEditingImagePreview(normalized.imageUrl);
       setEditingImageFile(null);
@@ -398,6 +419,24 @@ export default function AdminHome() {
     setEditingImagePreview(null);
   };
 
+  const toggleWeekday = (dayValue) => {
+    setEditingFields(f => ({
+      ...f,
+      availableDays: f.availableDays.includes(dayValue)
+        ? f.availableDays.filter((d) => d !== dayValue)
+        : [...f.availableDays, dayValue],
+    }));
+  };
+
+  const toggleSlot = (slotId) => {
+    setEditingFields(f => ({
+      ...f,
+      availableSlots: f.availableSlots.includes(slotId)
+        ? f.availableSlots.filter((s) => s !== slotId)
+        : [...f.availableSlots, slotId],
+    }));
+  };
+
   const saveEdit = async () => {
     if (!editingItem || !editingFields) return;
     if (!window.confirm("Save changes to this product?")) return;
@@ -409,6 +448,8 @@ export default function AdminHome() {
       fd.append("price", Number(editingFields.price) || 0);
       fd.append("stock", Number(editingFields.stock) || 0);
       fd.append("category", editingFields.category);
+      fd.append("availableDays", JSON.stringify(editingFields.availableDays || []));
+      fd.append("availableSlots", JSON.stringify(editingFields.availableSlots || []));
 
       // Append image if a new one was selected (optional)
       if (editingImageFile) {
@@ -842,7 +883,7 @@ export default function AdminHome() {
             className="absolute inset-0 bg-black/30"
             onClick={closeEditModal}
           />
-          <div className="relative w-full sm:max-w-2xl bg-white rounded-t-2xl sm:rounded-2xl shadow-lg border border-gray-100 max-h-[85vh] sm:max-h-none overflow-hidden flex flex-col">
+          <div className="relative w-full sm:max-w-2xl bg-white rounded-t-2xl sm:rounded-2xl shadow-lg border border-gray-100 max-h-[85vh] sm:max-h-[90vh] overflow-hidden flex flex-col">
             <div className="flex items-center justify-between p-6 sticky top-0 bg-white z-10 border-b">
               <h3 className="text-lg font-semibold text-jckl-navy">Edit Item</h3>
               <button
@@ -857,6 +898,13 @@ export default function AdminHome() {
             </div>
 
             <div className="overflow-y-auto flex-1 p-6">
+              {savingEdit && (
+                <div className="mb-3 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-700 flex items-center gap-2">
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  Saving changes...
+                </div>
+              )}
+
               <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
               {/* Left form */}
               <div className="sm:col-span-3 space-y-3">
@@ -902,8 +950,76 @@ export default function AdminHome() {
                     className="w-full border border-jckl-gold rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold"
                   />
                   <p className="text-xs text-jckl-slate mt-1">
-                    Preview: {editingFields.price ? peso.format(Number(editingFields.price)) : "—"}
+                    Preview: {editingFields.price ? peso.format(Number(editingFields.price)) : "â"}
                   </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-jckl-slate mb-2">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4" />
+                      Available Days (Weekdays)
+                    </div>
+                  </label>
+                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                    <p className="text-xs text-gray-600 mb-3">
+                      Select specific days. If none selected, item will be available on all days.
+                    </p>
+                    <div className="grid grid-cols-4 gap-2">
+                      {weekdays.map((day) => (
+                        <label
+                          key={day.value}
+                          className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition ${
+                            editingFields.availableDays.includes(day.value)
+                              ? "bg-blue-100 border-blue-500 text-blue-900"
+                              : "bg-white border-gray-300 hover:border-blue-400"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={editingFields.availableDays.includes(day.value)}
+                            onChange={() => toggleWeekday(day.value)}
+                            className="sr-only"
+                          />
+                          <span className="text-xs font-medium">{day.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-jckl-slate mb-2">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4" />
+                      Available Pickup Windows
+                    </div>
+                  </label>
+                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                    <p className="text-xs text-gray-600 mb-3">
+                      Select specific pickup windows. If none selected, item will be available for all windows.
+                    </p>
+                    <div className="grid grid-cols-3 gap-2">
+                      {slots.map((slot) => (
+                        <label
+                          key={slot.id}
+                          className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition ${
+                            editingFields.availableSlots.includes(slot.id)
+                              ? "bg-blue-100 border-blue-500 text-blue-900"
+                              : "bg-white border-gray-300 hover:border-blue-400"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={editingFields.availableSlots.includes(slot.id)}
+                            onChange={() => toggleSlot(slot.id)}
+                            className="sr-only"
+                          />
+                          <span className="text-xs font-medium">{slot.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -917,6 +1033,7 @@ export default function AdminHome() {
                         src={editingImagePreview}
                         alt="preview"
                         className="w-40 h-40 object-contain rounded"
+                        onError={(e) => { e.currentTarget.style.display = "none"; }}
                       />
                       <div className="mt-3 flex gap-2">
                         <button
@@ -965,7 +1082,7 @@ export default function AdminHome() {
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                         </svg>
-                        Upload (≤ 2MB)
+                        Upload (â¤ 2MB)
                       </button>
                     </>
                   )}
@@ -978,19 +1095,23 @@ export default function AdminHome() {
             <div className="mt-5 flex flex-col sm:flex-row gap-2 justify-end p-6 border-t bg-white pb-24 sm:pb-6">
               <button
                 onClick={closeEditModal}
-                className="px-4 py-2 rounded-lg border border-jckl-gold text-jckl-navy hover:bg-jckl-cream text-sm"
+                className="px-4 py-2 rounded-lg border hover:bg-white text-sm"
               >
                 Cancel
               </button>
               <button
                 onClick={saveEdit}
                 disabled={savingEdit}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-jckl-navy text-white hover:bg-jckl-navy text-sm disabled:opacity-60"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-jckl-navy text-white hover:bg-jckl-navy text-sm disabled:opacity-60"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                {savingEdit ? "Saving…" : "Save Changes"}
+                {savingEdit ? (
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                ) : (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
+                Save Changes
               </button>
             </div>
           </div>
