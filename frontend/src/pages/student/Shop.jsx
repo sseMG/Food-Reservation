@@ -313,10 +313,12 @@ function getCutoffCountdown(pickupDateStr, cutoff) {
   );
   const diff = deadline - nowManila;
   if (diff <= 0) return null;
-  const hours = Math.floor(diff / 3600000);
-  const mins = Math.floor((diff % 3600000) / 60000);
-  if (hours > 0) return `${hours}h ${mins}m`;
-  return `${mins}m`;
+  const days = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const minutes = Math.floor((diff % 3600000) / 60000);
+  if (days > 0) return `${days}d ${hours}h ${minutes}m`;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  return `${minutes}m`;
 }
 
 export default function Shop({ publicView = false }) {
@@ -377,6 +379,7 @@ export default function Shop({ publicView = false }) {
   const [cutoffCountdown, setCutoffCountdown] = useState(null);
 
   const [preview, setPreview] = useState(null);
+  const [showPickupDatePopup, setShowPickupDatePopup] = useState(false);
 
   const filterBarRef = useRef(null);
   const menuGridRef = useRef(null);
@@ -567,6 +570,74 @@ export default function Shop({ publicView = false }) {
     const interval = setInterval(update, 60000);
     return () => clearInterval(interval);
   }, [globalCutoff, reserve.pickupDate]);
+
+  // Deadline notifications
+  useEffect(() => {
+    if (!globalCutoff || !globalCutoff.cutoffTime) return;
+
+    const checkNotifications = () => {
+      const nowManila = new Date(
+        new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' })
+      );
+      
+      // Check for urgent deadlines (under 2 hours)
+      for (let i = 1; i <= 7; i++) {
+        const checkDate = new Date(nowManila);
+        checkDate.setDate(checkDate.getDate() + i);
+        checkDate.setHours(0, 0, 0, 0);
+        
+        const dateStr = [
+          checkDate.getFullYear(),
+          String(checkDate.getMonth() + 1).padStart(2, "0"),
+          String(checkDate.getDate()).padStart(2, "0")
+        ].join('-');
+        
+        if (isOrderAllowed(dateStr, globalCutoff)) {
+          const [h, m] = globalCutoff.cutoffTime.split(':').map(Number);
+          const advance = globalCutoff.advanceDaysRequired ?? 1;
+          const deadline = new Date(checkDate);
+          deadline.setDate(deadline.getDate() - advance);
+          deadline.setHours(h, m, 0, 0);
+          
+          const diff = deadline - nowManila;
+          const hours = Math.floor(diff / 3600000);
+          
+          // Show notification for deadlines under 2 hours
+          if (hours > 0 && hours < 2) {
+            const notificationKey = `urgent-${dateStr}`;
+            const lastShown = localStorage.getItem(notificationKey);
+            const now = Date.now();
+            
+            if (!lastShown || (now - parseInt(lastShown)) > 30 * 60 * 1000) { // Don't show more than once per 30 minutes
+              localStorage.setItem(notificationKey, now.toString());
+              
+              // Show toast notification
+              showToast({
+                visible: true,
+                message: `⚠️ Order deadline approaching! ${dateStr} orders close in ${Math.ceil(hours * 60)} minutes`,
+                type: 'warning'
+              });
+              
+              // Request browser notification permission
+              if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification('Order Deadline Approaching', {
+                  body: `${dateStr} orders close in ${Math.ceil(hours * 60)} minutes`,
+                  icon: '/jckl-192.png'
+                });
+              }
+            }
+          }
+        }
+      }
+    };
+
+    // Check notifications every 5 minutes
+    const notificationInterval = setInterval(checkNotifications, 5 * 60 * 1000);
+    
+    return () => {
+      clearInterval(notificationInterval);
+    };
+  }, [globalCutoff]);
 
   useEffect(() => {
     if (!mobileCartOpen) return;
@@ -1003,6 +1074,46 @@ export default function Shop({ publicView = false }) {
       />
 
       <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-3 sm:py-6 space-y-3 sm:space-y-6">
+        {/* Global Cutoff Banner */}
+        {globalCutoff && globalCutoff.cutoffTime && (
+          <div data-cutoff-banner className="sticky top-0 z-30 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-lg shadow-lg p-4 mb-4 sm:p-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <Clock className="w-5 h-5 flex-shrink-0" />
+                <div>
+                  <div className="font-semibold text-sm sm:text-base">Order Deadline Active</div>
+                  <div className="text-xs opacity-90">
+                    Orders by {globalCutoff.cutoffTime}, {globalCutoff.advanceDaysRequired} day(s) before pickup
+                  </div>
+                </div>
+              </div>
+              {cutoffCountdown && (
+                <div className="text-right sm:text-left">
+                  <div className="text-xs opacity-90">Next deadline in</div>
+                  <div className="font-bold text-lg sm:text-xl">{cutoffCountdown}</div>
+                </div>
+              )}
+              {/* Mobile dismiss button */}
+              <button
+                onClick={() => {
+                  // Temporarily hide banner for mobile
+                  const banner = document.querySelector('[data-cutoff-banner]');
+                  if (banner) {
+                    banner.style.transform = 'translateY(-100%)';
+                    setTimeout(() => {
+                      banner.style.transform = 'translateY(0%)';
+                    }, 300);
+                  }
+                }}
+                className="sm:hidden p-2 -m-2 rounded-lg hover:bg-white/20 transition-colors"
+                aria-label="Dismiss deadline banner"
+              >
+                <ChevronDown className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
         {!publicView && items.length > 0 && (
           <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl overflow-hidden shadow-lg">
             <div className="p-4 sm:p-6 lg:p-8">
@@ -1063,22 +1174,11 @@ export default function Shop({ publicView = false }) {
                 <label className="block text-xs font-medium text-jckl-navy mb-1">Pickup Date</label>
                 <button
                   type="button"
-                  onClick={() => {
-                    const input = document.querySelector('input[name="pickup-date-hidden"]');
-                    if (input) input.showPicker ? input.showPicker() : input.click();
-                  }}
+                  onClick={() => setShowPickupDatePopup(true)}
                   className="w-full border border-jckl-gold rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-jckl-gold bg-white text-left hover:bg-jckl-cream transition"
                 >
                   {reservation.pickupDate || "Select date"}
                 </button>
-                <input
-                  type="date"
-                  name="pickup-date-hidden"
-                  value={reservation.pickupDate}
-                  onChange={(e) => handlePickupChange('pickupDate', e.target.value)}
-                  min={getMinDate()}
-                  className="sr-only"
-                />
               </div>
               <div>
                 <label className="block text-xs font-medium text-jckl-navy mb-1">Pickup Window</label>
@@ -1471,9 +1571,28 @@ export default function Shop({ publicView = false }) {
                   <ShoppingCart className="w-4 h-4" />
                   Go to Cart
                 </button>
+                {globalCutoff && globalCutoff.cutoffTime && (
+                  <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-amber-600" />
+                      <div className="flex-1">
+                        <div className="text-sm font-medium text-amber-800">Order Deadline Active</div>
+                        <div className="text-xs text-amber-600">
+                          Orders close {globalCutoff.advanceDaysRequired} day(s) before pickup at {globalCutoff.cutoffTime}
+                        </div>
+                      </div>
+                    </div>
+                    {cutoffCountdown && (
+                      <div className="mt-2 text-center">
+                        <div className="text-xs text-amber-600">Next deadline in</div>
+                        <div className="font-bold text-lg text-amber-800">{cutoffCountdown}</div>
+                      </div>
+                    )}
+                  </div>
+                )}
                 <button
                   onClick={openReserve}
-                  disabled={!list.length}
+                  disabled={!list.length || (globalCutoff && reserve.pickupDate && !isOrderAllowed(reserve.pickupDate, globalCutoff))}
                   className="w-full inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-4 py-3 rounded-lg hover:bg-black text-sm disabled:opacity-60 transition"
                 >
                   <Clock className="w-4 h-4" />
@@ -1661,6 +1780,7 @@ export default function Shop({ publicView = false }) {
                         <label className="block text-sm font-medium text-jckl-navy mb-1">Pickup Date</label>
                         <RestrictedDateCalendar
                           value={reserve.pickupDate}
+                          cutoff={globalCutoff}
                           onChange={async (next) => {
                             // Don't update local state immediately, only check if warning needed
                             const newReservation = { ...reservation, pickupDate: next };
@@ -1723,12 +1843,52 @@ export default function Shop({ publicView = false }) {
                       {globalCutoff && reserve.pickupDate &&
                        isOrderAllowed(reserve.pickupDate, globalCutoff) &&
                        cutoffCountdown && (
-                        <div className="p-3 bg-blue-50 border border-blue-200 
-                          rounded-lg text-xs text-blue-800 flex items-center gap-2">
-                          <Clock className="w-4 h-4 flex-shrink-0 text-blue-600" />
-                          <span>Order window closes in <strong>
-                            {cutoffCountdown}
-                          </strong></span>
+                        <div 
+                          className="p-3 bg-blue-50 border border-blue-200 
+                          rounded-lg text-xs text-blue-800"
+                          role="status"
+                          aria-live="polite"
+                          aria-label={`Order countdown: ${cutoffCountdown} remaining`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="relative">
+                              <svg 
+                                className="w-10 h-10 transform -rotate-90"
+                                aria-hidden="true"
+                                focusable="false"
+                              >
+                                <circle
+                                  cx="20"
+                                  cy="20"
+                                  r="18"
+                                  stroke="currentColor"
+                                  strokeWidth="3"
+                                  fill="none"
+                                  className="text-blue-200"
+                                />
+                                <circle
+                                  cx="20"
+                                  cy="20"
+                                  r="18"
+                                  stroke="currentColor"
+                                  strokeWidth="3"
+                                  fill="none"
+                                  strokeDasharray="113"
+                                  strokeDashoffset={113 - (Math.min(100, Math.max(0, 100 - (parseFloat(cutoffCountdown) / 72 * 100))) * 1.13)}
+                                  className="text-blue-600 transition-all duration-1000"
+                                  transform="rotate(-90 20 20)"
+                                  transformOrigin="20 20"
+                                />
+                              </svg>
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <Clock className="w-4 h-4 text-blue-600" aria-hidden="true" />
+                              </div>
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-semibold text-sm">Order window closes</div>
+                              <div className="text-lg font-bold" aria-live="polite">{cutoffCountdown}</div>
+                            </div>
+                          </div>
                         </div>
                       )}
 
@@ -1962,6 +2122,53 @@ export default function Shop({ publicView = false }) {
                   )}
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Pickup Date Pop-up Modal */}
+      {showPickupDatePopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Select Pickup Date</h3>
+              <button
+                onClick={() => setShowPickupDatePopup(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="mb-4">
+              <RestrictedDateCalendar
+                value={reservation.pickupDate}
+                cutoff={globalCutoff}
+                onChange={(next) => {
+                  handlePickupChange('pickupDate', next);
+                  setShowPickupDatePopup(false);
+                }}
+                min={getMinDate()}
+                rules={dateRestrictions}
+              />
+            </div>
+            
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowPickupDatePopup(false)}
+                className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+              {reservation.pickupDate && (
+                <button
+                  onClick={() => setShowPickupDatePopup(false)}
+                  className="px-4 py-2 text-sm bg-jckl-navy text-white rounded-lg hover:bg-jckl-light-navy transition-colors"
+                >
+                  Confirm
+                </button>
+              )}
             </div>
           </div>
         </div>

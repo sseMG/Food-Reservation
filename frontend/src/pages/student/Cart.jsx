@@ -76,6 +76,58 @@ function isDateRestricted(dateStr, rules) {
   return false;
 }
 
+// Cutoff utility functions
+function isOrderAllowed(dateStr, cutoff) {
+  if (!cutoff || !cutoff.cutoffTime) return true;
+  const nowManila = new Date(
+    new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' })
+  );
+  const [h, m] = cutoff.cutoffTime.split(':').map(Number);
+  const advance = cutoff.advanceDaysRequired ?? 1;
+  const deadline = new Date(dateStr);
+  deadline.setDate(deadline.getDate() - advance);
+  deadline.setHours(h, m, 0, 0);
+  return nowManila < deadline;
+}
+
+function getCutoffDeadlineLabel(dateStr, cutoff) {
+  if (!cutoff || !cutoff.cutoffTime) return "";
+  const [h, m] = cutoff.cutoffTime.split(':').map(Number);
+  const advance = cutoff.advanceDaysRequired ?? 1;
+  const deadline = new Date(dateStr);
+  deadline.setDate(deadline.getDate() - advance);
+  deadline.setHours(h, m, 0, 0);
+  const deadlineStr = deadline.toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: 'Asia/Manila'
+  });
+  return `(Deadline: ${deadlineStr})`;
+}
+
+function getCutoffCountdown(dateStr, cutoff) {
+  if (!cutoff || !cutoff.cutoffTime) return "";
+  const nowManila = new Date(
+    new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' })
+  );
+  const [h, m] = cutoff.cutoffTime.split(':').map(Number);
+  const advance = cutoff.advanceDaysRequired ?? 1;
+  const deadline = new Date(dateStr);
+  deadline.setDate(deadline.getDate() - advance);
+  deadline.setHours(h, m, 0, 0);
+  const diff = deadline - nowManila;
+  if (diff <= 0) return "Closed";
+  const days = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const minutes = Math.floor((diff % 3600000) / 60000);
+  if (days > 0) return `${days}d ${hours}h ${minutes}m`;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  return `${minutes}m`;
+}
+
 // Grade-specific pickup times
 const getPickupTimes = (grade) => {
   if (!grade) return {};
@@ -135,6 +187,10 @@ export default function Cart() {
 
   const [dateRestrictions, setDateRestrictions] = useState({ ranges: [], months: [], weekdays: [] });
 
+  // Cutoff state
+  const [globalCutoff, setGlobalCutoff] = useState(null);
+  const [cutoffCountdown, setCutoffCountdown] = useState(null);
+
   const [products, setProducts] = useState([]);
   const [menuLoading, setMenuLoading] = useState(true);
 
@@ -188,6 +244,7 @@ export default function Cart() {
           months: Array.isArray(r?.months) ? r.months : [],
           weekdays: Array.isArray(r?.weekdays) ? r.weekdays : [],
         });
+        setGlobalCutoff(r?.orderCutoff ?? null);
       } catch (e) {
         // silent fail: backend will still enforce
       }
@@ -196,6 +253,22 @@ export default function Cart() {
       mounted = false;
     };
   }, []);
+
+  // Countdown timer for cutoff
+  useEffect(() => {
+    if (!globalCutoff || !reserve.pickupDate) {
+      setCutoffCountdown(null);
+      return;
+    }
+    const update = () => {
+      setCutoffCountdown(
+        getCutoffCountdown(reserve.pickupDate, globalCutoff)
+      );
+    };
+    update();
+    const interval = setInterval(update, 60000);
+    return () => clearInterval(interval);
+  }, [globalCutoff, reserve.pickupDate]);
 
   // Cart persistence and server sync handled by CartContext
 
@@ -339,6 +412,13 @@ export default function Cart() {
 
     if (isDateRestricted(reserve.pickupDate, dateRestrictions)) {
       await showAlert("That pickup date is restricted. Please choose another date.", "warning");
+      setReserve((r) => ({ ...r, pickupDate: "" }));
+      return;
+    }
+
+    // Cutoff validation
+    if (globalCutoff && !isOrderAllowed(reserve.pickupDate, globalCutoff)) {
+      await showAlert(`Ordering is closed for this date. ${getCutoffDeadlineLabel(reserve.pickupDate, globalCutoff)}`, "warning");
       setReserve((r) => ({ ...r, pickupDate: "" }));
       return;
     }
@@ -515,6 +595,46 @@ export default function Cart() {
             <ArrowLeft className="w-4 h-4" /> Back
           </button>
         </div>
+
+        {/* Global Cutoff Banner */}
+        {globalCutoff && globalCutoff.cutoffTime && (
+          <div data-cutoff-banner className="sticky top-0 z-30 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-lg shadow-lg p-4 mb-4 sm:p-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <Clock className="w-5 h-5 flex-shrink-0" />
+                <div>
+                  <div className="font-semibold text-sm sm:text-base">Order Deadline Active</div>
+                  <div className="text-xs opacity-90">
+                    Orders by {globalCutoff.cutoffTime}, {globalCutoff.advanceDaysRequired} day(s) before pickup
+                  </div>
+                </div>
+              </div>
+              {cutoffCountdown && (
+                <div className="text-right sm:text-left">
+                  <div className="text-xs opacity-90">Next deadline in</div>
+                  <div className="font-bold text-lg sm:text-xl">{cutoffCountdown}</div>
+                </div>
+              )}
+              {/* Mobile dismiss button */}
+              <button
+                onClick={() => {
+                  // Temporarily hide banner for mobile
+                  const banner = document.querySelector('[data-cutoff-banner]');
+                  if (banner) {
+                    banner.style.transform = 'translateY(-100%)';
+                    setTimeout(() => {
+                      banner.style.transform = 'translateY(0%)';
+                    }, 300);
+                  }
+                }}
+                className="sm:hidden p-2 -m-2 rounded-lg hover:bg-white/20 transition-colors"
+                aria-label="Dismiss deadline banner"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
           {/* Lines */}
@@ -760,6 +880,7 @@ export default function Cart() {
                         </label>
                         <RestrictedDateCalendar
                           value={reserve.pickupDate}
+                          cutoff={globalCutoff}
                           onChange={async (next) => {
                             // Don't update local state immediately, only check if warning needed
                             const newReservation = { ...reservation, pickupDate: next };
@@ -817,6 +938,70 @@ export default function Cart() {
                         {reserve.pickupDate && (
                           <div className="mt-2 text-xs text-gray-500">Selected: {reserve.pickupDate}</div>
                         )}
+
+                      {globalCutoff && reserve.pickupDate &&
+                       isOrderAllowed(reserve.pickupDate, globalCutoff) &&
+                       cutoffCountdown && (
+                        <div 
+                          className="p-3 bg-blue-50 border border-blue-200 
+                          rounded-lg text-xs text-blue-800"
+                          role="status"
+                          aria-live="polite"
+                          aria-label={`Order countdown: ${cutoffCountdown} remaining`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="relative">
+                              <svg 
+                                className="w-10 h-10 transform -rotate-90"
+                                aria-hidden="true"
+                                focusable="false"
+                              >
+                                <circle
+                                  cx="20"
+                                  cy="20"
+                                  r="18"
+                                  stroke="currentColor"
+                                  strokeWidth="3"
+                                  fill="none"
+                                  className="text-blue-200"
+                                />
+                                <circle
+                                  cx="20"
+                                  cy="20"
+                                  r="18"
+                                  stroke="currentColor"
+                                  strokeWidth="3"
+                                  fill="none"
+                                  strokeDasharray="113"
+                                  strokeDashoffset={113 - (Math.min(100, Math.max(0, 100 - (parseFloat(cutoffCountdown) / 72 * 100))) * 1.13)}
+                                  className="text-blue-600 transition-all duration-1000"
+                                  transform="rotate(-90 20 20)"
+                                  transformOrigin="20 20"
+                                />
+                              </svg>
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <Clock className="w-4 h-4 text-blue-600" aria-hidden="true" />
+                              </div>
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-semibold text-sm">Order window closes</div>
+                              <div className="text-lg font-bold" aria-live="polite">{cutoffCountdown}</div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {globalCutoff && reserve.pickupDate &&
+                       !isOrderAllowed(reserve.pickupDate, globalCutoff) && (
+                        <div className="p-3 bg-red-50 border border-red-200 
+                          rounded-lg text-xs text-red-800 flex items-center gap-2">
+                          <AlertTriangle className="w-4 h-4 flex-shrink-0 
+                            text-red-600" />
+                          <span>Ordering closed for this date. {' '}
+                            {getCutoffDeadlineLabel(reserve.pickupDate, globalCutoff)}
+                          </span>
+                        </div>
+                      )}
                       </div>
 
                       <div>
@@ -991,7 +1176,7 @@ export default function Cart() {
                       </button>
                       <button
                         onClick={submitReservation}
-                        disabled={submitting || !list.length || insufficient}
+                        disabled={submitting || !list.length || insufficient || (globalCutoff && reserve.pickupDate && !isOrderAllowed(reserve.pickupDate, globalCutoff))}
                         className="flex-1 inline-flex items-center justify-center gap-2 bg-jckl-navy text-white px-4 py-3 rounded-lg hover:bg-jckl-light-navy transition text-sm disabled:opacity-60"
                       >
                         {submitting ? (

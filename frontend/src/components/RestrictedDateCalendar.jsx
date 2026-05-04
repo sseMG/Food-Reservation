@@ -54,7 +54,7 @@ function addMonths(d, delta) {
   return nd;
 }
 
-export default function RestrictedDateCalendar({ value, onChange, min, rules }) {
+export default function RestrictedDateCalendar({ value, onChange, min, rules, cutoff }) {
   const minStr = normalizeDateString(min);
   const selectedStr = normalizeDateString(value);
 
@@ -82,11 +82,39 @@ export default function RestrictedDateCalendar({ value, onChange, min, rules }) 
       const dateStr = normalizeDateString(d);
       const restricted = isDateRestricted(dateStr, rules);
       const beforeMin = !!minStr && dateStr < minStr;
-      cells.push({ day, dateStr, restricted, disabled: restricted || beforeMin });
+      
+      // Check cutoff status
+      let cutoffStatus = null;
+      if (cutoff && cutoff.cutoffTime) {
+        const nowManila = new Date(
+          new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' })
+        );
+        const [h, m] = cutoff.cutoffTime.split(':').map(Number);
+        const advance = cutoff.advanceDaysRequired ?? 1;
+        const deadline = new Date(d);
+        deadline.setDate(deadline.getDate() - advance);
+        deadline.setHours(h, m, 0, 0);
+        
+        if (nowManila >= deadline) {
+          cutoffStatus = 'closed';
+        } else {
+          const diff = deadline - nowManila;
+          const hours = Math.floor(diff / 3600000);
+          if (hours < 2) {
+            cutoffStatus = 'urgent';
+          } else if (hours < 24) {
+            cutoffStatus = 'warning';
+          } else {
+            cutoffStatus = 'safe';
+          }
+        }
+      }
+      
+      cells.push({ day, dateStr, restricted, disabled: restricted || beforeMin || cutoffStatus === 'closed', cutoffStatus });
     }
     while (cells.length % 7 !== 0) cells.push(null);
     return cells;
-  }, [viewMonth, rules, minStr]);
+  }, [viewMonth, rules, minStr, cutoff]);
 
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -123,17 +151,60 @@ export default function RestrictedDateCalendar({ value, onChange, min, rules }) 
           if (!cell) return <div key={`e-${idx}`} className="h-9" />;
 
           const isSelected = selectedStr && cell.dateStr === selectedStr;
-          const base = "h-9 rounded-lg text-sm flex items-center justify-center";
+          const base = "h-9 rounded-lg text-sm flex items-center justify-center relative";
 
           if (cell.disabled) {
-            const disabledClass = cell.restricted
-              ? "bg-rose-50 text-rose-700 border border-rose-200"
-              : "bg-gray-50 text-gray-400";
+            let disabledClass = "";
+            let titleText = "";
+            
+            if (cell.cutoffStatus === 'closed') {
+              disabledClass = "bg-red-50 text-red-700 border border-red-200";
+              titleText = "Ordering closed for this date";
+            } else if (cell.restricted) {
+              disabledClass = "bg-rose-50 text-rose-700 border border-rose-200";
+              titleText = "Restricted";
+            } else {
+              disabledClass = "bg-gray-50 text-gray-400";
+              titleText = "Unavailable";
+            }
+            
             return (
-              <div key={cell.dateStr} className={`${base} ${disabledClass}`} title={cell.restricted ? "Restricted" : "Unavailable"}>
+              <div key={cell.dateStr} className={`${base} ${disabledClass}`} title={titleText}>
                 {cell.day}
+                {cell.cutoffStatus === 'closed' && (
+                  <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" aria-label="Ordering closed"></span>
+                )}
               </div>
             );
+          }
+
+          // Determine cutoff styling
+          let cutoffIndicator = null;
+          let cutoffClass = "";
+          let cutoffTitle = "";
+          
+          if (cell.cutoffStatus) {
+            switch (cell.cutoffStatus) {
+              case 'closed':
+                cutoffIndicator = <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" aria-label="Ordering closed"></span>;
+                cutoffClass = "border-red-300";
+                cutoffTitle = "Ordering closed for this date";
+                break;
+              case 'urgent':
+                cutoffIndicator = <span className="absolute top-0 right-0 w-2 h-2 bg-orange-500 rounded-full animate-pulse" aria-label="Ordering closes soon"></span>;
+                cutoffClass = "border-orange-300";
+                cutoffTitle = "Ordering closes soon (under 2 hours)";
+                break;
+              case 'warning':
+                cutoffIndicator = <span className="absolute top-0 right-0 w-2 h-2 bg-yellow-500 rounded-full" aria-label="Ordering closes today"></span>;
+                cutoffClass = "border-yellow-300";
+                cutoffTitle = "Ordering closes today";
+                break;
+              default:
+                cutoffIndicator = <span className="absolute top-0 right-0 w-2 h-2 bg-green-500 rounded-full" aria-label="Plenty of time to order"></span>;
+                cutoffClass = "border-green-300";
+                cutoffTitle = "Plenty of time to order";
+            }
           }
 
           return (
@@ -141,9 +212,11 @@ export default function RestrictedDateCalendar({ value, onChange, min, rules }) 
               key={cell.dateStr}
               type="button"
               onClick={() => onChange && onChange(cell.dateStr)}
-              className={`${base} border ${isSelected ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-900 border-gray-200 hover:bg-gray-50"}`}
+              className={`${base} border ${isSelected ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-900 border-gray-200 hover:bg-gray-50"} ${cutoffClass}`}
+              title={cutoffTitle || "Select this date"}
             >
               {cell.day}
+              {cutoffIndicator}
             </button>
           );
         })}

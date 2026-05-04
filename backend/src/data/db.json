@@ -3912,11 +3912,11 @@
     ],
     "weekdays": [],
     "orderCutoff": {
-      "cutoffTime": "11:59",
+      "cutoffTime": "23:59",
       "advanceDaysRequired": 1,
       "timezone": "Asia/Manila",
-      "updatedAt": "2026-05-04T09:20:50.006Z"
+      "updatedAt": "2026-05-04T14:08:42.370Z"
     },
-    "updatedAt": "2026-05-04T09:20:50.006Z"
+    "updatedAt": "2026-05-04T14:08:42.370Z"
   }
 }
