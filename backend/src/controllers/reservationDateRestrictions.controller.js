@@ -5,6 +5,7 @@ function defaultRules() {
     ranges: [],
     months: [],
     weekdays: [],
+    orderCutoff: null,
     updatedAt: new Date().toISOString(),
   };
 }
@@ -55,10 +56,21 @@ function normalizeRules(body) {
 
   const weekdays = normalizeWeekdays(body?.weekdays);
 
+  let orderCutoff = null;
+  if (body?.orderCutoff && body.orderCutoff.cutoffTime) {
+    orderCutoff = {
+      cutoffTime: String(body.orderCutoff.cutoffTime),
+      advanceDaysRequired: Number(body.orderCutoff.advanceDaysRequired) || 1,
+      timezone: "Asia/Manila",
+      updatedAt: new Date().toISOString()
+    };
+  }
+
   return {
     ranges,
     months,
     weekdays,
+    orderCutoff,
     updatedAt: new Date().toISOString(),
   };
 }
@@ -104,6 +116,7 @@ async function readRules() {
       ranges: Array.isArray(stored.ranges) ? stored.ranges : [],
       months: Array.isArray(stored.months) ? stored.months : [],
       weekdays: Array.isArray(stored.weekdays) ? stored.weekdays : [],
+      orderCutoff: stored.orderCutoff || null,
       updatedAt: stored.updatedAt || new Date().toISOString(),
     };
   }

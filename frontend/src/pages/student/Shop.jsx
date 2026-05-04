@@ -267,6 +267,58 @@ function isDateRestricted(dateStr, rules) {
   return false;
 }
 
+function isOrderAllowed(pickupDateStr, cutoff) {
+  if (!cutoff || !cutoff.cutoffTime) return true;
+  const [h, m] = cutoff.cutoffTime.split(':').map(Number);
+  const advance = cutoff.advanceDaysRequired ?? 1;
+  const pickup = new Date(pickupDateStr + 'T00:00:00+08:00');
+  const deadline = new Date(pickup);
+  deadline.setDate(deadline.getDate() - advance);
+  deadline.setHours(h, m, 0, 0);
+  const nowManila = new Date(
+    new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' })
+  );
+  return nowManila < deadline;
+}
+
+function getCutoffDeadlineLabel(pickupDateStr, cutoff) {
+  if (!cutoff || !cutoff.cutoffTime) return null;
+  const [h, m] = cutoff.cutoffTime.split(':').map(Number);
+  const advance = cutoff.advanceDaysRequired ?? 1;
+  const pickup = new Date(pickupDateStr + 'T00:00:00+08:00');
+  const deadline = new Date(pickup);
+  deadline.setDate(deadline.getDate() - advance);
+  deadline.setHours(h, m, 0, 0);
+  const time = deadline.toLocaleTimeString('en-US', {
+    hour: 'numeric', minute: '2-digit', hour12: true,
+    timeZone: 'Asia/Manila'
+  });
+  const date = deadline.toLocaleDateString('en-US', {
+    weekday: 'short', month: 'short', day: 'numeric',
+    timeZone: 'Asia/Manila'
+  });
+  return `Order by ${time}, ${date}`;
+}
+
+function getCutoffCountdown(pickupDateStr, cutoff) {
+  if (!cutoff || !cutoff.cutoffTime) return null;
+  const [h, m] = cutoff.cutoffTime.split(':').map(Number);
+  const advance = cutoff.advanceDaysRequired ?? 1;
+  const pickup = new Date(pickupDateStr + 'T00:00:00+08:00');
+  const deadline = new Date(pickup);
+  deadline.setDate(deadline.getDate() - advance);
+  deadline.setHours(h, m, 0, 0);
+  const nowManila = new Date(
+    new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' })
+  );
+  const diff = deadline - nowManila;
+  if (diff <= 0) return null;
+  const hours = Math.floor(diff / 3600000);
+  const mins = Math.floor((diff % 3600000) / 60000);
+  if (hours > 0) return `${hours}h ${mins}m`;
+  return `${mins}m`;
+}
+
 export default function Shop({ publicView = false }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -321,6 +373,8 @@ export default function Shop({ publicView = false }) {
   const [submitting, setSubmitting] = useState(false);
 
   const [dateRestrictions, setDateRestrictions] = useState({ ranges: [], months: [], weekdays: [] });
+  const [globalCutoff, setGlobalCutoff] = useState(null);
+  const [cutoffCountdown, setCutoffCountdown] = useState(null);
 
   const [preview, setPreview] = useState(null);
 
@@ -374,6 +428,7 @@ export default function Shop({ publicView = false }) {
           months: Array.isArray(r?.months) ? r.months : [],
           weekdays: Array.isArray(r?.weekdays) ? r.weekdays : [],
         });
+        setGlobalCutoff(r?.orderCutoff ?? null);
       } catch (e) {
         // silent fail: backend will still enforce
       }
@@ -497,6 +552,21 @@ export default function Shop({ publicView = false }) {
       document.body.style.overflow = '';
     };
   }, [open]);
+
+  useEffect(() => {
+    if (!globalCutoff || !reserve.pickupDate) {
+      setCutoffCountdown(null);
+      return;
+    }
+    const update = () => {
+      setCutoffCountdown(
+        getCutoffCountdown(reserve.pickupDate, globalCutoff)
+      );
+    };
+    update();
+    const interval = setInterval(update, 60000);
+    return () => clearInterval(interval);
+  }, [globalCutoff, reserve.pickupDate]);
 
   useEffect(() => {
     if (!mobileCartOpen) return;
@@ -815,6 +885,19 @@ export default function Shop({ publicView = false }) {
       await showAlert("That pickup date is restricted. Please choose another date.", "warning");
       setReserve((r) => ({ ...r, pickupDate: "" }));
       return;
+    }
+
+    if (globalCutoff && reserve.pickupDate) {
+      if (!isOrderAllowed(reserve.pickupDate, globalCutoff)) {
+        const label = getCutoffDeadlineLabel(
+          reserve.pickupDate, globalCutoff
+        );
+        await showAlert(
+          `Order deadline has passed for this date. ${label}. Please pick a later date.`,
+          "warning"
+        );
+        return;
+      }
     }
 
     const token = localStorage.getItem("token");
@@ -1637,6 +1720,30 @@ export default function Shop({ publicView = false }) {
                         )}
                       </div>
 
+                      {globalCutoff && reserve.pickupDate &&
+                       isOrderAllowed(reserve.pickupDate, globalCutoff) &&
+                       cutoffCountdown && (
+                        <div className="p-3 bg-blue-50 border border-blue-200 
+                          rounded-lg text-xs text-blue-800 flex items-center gap-2">
+                          <Clock className="w-4 h-4 flex-shrink-0 text-blue-600" />
+                          <span>Order window closes in <strong>
+                            {cutoffCountdown}
+                          </strong></span>
+                        </div>
+                      )}
+
+                      {globalCutoff && reserve.pickupDate &&
+                       !isOrderAllowed(reserve.pickupDate, globalCutoff) && (
+                        <div className="p-3 bg-red-50 border border-red-200 
+                          rounded-lg text-xs text-red-800 flex items-center gap-2">
+                          <AlertTriangle className="w-4 h-4 flex-shrink-0 
+                            text-red-600" />
+                          <span>Ordering closed for this date. {' '}
+                            {getCutoffDeadlineLabel(reserve.pickupDate, globalCutoff)}
+                          </span>
+                        </div>
+                      )}
+
                       <div>
                         <label className="block text-sm font-medium text-jckl-navy mb-1">Pickup Window</label>
                         {!reserve.grade ? (
@@ -1784,7 +1891,9 @@ export default function Shop({ publicView = false }) {
                     </button>
                     <button
                       onClick={submitReservation}
-                      disabled={submitting || insufficient}
+                      disabled={submitting || insufficient ||
+                        (globalCutoff && reserve.pickupDate &&
+                         !isOrderAllowed(reserve.pickupDate, globalCutoff))}
                       className="flex-1 bg-jckl-navy text-white px-3 py-2 rounded-lg hover:bg-jckl-light-navy disabled:opacity-60 font-medium text-sm"
                     >
                       {submitting ? "Submitting..." : "Submit Reservation"}

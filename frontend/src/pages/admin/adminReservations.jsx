@@ -97,6 +97,13 @@ export default function AdminReservations() {
   const [draftRange, setDraftRange] = useState({ from: "", to: "" });
   const [draftMonth, setDraftMonth] = useState({ year: String(new Date().getFullYear()), month: String(new Date().getMonth() + 1) });
 
+  const [cutoffSettings, setCutoffSettings] = useState({
+    cutoffTime: "",
+    advanceDaysRequired: "1"
+  });
+  const [cutoffSaving, setCutoffSaving] = useState(false);
+  const [confirmClear, setConfirmClear] = useState(false);
+
   // fetch
   const fetchReservations = async () => {
     setLoading(true);
@@ -136,6 +143,16 @@ export default function AdminReservations() {
           months: Array.isArray(data?.months) ? data.months : [],
           weekdays: Array.isArray(data?.weekdays) ? data.weekdays : [],
         });
+        if (data?.orderCutoff) {
+          setCutoffSettings({
+            cutoffTime: data.orderCutoff.cutoffTime || "",
+            advanceDaysRequired: String(
+              data.orderCutoff.advanceDaysRequired ?? 1
+            )
+          });
+        } else {
+          setCutoffSettings({ cutoffTime: "", advanceDaysRequired: "1" });
+        }
       } catch (e) {
         console.error("Load reservation date restrictions failed:", e);
         alert(e?.message || "Failed to load reservation date restrictions.");
@@ -152,6 +169,10 @@ export default function AdminReservations() {
         ranges: restrictions.ranges || [],
         months: restrictions.months || [],
         weekdays: restrictions.weekdays || [],
+        orderCutoff: cutoffSettings.cutoffTime ? {
+          cutoffTime: cutoffSettings.cutoffTime,
+          advanceDaysRequired: Number(cutoffSettings.advanceDaysRequired)
+        } : null
       };
       const saved = await api.put("/admin/reservation-date-restrictions", payload);
       setRestrictions({
@@ -196,6 +217,50 @@ export default function AdminReservations() {
       else set.add(d);
       return { ...r, weekdays: Array.from(set).filter((n) => Number.isFinite(n)).sort((a, b) => a - b) };
     });
+  };
+
+  const saveCutoff = async () => {
+    if (!cutoffSettings.cutoffTime) return;
+    const days = Number(cutoffSettings.advanceDaysRequired);
+    if (!days || days < 1 || days > 7) return;
+    setCutoffSaving(true);
+    try {
+      const payload = {
+        ranges: restrictions.ranges || [],
+        months: restrictions.months || [],
+        weekdays: restrictions.weekdays || [],
+        orderCutoff: {
+          cutoffTime: cutoffSettings.cutoffTime,
+          advanceDaysRequired: days
+        }
+      };
+      await api.put("/admin/reservation-date-restrictions", payload);
+      setRestrictionsOpen(false);
+    } catch (e) {
+      console.error("Save cutoff failed:", e);
+    } finally {
+      setCutoffSaving(false);
+    }
+  };
+
+  const clearCutoff = async () => {
+    setCutoffSaving(true);
+    try {
+      const payload = {
+        ranges: restrictions.ranges || [],
+        months: restrictions.months || [],
+        weekdays: restrictions.weekdays || [],
+        orderCutoff: null
+      };
+      await api.put("/admin/reservation-date-restrictions", payload);
+      setCutoffSettings({ cutoffTime: "", advanceDaysRequired: "1" });
+      setConfirmClear(false);
+      setRestrictionsOpen(false);
+    } catch (e) {
+      console.error("Clear cutoff failed:", e);
+    } finally {
+      setCutoffSaving(false);
+    }
   };
 
   // normalize & sort
@@ -791,6 +856,115 @@ export default function AdminReservations() {
                       >
                         Clear weekdays
                       </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 border-t pt-4">
+                    <div className="text-sm font-semibold text-gray-900">
+                      Order Cutoff Settings
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Each pickup date has its own deadline. 
+                      Example: cutoff 9 PM, 1 day advance means students 
+                      must order by 9 PM the night before pickup.
+                    </div>
+
+                    {cutoffSettings.cutoffTime ? (
+                      <div className="text-xs text-green-700 font-medium">
+                        Active — orders must be placed by{' '}
+                        {cutoffSettings.cutoffTime},{' '}
+                        {cutoffSettings.advanceDaysRequired} day(s) before pickup
+                      </div>
+                    ) : (
+                      <div className="text-xs text-gray-400">
+                        Inactive — students can order anytime
+                      </div>
+                    )}
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium text-gray-700">
+                          Cutoff time
+                        </label>
+                        <input
+                          type="time"
+                          value={cutoffSettings.cutoffTime}
+                          onChange={(e) => setCutoffSettings(s => ({
+                            ...s, cutoffTime: e.target.value
+                          }))}
+                          className="w-full border border-gray-300 rounded-lg
+                            px-3 py-2 text-sm"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium text-gray-700">
+                          Days before pickup
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="7"
+                          value={cutoffSettings.advanceDaysRequired}
+                          onChange={(e) => setCutoffSettings(s => ({
+                            ...s, advanceDaysRequired: e.target.value
+                          }))}
+                          className="w-full border border-gray-300 rounded-lg
+                            px-3 py-2 text-sm"
+                        />
+                        <div className="text-xs text-gray-400">
+                          1 = must order by the day before pickup
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={saveCutoff}
+                        disabled={cutoffSaving || !cutoffSettings.cutoffTime}
+                        className="px-3 py-2 rounded-lg text-sm bg-gray-900
+                          text-white hover:bg-gray-800 disabled:opacity-50"
+                      >
+                        {cutoffSaving ? "Saving…" : "Save Cutoff"}
+                      </button>
+
+                      {cutoffSettings.cutoffTime && !confirmClear && (
+                        <button
+                          type="button"
+                          onClick={() => setConfirmClear(true)}
+                          disabled={cutoffSaving}
+                          className="px-3 py-2 rounded-lg text-sm border
+                            border-gray-300 text-gray-700 hover:bg-gray-50"
+                        >
+                          Disable Cutoff
+                        </button>
+                      )}
+
+                      {confirmClear && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-gray-600">
+                            Are you sure?
+                          </span>
+                          <button
+                            type="button"
+                            onClick={clearCutoff}
+                            disabled={cutoffSaving}
+                            className="px-3 py-2 rounded-lg text-sm 
+                              bg-rose-600 text-white hover:bg-rose-700 
+                              disabled:opacity-50"
+                          >
+                            Yes, disable
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setConfirmClear(false)}
+                            className="px-3 py-2 rounded-lg text-sm border
+                              border-gray-300 hover:bg-gray-50"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </>
