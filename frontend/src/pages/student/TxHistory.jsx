@@ -9,7 +9,7 @@ import { api } from "../../lib/api";
 import { refreshSessionForProtected } from "../../lib/auth";
 import { generateExcelHTML, downloadExcelFile } from "../../utils/excelExportHelper";
 import { Search, RefreshCw, ChevronLeft, ChevronRight, X, Filter, CheckCircle, Clock, XCircle, DollarSign, Calendar, ShoppingBag } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useModal } from "../../contexts/ModalContext";
 
 const peso = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" });
@@ -263,11 +263,8 @@ const fetchReservationsWithParams = async ({ signal, params }) => {
 export default function TxHistory() {
   const navigate = useNavigate();
   const { showAlert, showConfirm } = useModal();
-  useEffect(() => {
-    (async () => {
-      await refreshSessionForProtected({ navigate, requiredRole: "student" });
-    })();
-  }, [navigate]);
+  const queryClient = useQueryClient();
+  const [currentUser, setCurrentUser] = useState(null);
 
   // UI state
   const [page, setPage] = useState(1);
@@ -282,6 +279,7 @@ export default function TxHistory() {
   const [draftTo, setDraftTo] = useState("");
   const [sort, setSort] = useState("date-desc");
   const [showFilters, setShowFilters] = useState(false);
+  const [showAllData, setShowAllData] = useState(true); // Toggle for showing all data vs filtered data
   const rangeRef = useRef(null);
 
   useEffect(() => {
@@ -330,8 +328,8 @@ export default function TxHistory() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // query key and fetching
-  const queryKey = ["txHistory", { q: debouncedQ, status, pickup, from, to, sort, page, perPage }];
+  // query key and fetching - include user ID to ensure refetch on account change
+  const queryKey = ["txHistory", currentUser?.id, { q: debouncedQ, status, pickup, from, to, sort, page, perPage }];
 
   const {
     data,
@@ -348,6 +346,26 @@ export default function TxHistory() {
     keepPreviousData: true,
     retry: 1,
     staleTime: 1000 * 10,
+    enabled: !!currentUser, // Only run query when we have a user
+  });
+
+  // Separate query for summary statistics (all data) - include user ID
+  const {
+    data: allData,
+    refetch: refetchSummary,
+  } = useQuery({
+    queryKey: ["txHistorySummary", currentUser?.id],
+    queryFn: async ({ signal }) => {
+      const res = await fetchReservationsWithParams({ 
+        signal, 
+        params: { q: "", status: "all", pickup: "all", from: "", to: "", sort: "date-desc", page: 1, perPage: 10000 } 
+      });
+      return res;
+    },
+    keepPreviousData: true,
+    retry: 1,
+    staleTime: 1000 * 60, // Cache longer for summary data
+    enabled: !!currentUser, // Only run query when we have a user
   });
 
   // derived data
@@ -357,20 +375,89 @@ export default function TxHistory() {
   const pageSafe = Math.min(page, totalPages);
   const pageRows = rows; // already paginated by fetcher
 
-  // summary statistics
+  // summary statistics - respect showAllData toggle
   const summary = useMemo(() => {
     let totalSpent = 0;
-    let success = 0, preparing = 0, pending = 0, rejected = 0;
-    for (const r of rows) {
+    let success = 0, preparing = 0, pending = 0, rejected = 0, cancelled = 0;
+    
+    // Use allData when showAllData is true, otherwise use filtered rows
+    const dataToUse = showAllData ? (allData?.items || rows) : rows;
+    
+    for (const r of dataToUse) {
       totalSpent += r.amount;
       const s = r.statusLC;
       if (s === "success" || s === "approved" || s === "claimed" || s === "ready") success++;
       else if (s === "preparing") preparing++;
       else if (s === "pending") pending++;
       else if (s === "failed" || s === "rejected") rejected++;
+      else if (s === "cancelled") cancelled++;
     }
-    return { totalSpent, success, preparing, pending, rejected };
-  }, [rows]);
+    return { totalSpent, success, preparing, pending, rejected, cancelled };
+  }, [allData, rows, showAllData]);
+
+  // Monitor user changes and refresh data when account switches
+  useEffect(() => {
+    const checkUserChange = async () => {
+      try {
+        const user = await refreshSessionForProtected({ navigate, requiredRole: "student" });
+        if (user && (!currentUser || user.id !== currentUser.id)) {
+          console.log('User changed from', currentUser?.id, 'to', user.id);
+          // User changed or first time loading
+          setCurrentUser(user);
+          // Invalidate all queries to force complete refresh
+          queryClient.invalidateQueries();
+        }
+      } catch (error) {
+        console.log('Auth error:', error);
+        // Handle auth errors
+        setCurrentUser(null);
+        queryClient.invalidateQueries();
+      }
+    };
+    
+    checkUserChange();
+  }, [navigate, currentUser?.id, queryClient]);
+  
+  // Also monitor localStorage for user changes (for cross-tab sync)
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'user') {
+        const newUser = e.newValue ? JSON.parse(e.newValue) : null;
+        const oldUserId = currentUser?.id;
+        const newUserId = newUser?.id;
+        
+        if (oldUserId !== newUserId) {
+          console.log('Storage user change detected:', oldUserId, '->', newUserId);
+          setCurrentUser(newUser);
+          queryClient.invalidateQueries();
+        }
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [currentUser?.id, queryClient]);
+  
+  // Also check for user changes periodically (fallback)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      try {
+        const cachedUser = localStorage.getItem('user');
+        if (cachedUser) {
+          const parsedUser = JSON.parse(cachedUser);
+          if (!currentUser || parsedUser.id !== currentUser.id) {
+            console.log('Periodic check: user changed from', currentUser?.id, 'to', parsedUser.id);
+            setCurrentUser(parsedUser);
+            queryClient.invalidateQueries();
+          }
+        }
+      } catch (error) {
+        // Ignore parsing errors
+      }
+    }, 1000); // Check every 1 second for immediate response
+    
+    return () => clearInterval(interval);
+  }, [currentUser?.id, queryClient]);
 
   // error mapping
   let friendlyError = null;
@@ -585,6 +672,22 @@ export default function TxHistory() {
 
         {/* Summary cards */}
         <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          {/* Toggle for showing all data vs filtered data */}
+          <div className="lg:col-span-4 col-span-2">
+            <div className="bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
+              <div className="flex items-center justify-between gap-2">
+                <div className="text-xs sm:text-sm text-gray-600">
+                  {showAllData ? "Showing All Data" : "Showing Filtered Data"}
+                </div>
+                <button
+                  onClick={() => setShowAllData(!showAllData)}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 text-xs border rounded-lg bg-jckl-navy text-white hover:bg-jckl-light-navy transition-colors"
+                >
+                  {showAllData ? "Show Filtered" : "Show All"}
+                </button>
+              </div>
+            </div>
+          </div>
           <div className="bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
             <div className="flex items-center gap-2 mb-2">
               <div className="w-8 h-8 bg-rose-100 rounded-lg flex items-center justify-center">
@@ -615,14 +718,15 @@ export default function TxHistory() {
             <div className="text-lg sm:text-2xl font-bold text-yellow-600">{summary.preparing + summary.pending}</div>
           </div>
 
+          
           <div className="bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-                <XCircle className="w-4 h-4 text-red-600" />
+              <div className="w-8 h-8 bg-rose-100 rounded-lg flex items-center justify-center">
+                <X className="w-4 h-4 text-rose-600" />
               </div>
-              <div className="text-xs sm:text-sm text-gray-600">Failed</div>
+              <div className="text-xs sm:text-sm text-gray-600">Cancelled</div>
             </div>
-            <div className="text-lg sm:text-2xl font-bold text-red-600">{summary.rejected}</div>
+            <div className="text-lg sm:text-2xl font-bold text-rose-600">{summary.cancelled}</div>
           </div>
         </section>
 
@@ -679,7 +783,6 @@ export default function TxHistory() {
               <option value="claimed">Claimed</option>
               <option value="pending">Pending</option>
               <option value="pending cancellation">Pending Cancellation</option>
-              <option value="rejected">Rejected</option>
               <option value="cancelled">Cancelled</option>
             </select>
 
@@ -961,15 +1064,15 @@ export default function TxHistory() {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-sm text-jckl-slate text-center">{fmtDateTime(t.createdAt)}</td>
-                      <td className={`px-6 py-4 text-sm text-right font-semibold ${t.statusLC === "rejected" || t.statusLC === "cancelled" ? "text-gray-900" : "text-rose-700"}`}>
-                        {(t.statusLC === "rejected" || t.statusLC === "cancelled") ? peso.format(t.amount) : `−${peso.format(t.amount)}`}
+                      <td className={`px-6 py-4 text-sm text-right font-semibold ${t.statusLC === "cancelled" ? "text-gray-900" : "text-rose-700"}`}>
+                        {t.statusLC === "cancelled" ? peso.format(t.amount) : `−${peso.format(t.amount)}`}
                       </td>
                       <td className="px-6 py-4 text-sm text-center">
                         {(() => {
                           const s = t.statusLC;
                           if (s === "success" || s === "approved" || s === "claimed" || s === "ready") return <Pill tone="green">{t.status}</Pill>;
                           if (s === "preparing" || s === "pending" || s === "pending cancellation") return <Pill tone="yellow">{t.status}</Pill>;
-                          if (s === "failed" || s === "rejected" || s === "cancelled") return <Pill tone="red">{t.status}</Pill>;
+                          if (s === "failed" || s === "cancelled") return <Pill tone="red">{t.status}</Pill>;
                           if (s === "refunded") return <Pill tone="blue">{t.status}</Pill>;
                           return <Pill>{t.status}</Pill>;
                         })()}

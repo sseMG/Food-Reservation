@@ -23,7 +23,7 @@ const peso = new Intl.NumberFormat("en-PH", {
 });
 
 // ---- helpers ---------------------------------------------------------------
-const CANON = ["Pending", "Pending Cancellation", "Approved", "Rejected", "Cancelled", "Claimed"];
+const CANON = ["Pending", "Pending Cancellation", "Approved", "Cancelled", "Claimed"];
 
 function normalizeStatus(raw) {
   const s = String(raw || "").trim();
@@ -32,7 +32,7 @@ function normalizeStatus(raw) {
   if (["pending"].includes(lower)) return "Pending";
   if (["pending cancellation", "pending_cancellation", "pending-cancellation", "cancellation pending", "cancellation_pending"].includes(lower)) return "Pending Cancellation";
   if (["approved", "approve"].includes(lower)) return "Approved";
-  if (["rejected", "declined"].includes(lower)) return "Rejected";
+  if (["rejected", "declined"].includes(lower)) return "Cancelled"; // Map rejected to cancelled
   if (["cancelled", "canceled", "cancel"].includes(lower)) return "Cancelled";
   if (["claimed", "pickedup", "picked_up", "picked-up"].includes(lower)) return "Claimed";
   return s;
@@ -61,7 +61,6 @@ function StatusPill({ status }) {
     Pending: "bg-amber-100 text-amber-700",
     "Pending Cancellation": "bg-amber-100 text-amber-700",
     Approved: "bg-emerald-100 text-emerald-700",
-    Rejected: "bg-rose-100 text-rose-700",
     Cancelled: "bg-rose-100 text-rose-700",
     Claimed: "bg-gray-100 text-gray-700",
   };
@@ -97,6 +96,7 @@ export default function AdminReservations() {
   const [draftRange, setDraftRange] = useState({ from: "", to: "" });
   const [draftMonth, setDraftMonth] = useState({ year: String(new Date().getFullYear()), month: String(new Date().getMonth() + 1) });
 
+  
   const [cutoffSettings, setCutoffSettings] = useState({
     cutoffTime: "",
     advanceDaysRequired: "1"
@@ -372,6 +372,8 @@ export default function AdminReservations() {
 
   const bulkUpdate = async (nextStatus) => {
     if (!anySelected) return;
+
+    // For other status updates
     const ids = selectedIds.slice();
     setSelected({});
     for (const id of ids) {
@@ -502,7 +504,7 @@ export default function AdminReservations() {
               <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
                 <ShieldCheck className="w-4 h-4 text-blue-600 flex-shrink-0" />
                 <span>
-                  {anySelected ? `${selectedIds.length} selected` : "Select items to bulk approve/reject"}
+                  {anySelected ? `${selectedIds.length} selected` : "Select items to bulk approve"}
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -512,13 +514,6 @@ export default function AdminReservations() {
                   className="flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs sm:text-sm bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Approve Selected
-                </button>
-                <button
-                  disabled={!anySelected}
-                  onClick={() => bulkUpdate("Rejected")}
-                  className="flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs sm:text-sm bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Reject Selected
                 </button>
               </div>
             </div>
@@ -681,18 +676,6 @@ export default function AdminReservations() {
                             <Check className="w-4 h-4" />
                           )}
                           Approve
-                        </button>
-                        <button
-                          onClick={() => updateStatus(r.id, "Rejected")}
-                          disabled={busyId === r.id}
-                          className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs sm:text-sm bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-60"
-                        >
-                          {busyId === r.id ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <X className="w-4 h-4" />
-                          )}
-                          Reject
                         </button>
                       </div>
                     ) : null}
@@ -990,6 +973,7 @@ export default function AdminReservations() {
         </div>
       )}
 
+      
       {/* Bottom Navigation - Mobile only */}
       <AdminBottomNav badgeCounts={badgeCounts} />
     </div>
