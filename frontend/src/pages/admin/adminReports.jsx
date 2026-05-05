@@ -35,7 +35,7 @@ const peso = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP"
 const USE_FAKE = process.env.REACT_APP_FAKE_API === "1";
 const FAKE_DB_KEY = "FAKE_DB_V1";
 
-const CANONICAL_STATUSES = ["Pending", "Approved", "Preparing", "Ready", "Claimed", "Rejected"];
+const CANONICAL_STATUSES = ["Pending", "Approved", "Preparing", "Ready", "Claimed", "Cancelled"];
 function normalizeStatus(raw) {
   const s = String(raw || "").trim().toLowerCase();
   if (!s) return "Pending";
@@ -44,7 +44,8 @@ function normalizeStatus(raw) {
   if (["preparing", "in-prep", "in_prep", "prep"].includes(s)) return "Preparing";
   if (["ready", "done"].includes(s)) return "Ready";
   if (["claimed", "pickedup", "picked_up", "picked-up"].includes(s)) return "Claimed";
-  if (["rejected", "declined"].includes(s)) return "Rejected";
+  if (["rejected", "declined"].includes(s)) return "Rejected"; // Keep for top-ups
+  if (["cancelled", "canceled", "cancel"].includes(s)) return "Cancelled"; // For reservations
   return "Pending";
 }
 function getCreated(obj) {
@@ -269,7 +270,7 @@ export default function AdminReports() {
       const status = normalizeStatus(r?.status);
       counts[status] = (counts[status] || 0) + 1;
       const includeRevenue = revenueStatuses.has(status);
-      if (status !== "Rejected" && Array.isArray(r?.items)) {
+      if (status !== "Cancelled" && Array.isArray(r?.items)) {
         for (const it of r.items) {
           const rid = String(it?.id ?? it?.productId ?? it?.itemId ?? it?._id ?? "").trim();
           const qty = Number(it?.qty ?? it?.quantity ?? it?.count ?? 0) || 0;
@@ -803,7 +804,7 @@ export default function AdminReports() {
                 'Total Reservations': Object.values(data).reduce((sum, count) => sum + count, 0),
                 'Completion Rate': ((data.Approved + data.Preparing + data.Ready + data.Claimed) / Object.values(data).reduce((sum, count) => sum + count, 0) * 100).toFixed(1) + '%',
                 'Pending Reservations': data.Pending || 0,
-                'Rejected Reservations': data.Rejected || 0
+                'Cancelled Reservations': data.Cancelled || 0
               }
             },
             {
@@ -1047,7 +1048,7 @@ export default function AdminReports() {
                 'Total Reservations': Object.values(data).reduce((sum, count) => sum + count, 0),
                 'Completion Rate': ((data.Approved + data.Preparing + data.Ready + data.Claimed) / Object.values(data).reduce((sum, count) => sum + count, 0) * 100).toFixed(1) + '%',
                 'Pending Reservations': data.Pending || 0,
-                'Rejected Reservations': data.Rejected || 0
+                'Cancelled Reservations': data.Cancelled || 0
               }
             },
             {
